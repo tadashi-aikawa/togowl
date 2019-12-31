@@ -1,0 +1,10 @@
+# https://typescript-jp.gitbook.io/deep-dive/styleguide
+printWidth: 120
+tabWidth: 2
+useTabs: false
+semi: true
+singleQuote: true
+quoteProps: as-needed
+trailingComma: all
+bracketSpacing: true
+arrowParens: avoid
