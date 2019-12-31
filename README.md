@@ -5,6 +5,13 @@
 Togowl is task and life management tools for next generation owls.  
 It integrates with Toggl, Todoist and Slack.
 
+<div style="display: flex;">
+  <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" width="60" />
+  <img src="https://cdn.svgporn.com/logos/nuxt.svg" width="60" />
+  <img src="https://cdn.svgporn.com/logos/vuetifyjs.svg" width="60" />
+  <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" />
+</div>
+
 ## For developers
 
 ### Build Setup
