@@ -1,8 +1,20 @@
 # togowl-next
 
-> Togowl next
+<img src="https://github.com/tadashi-aikawa/togowl/raw/master/public/icon.png" width="240" />
 
-## Build Setup
+Togowl is task and life management tools for next generation owls.  
+It integrates with Toggl, Todoist and Slack.
+
+<div style="display: flex;">
+  <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" width="60" />
+  <img src="https://cdn.svgporn.com/logos/nuxt.svg" width="60" />
+  <img src="https://cdn.svgporn.com/logos/vuetifyjs.svg" width="60" />
+  <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" />
+</div>
+
+## For developers
+
+### Build Setup
 
 ``` bash
 # install dependencies
@@ -14,9 +26,13 @@ $ npm run dev
 # build for production and launch server
 $ npm run build
 $ npm run start
-
-# generate static project
-$ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+### Deploy
+
+:warning: `firebase login` is required
+
+```
+$ npm run build
+$ firebase deploy
+```
