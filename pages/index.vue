@@ -7,20 +7,25 @@
 
           <v-text-field v-model="password" type="password" :rules="passwordRules" label="Password" required />
 
-          <v-btn :disabled="!valid" color="success" class="mr-4" @click="login">
-            Login
-          </v-btn>
+          <template v-if="isLoading"> <v-progress-circular indeterminate color="green" /> Login... </template>
+          <template v-else>
+            <v-btn :disabled="!valid" color="success" class="mr-4" @click="login">
+              Login
+            </v-btn>
+          </template>
         </v-form>
 
         <v-img src="https://github.com/tadashi-aikawa/togowl/raw/master/public/icon.png" width="64" />
       </v-row>
       <v-row align="center" justify="center">
-        <v-alert v-if="loginMailAddress" type="success">
-          {{ loginMailAddress }}
-        </v-alert>
-        <v-alert v-if="errorMessage" type="error">
-          {{ errorMessage }}
-        </v-alert>
+        <div style="padding: 15px;">
+          <v-alert v-if="verifiedUser.isNotEmpty()" type="success">
+            <p>Welcome to {{ verifiedUser.name.value }}!!</p>
+          </v-alert>
+          <v-alert v-if="errorMessage" type="error">
+            {{ errorMessage }}
+          </v-alert>
+        </div>
       </v-row>
     </v-flex>
   </v-layout>
@@ -28,8 +33,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
-import { configStore } from '~/store/';
-import { LoginPayload, MailAddress } from '~/domain/authentication/vo';
+import { authenticationStore } from '~/store/';
+import { LoginPayload, MailAddress, User } from '~/domain/authentication/vo';
 
 @Component({})
 class Root extends Vue {
@@ -45,15 +50,19 @@ class Root extends Vue {
   passwordRules = [(v: string) => !!v || 'Password is required'];
 
   login() {
-    configStore.login(LoginPayload.create(MailAddress.create(this.mailAddress), this.password));
+    authenticationStore.login(LoginPayload.create(MailAddress.create(this.mailAddress), this.password));
   }
 
   get errorMessage(): string | undefined {
-    return configStore.error.message;
+    return authenticationStore.error.message;
   }
 
-  get loginMailAddress(): string | undefined {
-    return configStore.verifiedMailAddress.isNotEmpty() ? configStore.verifiedMailAddress.value : undefined;
+  get verifiedUser(): User {
+    return authenticationStore.verifiedUser;
+  }
+
+  get isLoading(): boolean {
+    return authenticationStore.isLoading;
   }
 }
 
