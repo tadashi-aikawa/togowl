@@ -38,6 +38,7 @@ import { Component, Vue } from 'nuxt-property-decorator';
 import { authenticationStore } from '~/store/';
 import { MailAddress } from '~/domain/authentication/vo/MailAddress';
 import { User } from '~/domain/authentication/vo/User';
+import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 
 @Component({})
 class Root extends Vue {
@@ -53,7 +54,7 @@ class Root extends Vue {
   passwordRules = [(v: string) => !!v || 'Password is required'];
 
   login() {
-    authenticationStore.login({ mailAddress: MailAddress.create(this.mailAddress), password: this.password });
+    authenticationStore.login(LoginPayload.create(MailAddress.create(this.mailAddress), this.password));
   }
 
   get errorMessage(): string | undefined {

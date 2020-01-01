@@ -19,7 +19,9 @@ module.exports = {
     '@typescript-eslint/no-useless-constructor': 'warn',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
+    'no-undef': 'off',
     // Original
+    'arrow-parens': ['warn', 'as-needed'],
     'space-before-function-paren': 'off',
     'comma-dangle': 'off',
     'no-empty-function': 'off',
