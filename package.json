@@ -15,7 +15,8 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
     "firebase": "^7.6.1",
-    "nuxt": "^2.0.0"
+    "nuxt": "^2.0.0",
+    "shallow-equal-object": "^1.1.1"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.5.4",

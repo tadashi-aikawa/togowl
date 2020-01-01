@@ -1,7 +1,15 @@
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import firebase from '~/plugins/firebase';
-import { TogowlError } from '~/domain/common/vo';
-import { LoginPayload, MailAddress, UId, User, UserName } from '~/domain/authentication/vo';
+import { User } from '~/domain/authentication/vo/User';
+import { UId } from '~/domain/authentication/vo/UId';
+import { UserName } from '~/domain/authentication/vo/UserName';
+import { MailAddress } from '~/domain/authentication/vo/MailAddress';
+import { TogowlError } from '~/domain/common/TogowlError';
+
+interface LoginPayload {
+  mailAddress: MailAddress;
+  password: string;
+}
 
 @Module({ name: 'authentication', namespaced: true, stateFactory: true })
 class Authentication extends VuexModule {
@@ -44,7 +52,7 @@ class Authentication extends VuexModule {
         ),
       );
     } catch (err) {
-      this.setError(new TogowlError(err.code, err.message));
+      this.setError(TogowlError.create(err.code, err.message));
       this.setVerifiedUser(User.empty());
     }
 

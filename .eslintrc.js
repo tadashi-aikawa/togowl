@@ -25,11 +25,13 @@ module.exports = {
     'no-empty-function': 'off',
     // Semicolon
     semi: ['error', 'always'],
-    'semi-spacing': ['error', { after: true, before: false }],
-    'semi-style': ['error', 'last'],
-    'no-extra-semi': 'error',
-    'no-unexpected-multiline': 'error',
-    'no-unreachable': 'error',
+    'semi-spacing': ['warn', { after: true, before: false }],
+    'semi-style': ['warn', 'last'],
+    'no-extra-semi': 'warn',
+    'no-unexpected-multiline': 'warn',
+    'no-unreachable': 'warn',
+    // Space
+    'object-curly-spacing': ['warn', 'always'],
     // '@typescript-eslint/no-empty-function': 'off',
   },
 };

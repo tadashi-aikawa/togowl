@@ -7,7 +7,9 @@
 
           <v-text-field v-model="password" type="password" :rules="passwordRules" label="Password" required />
 
-          <template v-if="isLoading"> <v-progress-circular indeterminate color="green" /> Login... </template>
+          <template v-if="isLoading">
+            <v-progress-circular indeterminate color="green" /> <span>Login...</span>
+          </template>
           <template v-else>
             <v-btn :disabled="!valid" color="success" class="mr-4" @click="login">
               Login
@@ -34,7 +36,8 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
 import { authenticationStore } from '~/store/';
-import { LoginPayload, MailAddress, User } from '~/domain/authentication/vo';
+import { MailAddress } from '~/domain/authentication/vo/MailAddress';
+import { User } from '~/domain/authentication/vo/User';
 
 @Component({})
 class Root extends Vue {
@@ -50,7 +53,7 @@ class Root extends Vue {
   passwordRules = [(v: string) => !!v || 'Password is required'];
 
   login() {
-    authenticationStore.login(LoginPayload.create(MailAddress.create(this.mailAddress), this.password));
+    authenticationStore.login({ mailAddress: MailAddress.create(this.mailAddress), password: this.password });
   }
 
   get errorMessage(): string | undefined {
