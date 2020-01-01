@@ -5,9 +5,9 @@ interface ValueObjectProps {
 }
 
 export abstract class AbstractValueObject<T> {
-  protected readonly _value: T;
+  protected readonly _value: T | undefined;
 
-  protected constructor(_value: T) {
+  protected constructor(_value?: T) {
     this._value = Object.freeze(_value);
   }
 
@@ -17,12 +17,20 @@ export abstract class AbstractValueObject<T> {
     }
     return shallowEqual(this._value, vo._value);
   }
+
+  isEmpty(): boolean {
+    return this._value === undefined;
+  }
+
+  isNotEmpty(): boolean {
+    return !this.isEmpty();
+  }
 }
 
 export abstract class ValueObject<T extends ValueObjectProps> extends AbstractValueObject<T> {}
 
 export abstract class PrimitiveValueObject<T> extends ValueObject<T> {
   get value(): T {
-    return this._value;
+    return this._value!;
   }
 }

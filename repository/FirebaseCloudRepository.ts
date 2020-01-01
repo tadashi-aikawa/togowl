@@ -27,7 +27,7 @@ class FirebaseCloudRepository implements CloudRepository {
       );
       return right(user);
     } catch (e) {
-      return left(e);
+      return left(TogowlError.create(e.code, e.message));
     }
   }
 }

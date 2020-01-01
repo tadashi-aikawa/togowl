@@ -6,21 +6,15 @@ interface Props {
 }
 
 export class TogowlError extends ValueObject<Props> {
-  static EMPTY: TogowlError = new TogowlError({} as Props);
-
   static create(code: string, message: string): TogowlError {
     return new TogowlError({ code, message });
   }
 
   static empty(): TogowlError {
-    return TogowlError.EMPTY;
+    return new TogowlError();
   }
 
   get message(): string {
-    return this._value.message;
-  }
-
-  isEmpty(): boolean {
-    return this.equals(TogowlError.empty());
+    return this._value!.message;
   }
 }

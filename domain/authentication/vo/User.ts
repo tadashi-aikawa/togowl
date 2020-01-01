@@ -10,21 +10,15 @@ interface Props {
 }
 
 export class User extends ValueObject<Props> {
-  static EMPTY: User = new User({} as any);
-
   static create(uid: UId, name: UserName, mailAddress: MailAddress): User {
     return new User({ uid, name, mailAddress });
   }
 
   static empty(): User {
-    return User.EMPTY;
+    return new User();
   }
 
   get name(): UserName {
-    return this._value.name;
-  }
-
-  isNotEmpty(): boolean {
-    return !this.equals(User.EMPTY);
+    return this._value!.name;
   }
 }

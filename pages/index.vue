@@ -24,8 +24,8 @@
           <v-alert v-if="verifiedUser.isNotEmpty()" type="success">
             <p>Welcome to {{ verifiedUser.name.value }}!!</p>
           </v-alert>
-          <v-alert v-if="errorMessage" type="error">
-            {{ errorMessage }}
+          <v-alert v-if="error.isNotEmpty()" type="error">
+            {{ error.message }}
           </v-alert>
         </div>
       </v-row>
@@ -39,6 +39,7 @@ import { authenticationStore } from '~/store/';
 import { MailAddress } from '~/domain/authentication/vo/MailAddress';
 import { User } from '~/domain/authentication/vo/User';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
+import { TogowlError } from '~/domain/common/TogowlError';
 
 @Component({})
 class Root extends Vue {
@@ -57,8 +58,8 @@ class Root extends Vue {
     authenticationStore.login(LoginPayload.create(MailAddress.create(this.mailAddress), this.password));
   }
 
-  get errorMessage(): string | undefined {
-    return authenticationStore.error.message;
+  get error(): TogowlError {
+    return authenticationStore.error;
   }
 
   get verifiedUser(): User {

@@ -12,10 +12,10 @@ export class LoginPayload extends ValueObject<Props> {
   }
 
   get mailAddress(): MailAddress {
-    return this._value.mailAddress;
+    return this._value!.mailAddress;
   }
 
   get password(): string {
-    return this._value.password;
+    return this._value!.password;
   }
 }
