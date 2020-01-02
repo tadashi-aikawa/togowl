@@ -10,10 +10,6 @@ export class MailAddress extends PrimitiveValueObject<string> {
     return new MailAddress(value);
   }
 
-  static empty(): MailAddress {
-    return new MailAddress();
-  }
-
   static isValid(value: string): boolean {
     return /.+@.+\..+/.test(value);
   }

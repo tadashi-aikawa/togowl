@@ -1,12 +1,16 @@
 import { Store } from 'vuex';
 import { getModule } from 'vuex-module-decorators';
-import Authentication from '~/store/authentication';
+import AuthenticationModule from '~/store/Authentication';
+import CloudUserModule from '~/store/CloudUser';
 
 // eslint-disable-next-line import/no-mutable-exports
-let authenticationStore: Authentication;
+let authenticationStore: AuthenticationModule;
+// eslint-disable-next-line import/no-mutable-exports
+let userStore: CloudUserModule;
 
 function initialiseStores(store: Store<any>): void {
-  authenticationStore = getModule(Authentication, store);
+  authenticationStore = getModule(AuthenticationModule, store);
+  userStore = getModule(CloudUserModule, store);
 }
 
-export { initialiseStores, authenticationStore };
+export { initialiseStores, authenticationStore, userStore };

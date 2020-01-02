@@ -10,10 +10,6 @@ export class TogowlError extends ValueObject<Props> {
     return new TogowlError({ code, message });
   }
 
-  static empty(): TogowlError {
-    return new TogowlError();
-  }
-
   get message(): string {
     return this._value!.message;
   }

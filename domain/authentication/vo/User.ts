@@ -6,19 +6,18 @@ import { ValueObject } from '~/utils/vo';
 interface Props {
   uid: UId;
   name: UserName;
-  mailAddress: MailAddress;
 }
 
 export class User extends ValueObject<Props> {
-  static create(uid: UId, name: UserName, mailAddress: MailAddress): User {
-    return new User({ uid, name, mailAddress });
-  }
-
-  static empty(): User {
-    return new User();
+  static create(uid: UId, name: UserName): User {
+    return new User({ uid, name });
   }
 
   get name(): UserName {
     return this._value!.name;
+  }
+
+  get uid(): UId {
+    return this._value!.uid;
   }
 }

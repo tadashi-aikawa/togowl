@@ -21,10 +21,10 @@
       </v-row>
       <v-row align="center" justify="center">
         <div style="padding: 15px;">
-          <v-alert v-if="verifiedUser.isNotEmpty()" type="success">
+          <v-alert v-if="verifiedUser" type="success">
             <p>Welcome to {{ verifiedUser.name.value }}!!</p>
           </v-alert>
-          <v-alert v-if="error.isNotEmpty()" type="error">
+          <v-alert v-if="error" type="error">
             {{ error.message }}
           </v-alert>
         </div>
@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
-import { authenticationStore } from '~/store/';
+import { authenticationStore, userStore } from '~/store/';
 import { MailAddress } from '~/domain/authentication/vo/MailAddress';
 import { User } from '~/domain/authentication/vo/User';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
@@ -58,16 +58,16 @@ class Root extends Vue {
     authenticationStore.login(LoginPayload.create(MailAddress.create(this.mailAddress), this.password));
   }
 
-  get error(): TogowlError {
+  get error(): TogowlError | null {
     return authenticationStore.error;
   }
 
-  get verifiedUser(): User {
-    return authenticationStore.verifiedUser;
+  get verifiedUser(): User | null {
+    return userStore.user;
   }
 
   get isLoading(): boolean {
-    return authenticationStore.isLoading;
+    return authenticationStore.duringAuthentication;
   }
 }
 

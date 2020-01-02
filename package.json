@@ -17,7 +17,8 @@
     "firebase": "^7.6.1",
     "fp-ts": "^2.3.1",
     "nuxt": "^2.0.0",
-    "shallow-equal-object": "^1.1.1"
+    "shallow-equal-object": "^1.1.1",
+    "vuexfire": "^3.2.1"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.5.4",

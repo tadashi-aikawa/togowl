@@ -17,14 +17,6 @@ export abstract class AbstractValueObject<T> {
     }
     return shallowEqual(this._value, vo._value);
   }
-
-  isEmpty(): boolean {
-    return this._value === undefined;
-  }
-
-  isNotEmpty(): boolean {
-    return !this.isEmpty();
-  }
 }
 
 export abstract class ValueObject<T extends ValueObjectProps> extends AbstractValueObject<T> {}

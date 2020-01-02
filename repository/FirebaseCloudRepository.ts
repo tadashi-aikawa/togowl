@@ -20,11 +20,7 @@ class FirebaseCloudRepository implements CloudRepository {
         .collection('users')
         .doc(this.uid)
         .get();
-      const user = User.create(
-        UId.create(this.uid),
-        UserName.create(userDoc.data()!.name),
-        MailAddress.create(authResult.user?.email!),
-      );
+      const user = User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name));
       return right(user);
     } catch (e) {
       return left(TogowlError.create(e.code, e.message));
