@@ -14,25 +14,58 @@ It integrates with Toggl, Todoist and Slack.
 
 ## For developers
 
-### Build Setup
+### Clone
 
-``` bash
-# install dependencies
+Clone this repository.
+
+### Install dependencies
+
+```bash
 $ npm run install
+```
 
-# serve with hot reload at localhost:3000
+### Create your app on firebase
+
+Create togowl app on firebase as different name (ex: yourtogowl)
+
+### Create `.firebase.config.json`
+
+For example.
+
+```json
+{
+  "apiKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "authDomain": "yourtogowl.firebaseapp.com",
+  "databaseURL": "https://yourtogowl.firebaseio.com",
+  "projectId": "yourtogowl",
+  "storageBucket": "yourtogowl.appspot.com",
+  "messagingSenderId": "777777777777",
+  "appId": "1:666666666666:web:aaaaaaaaaaaaaaaaaaaaaa"
+}
+```
+
+# Serve with hot reload at localhost:3000
+
+```
 $ npm run dev
+```
 
-# build for production and launch server
+# Build for production and launch server
+
+```
 $ npm run build
 $ npm run start
 ```
 
 ### Deploy
 
-:warning: `firebase login` is required
+Before deploy, you need to
+
+- Build as production ( `npm run build` )
+- Login with your firebase account ( `firebase login` )
+
+Then
 
 ```
-$ npm run build
 $ firebase deploy
 ```
