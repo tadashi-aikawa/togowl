@@ -20,7 +20,6 @@ class CloudUserModule extends VuexModule {
   _user: FirestoreUser | null = null;
 
   get user(): User | null {
-    console.log(this._user);
     return this._user ? User.create(UId.create(this._user.id), UserName.create(this._user.name)) : null;
   }
 

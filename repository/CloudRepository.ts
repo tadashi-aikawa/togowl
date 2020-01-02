@@ -4,7 +4,8 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { Either } from '~/node_modules/fp-ts/lib/Either';
 
 interface CloudRepository {
-  login(payload: LoginPayload): Promise<Either<TogowlError, User>>;
+  login(payload?: LoginPayload): Promise<Either<TogowlError, User>>;
+  logout(): void;
 }
 
 export default CloudRepository;

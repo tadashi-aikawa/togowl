@@ -6,17 +6,23 @@ import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { userStore } from '~/utils/store-accessor';
+import firebase from '~/plugins/firebase';
+import { UId } from '~/domain/authentication/vo/UId';
+import { AuthenticationStatus } from '~/domain/authentication/vo/AuthenticationStatus';
+
+function initCloudStores(uid: UId) {
+  userStore.init(uid);
+}
 
 @Module({ name: 'Authentication', namespaced: true, stateFactory: true })
 class AuthenticationModule extends VuexModule {
-  // TODO: status enum (AUTHENTICATING / SUCCESS / FAILURE / NONE)
-  duringAuthentication: boolean = false;
+  status: AuthenticationStatus = 'init';
   error: TogowlError | null = null;
   cloudRepository: CloudRepository = new FirebaseCloudRepository();
 
   @Mutation
-  setDuringAuthentication(isLoading: boolean) {
-    this.duringAuthentication = isLoading;
+  setAuthenticationStatus(status: AuthenticationStatus) {
+    this.status = status;
   }
 
   @Mutation
@@ -25,19 +31,54 @@ class AuthenticationModule extends VuexModule {
   }
 
   @Action
+  init() {
+    this.setAuthenticationStatus('check');
+    firebase.auth().onAuthStateChanged(async user => {
+      if (!user) {
+        this.setError(null);
+        this.setAuthenticationStatus('logout');
+        return;
+      }
+      pipe(
+        await this.cloudRepository.login(),
+        fold(
+          e => {
+            this.setError(e);
+            this.setAuthenticationStatus('error');
+          },
+          user => {
+            initCloudStores(user.uid);
+            this.setAuthenticationStatus('login');
+          },
+        ),
+      );
+    });
+  }
+
+  @Action
   async login(payload: LoginPayload) {
     this.setError(null);
-    this.setDuringAuthentication(true);
+    this.setAuthenticationStatus('check');
 
     pipe(
       await this.cloudRepository.login(payload),
       fold(
-        e => this.setError(e),
-        user => userStore.init(user.uid),
+        e => {
+          this.setError(e);
+          this.setAuthenticationStatus('error');
+        },
+        user => {
+          initCloudStores(user.uid);
+          this.setAuthenticationStatus('login');
+        },
       ),
     );
+  }
 
-    this.setDuringAuthentication(false);
+  @Action
+  async logout() {
+    this.setAuthenticationStatus('logout');
+    await this.cloudRepository.logout();
   }
 }
 
