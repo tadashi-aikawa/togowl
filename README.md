@@ -28,6 +28,8 @@ $ npm run install
 
 Create togowl app on firebase as different name (ex: yourtogowl)
 
+👉 https://console.firebase.google.com/
+
 ### Create `.firebase.config.json`
 
 For example.
@@ -43,6 +45,8 @@ For example.
   "appId": "1:666666666666:web:aaaaaaaaaaaaaaaaaaaaaa"
 }
 ```
+
+You can see in `Project Overview > Settings`
 
 # Serve with hot reload at localhost:3000
 
