@@ -6,6 +6,12 @@ import CloudRepository from '~/repository/CloudRepository';
 import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { UserName } from '~/domain/authentication/vo/UserName';
+import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
+
+export interface FirestoreSlack {
+  notifyTo?: string;
+  incomingWebHookUrl?: string;
+}
 
 class FirebaseCloudRepository implements CloudRepository {
   private uid: string;
@@ -34,6 +40,23 @@ class FirebaseCloudRepository implements CloudRepository {
 
   async logout() {
     await firebase.auth().signOut();
+  }
+
+  saveSlackConfig(config: SlackConfig): Promise<TogowlError | null> {
+    const document: FirestoreSlack = {
+      incomingWebHookUrl: config.incomingWebHookUrl?.value,
+      notifyTo: config.notifyTo?.value,
+    };
+    return firebase
+      .firestore()
+      .collection('slack')
+      .doc(this.uid)
+      .set(document)
+      .then(() => {
+        console.log('"slack" updated!');
+        return null;
+      })
+      .catch(() => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', `Fail to save slack config. detail: ${config}`));
   }
 }
 

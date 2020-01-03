@@ -1,4 +1,3 @@
-import { MailAddress } from '~/domain/authentication/vo/MailAddress';
 import { UserName } from '~/domain/authentication/vo/UserName';
 import { UId } from '~/domain/authentication/vo/UId';
 import { ValueObject } from '~/utils/vo';

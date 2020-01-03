@@ -1,7 +1,5 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { TogowlError } from '~/domain/common/TogowlError';
-import CloudRepository from '~/repository/CloudRepository';
-import FirebaseCloudRepository from '~/repository/FirebaseCloudRepository';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
@@ -9,6 +7,7 @@ import { notificationStore, userStore } from '~/utils/store-accessor';
 import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { AuthenticationStatus } from '~/domain/authentication/vo/AuthenticationStatus';
+import { cloudRepository } from '~/store/index';
 
 function initCloudStores(uid: UId) {
   userStore.init(uid);
@@ -19,7 +18,6 @@ function initCloudStores(uid: UId) {
 class AuthenticationModule extends VuexModule {
   status: AuthenticationStatus = 'init';
   error: TogowlError | null = null;
-  cloudRepository: CloudRepository = new FirebaseCloudRepository();
 
   @Mutation
   setAuthenticationStatus(status: AuthenticationStatus) {
@@ -41,7 +39,7 @@ class AuthenticationModule extends VuexModule {
         return;
       }
       pipe(
-        await this.cloudRepository.login(),
+        await cloudRepository.login(),
         fold(
           e => {
             this.setError(e);
@@ -62,7 +60,7 @@ class AuthenticationModule extends VuexModule {
     this.setAuthenticationStatus('check');
 
     pipe(
-      await this.cloudRepository.login(payload),
+      await cloudRepository.login(payload),
       fold(
         e => {
           this.setError(e);
@@ -79,7 +77,7 @@ class AuthenticationModule extends VuexModule {
   @Action
   async logout() {
     this.setAuthenticationStatus('logout');
-    await this.cloudRepository.logout();
+    await cloudRepository.logout();
   }
 }
 

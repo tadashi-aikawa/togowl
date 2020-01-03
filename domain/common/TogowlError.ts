@@ -10,7 +10,15 @@ export class TogowlError extends ValueObject<Props> {
     return new TogowlError({ code, message });
   }
 
+  get code(): string {
+    return this._value!.code;
+  }
+
   get message(): string {
     return this._value!.message;
+  }
+
+  get messageForLog(): string {
+    return `[${this.code}]: ${this.message}`;
   }
 }

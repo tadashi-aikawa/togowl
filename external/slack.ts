@@ -1,10 +1,18 @@
 import { IncomingWebhook } from '@slack/webhook';
 
-export async function send(webHookUrl: string, message: string, channel?: string) {
+type Result = 'ok' | string;
+
+export async function send(
+  webHookUrl: string,
+  message: string,
+  userName: string,
+  iconEmoji: string,
+  channel?: string,
+): Promise<Result> {
   const webHook = new IncomingWebhook(webHookUrl, {
-    username: 'Togowl',
-    icon_emoji: ':togowl:',
+    username: userName,
+    icon_emoji: iconEmoji,
     channel,
   });
-  await webHook.send(message);
+  return (await webHook.send(message)).text;
 }

@@ -95,9 +95,9 @@ export default class extends Vue {
       to: '/',
     },
     {
-      icon: 'mdi-hand-peace',
-      title: 'Doki Junki',
-      to: '/inspire',
+      icon: 'mdi-settings',
+      title: 'Settings',
+      to: '/settings',
     },
   ];
 

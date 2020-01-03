@@ -5,9 +5,8 @@
         <v-img src="https://github.com/tadashi-aikawa/togowl/raw/master/public/icon.png" width="64" />
       </v-row>
       <v-row align="center" justify="center">
-        <v-form ref="form" v-model="valid" lazy-validation>
+        <v-form ref="form" v-model="valid">
           <v-text-field v-model="mailAddress" :rules="mailAddressRules" label="Mail address" required />
-
           <v-text-field v-model="password" type="password" :rules="passwordRules" label="Password" required />
         </v-form>
       </v-row>
@@ -41,7 +40,7 @@ import { authenticationStore } from '~/utils/store-accessor';
 
 @Component({})
 class Login extends Vue {
-  valid = true;
+  valid = false;
 
   mailAddress = '';
   mailAddressRules = [
