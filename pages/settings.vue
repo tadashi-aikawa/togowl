@@ -29,9 +29,15 @@
           </v-col>
         </v-row>
         <v-row align="center" justify="center">
-          <v-btn :disabled="!valid" color="success" class="mr-4" @click="save">
+          <v-btn :disabled="!valid" color="success" class="mr-4" :loading="isUpdating" @click="save">
             Save
           </v-btn>
+
+          <div style="padding: 15px;">
+            <v-alert v-if="updateError" type="error">
+              {{ updateError.message }}
+            </v-alert>
+          </div>
         </v-row>
       </v-form>
     </v-container>
@@ -44,6 +50,7 @@ import { notificationStore } from '~/utils/store-accessor';
 import { ChannelName } from '~/domain/notification/vo/ChannelName';
 import { Url } from '~/domain/common/Url';
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
+import { TogowlError } from '~/domain/common/TogowlError';
 
 @Component({})
 class Root extends Vue {
@@ -63,8 +70,15 @@ class Root extends Vue {
     this.notifyChannel = notificationStore.slackConfig?.notifyTo?.value ?? '';
   }
 
+  get updateError(): TogowlError | null {
+    return notificationStore.updateError;
+  }
+
+  get isUpdating(): boolean {
+    return notificationStore.updateStatus === 'updating';
+  }
+
   save() {
-    console.log('save..');
     notificationStore.updateSlackConfig(SlackConfig.create(this.incomingWebHookUrl, this.notifyChannel));
   }
 }

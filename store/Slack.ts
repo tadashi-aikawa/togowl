@@ -1,4 +1,4 @@
-import { Action, Module, VuexModule } from 'vuex-module-decorators';
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import firebase from '~/plugins/firebase';
 import { firestoreAction } from '~/node_modules/vuexfire';
 import { UId } from '~/domain/authentication/vo/UId';
@@ -6,6 +6,8 @@ import { NotificationServiceImpl } from '~/domain/notification/service/Notificat
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
 import { FirestoreSlack } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
+import { UpdateStatus } from '~/domain/notification/vo/UpdateStatus';
+import { TogowlError } from '~/domain/common/TogowlError';
 
 const service = new NotificationServiceImpl();
 const firestore = firebase.firestore();
@@ -16,17 +18,34 @@ const firestore = firebase.firestore();
 @Module({ name: 'Slack', namespaced: true, stateFactory: true })
 class SlackModule extends VuexModule {
   _slack: FirestoreSlack | null = null;
+  updateStatus: UpdateStatus = 'init';
+  updateError: TogowlError | null = null;
 
   get slackConfig(): SlackConfig | null {
     return SlackConfig.create(this._slack?.incomingWebHookUrl, this._slack?.notifyTo);
   }
 
+  @Mutation
+  setUpdateStatus(status: UpdateStatus) {
+    this.updateStatus = status;
+  }
+
+  @Mutation
+  setUpdateError(error: TogowlError | null) {
+    this.updateError = error;
+  }
+
   @Action
   async updateSlackConfig(config: SlackConfig) {
+    this.setUpdateError(null);
+    this.setUpdateStatus('updating');
+
     const err = await cloudRepository.saveSlackConfig(config);
     if (err) {
-      // TODO: Show on UI
-      console.error(err.messageForLog);
+      this.setUpdateStatus('error');
+      this.setUpdateError(err);
+    } else {
+      this.setUpdateStatus('success');
     }
   }
 

@@ -53,10 +53,9 @@ class FirebaseCloudRepository implements CloudRepository {
       .doc(this.uid)
       .set(document)
       .then(() => {
-        console.log('"slack" updated!');
         return null;
       })
-      .catch(() => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', `Fail to save slack config. detail: ${config}`));
+      .catch(() => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', 'Fail to save slack config.'));
   }
 }
 
