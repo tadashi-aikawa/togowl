@@ -5,13 +5,14 @@ import FirebaseCloudRepository from '~/repository/FirebaseCloudRepository';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
-import { userStore } from '~/utils/store-accessor';
+import { notificationStore, userStore } from '~/utils/store-accessor';
 import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { AuthenticationStatus } from '~/domain/authentication/vo/AuthenticationStatus';
 
 function initCloudStores(uid: UId) {
   userStore.init(uid);
+  notificationStore.init(uid);
 }
 
 @Module({ name: 'Authentication', namespaced: true, stateFactory: true })
