@@ -64,6 +64,22 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch(err => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', 'Fail to save slack config.', err));
   }
 
+  saveTimerConfig(config: TimerConfig): Promise<TogowlError | null> {
+    const document: FirestoreTimer = {
+      token: config.token,
+      proxy: config.proxy,
+    };
+    return firebase
+      .firestore()
+      .collection('timer')
+      .doc(this.uid)
+      .set(document)
+      .then(() => {
+        return null;
+      })
+      .catch(err => TogowlError.create('SAVE_TIMER_CONFIG_ERROR', 'Fail to save timer config.', err));
+  }
+
   getTimerConfig(): Promise<Either<TogowlError, TimerConfig>> {
     return firebase
       .firestore()

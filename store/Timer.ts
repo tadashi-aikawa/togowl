@@ -10,6 +10,9 @@ import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { createTimerService } from '~/utils/service-factory';
 import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
+import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
+import { cloudRepository } from '~/store/index';
+import { UpdateStatus } from '~/domain/notification/vo/UpdateStatus';
 
 const firestore = firebase.firestore();
 let service: TimerService | null;
@@ -20,6 +23,8 @@ let service: TimerService | null;
 @Module({ name: 'Timer', namespaced: true, stateFactory: true })
 class TimerModule extends VuexModule {
   _timer: FirestoreTimer | null = null;
+  updateStatus: UpdateStatus = 'init';
+  updateError: TogowlError | null = null;
 
   currentEntry: Entry | null = null;
   error: TogowlError | null = null;
@@ -27,11 +32,6 @@ class TimerModule extends VuexModule {
   get timerConfig(): TimerConfig | null {
     return TimerConfig.create(this._timer?.token, this._timer?.proxy);
   }
-
-  // @Mutation
-  // setService(service: TimerService) {
-  //   this.service = service;
-  // }
 
   @Mutation
   setCurrentEntry(entry: Entry | null) {
@@ -41,6 +41,30 @@ class TimerModule extends VuexModule {
   @Mutation
   setError(error: TogowlError | null) {
     this.error = error;
+  }
+
+  @Mutation
+  setUpdateStatus(status: UpdateStatus) {
+    this.updateStatus = status;
+  }
+
+  @Mutation
+  setUpdateError(error: TogowlError | null) {
+    this.updateError = error;
+  }
+
+  @Action
+  async updateTimerConfig(config: TimerConfig) {
+    this.setUpdateError(null);
+    this.setUpdateStatus('updating');
+
+    const err = await cloudRepository.saveTimerConfig(config);
+    if (err) {
+      this.setUpdateStatus('error');
+      this.setUpdateError(err);
+    } else {
+      this.setUpdateStatus('success');
+    }
   }
 
   @Action
