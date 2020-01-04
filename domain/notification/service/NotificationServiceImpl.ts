@@ -12,13 +12,17 @@ export class NotificationServiceImpl implements NotificationService {
     channel?: ChannelName,
     proxy?: string,
   ): Promise<TogowlError | null> {
-    const ret = await slack.send(
-      incomingWebHookUrl.getProxyAddedValue(proxy),
-      message,
-      'Togowl',
-      ':togowl:',
-      channel?.value,
-    );
-    return ret === 'ok' ? null : TogowlError.create('FAIL_INCOMING_WEB_HOOK', `Fail to notify slack! detail: ${ret}`);
+    try {
+      const ret = await slack.send(
+        incomingWebHookUrl.getProxyAddedValue(proxy),
+        message,
+        'Togowl',
+        ':togowl:',
+        channel?.value,
+      );
+      return ret === 'ok' ? null : TogowlError.create('FAIL_INCOMING_WEB_HOOK', `Fail to notify slack! detail: ${ret}`);
+    } catch (e) {
+      return TogowlError.create('FAIL_INCOMING_WEB_HOOK', e.message);
+    }
   }
 }

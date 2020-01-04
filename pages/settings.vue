@@ -11,7 +11,6 @@
                 :rules="incomingWebHookUrlRules"
                 label="Incoming web hook URL"
                 placeholder="https://hooks.slack.com/services/AAA/BBB/c123"
-                type="password"
                 clearable
               />
             </v-col>
@@ -73,7 +72,6 @@
                 :rules="togglApiTokenRules"
                 label="Toggl API Token"
                 placeholder="Show https://toggl.com/app/profile"
-                type="password"
                 clearable
               />
             </v-col>

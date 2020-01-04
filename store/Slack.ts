@@ -50,19 +50,19 @@ class SlackModule extends VuexModule {
   }
 
   @Action
-  async notifyToSlack(message: string) {
+  async notifyToSlack(message: string): Promise<TogowlError | null> {
     const config = this.slackConfig;
     if (!config?.incomingWebHookUrl) {
-      // TODO: Show on UI
-      console.error('Incoming web hook URL is required! It is empty!');
-      return;
+      return TogowlError.create('INCOMING_WEB_HOOK_URL_IS_EMPTY', 'Incoming web hook URL is required! It is empty!');
     }
 
     const err = await service.notifyToSlack(config.incomingWebHookUrl, message, config.notifyTo, config.proxy);
     if (err) {
-      // TODO: Show on UI
       console.error(err.messageForLog);
+      return TogowlError.create(err.code, err.message);
     }
+
+    return null;
   }
 
   @Action({ rawError: true })
