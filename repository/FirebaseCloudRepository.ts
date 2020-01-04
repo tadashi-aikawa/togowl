@@ -7,10 +7,15 @@ import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { UserName } from '~/domain/authentication/vo/UserName';
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
+import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 
 export interface FirestoreSlack {
   notifyTo?: string;
   incomingWebHookUrl?: string;
+}
+
+export interface FirestoreTimer {
+  token?: string;
 }
 
 class FirebaseCloudRepository implements CloudRepository {
@@ -55,7 +60,22 @@ class FirebaseCloudRepository implements CloudRepository {
       .then(() => {
         return null;
       })
-      .catch(() => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', 'Fail to save slack config.'));
+      .catch(err => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', 'Fail to save slack config.', err));
+  }
+
+  getTimerConfig(): Promise<Either<TogowlError, TimerConfig>> {
+    return firebase
+      .firestore()
+      .collection('timer')
+      .doc(this.uid)
+      .get()
+      .then(x => {
+        const data = x.data() as FirestoreTimer;
+        return data
+          ? right(TimerConfig.create(data.token))
+          : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
+      })
+      .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
   }
 }
 

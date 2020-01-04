@@ -5,6 +5,9 @@ service cloud.firestore {
     match /slack/{userId}/{documents=**} {
       allow read, write: if request.auth.uid == userId
     }
+    match /timer/{userId}/{documents=**} {
+      allow read, write: if request.auth.uid == userId
+    }
     match /users/{userId}/{documents=**} {
       allow read, write: if request.auth.uid == userId
     }

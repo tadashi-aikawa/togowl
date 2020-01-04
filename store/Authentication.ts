@@ -3,15 +3,16 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
-import { notificationStore, userStore } from '~/utils/store-accessor';
+import { notificationStore, timerStore, userStore } from '~/utils/store-accessor';
 import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { AuthenticationStatus } from '~/domain/authentication/vo/AuthenticationStatus';
 import { cloudRepository } from '~/store/index';
 
-function initCloudStores(uid: UId) {
+async function initCloudStores(uid: UId) {
   userStore.init(uid);
   notificationStore.init(uid);
+  await timerStore.init(uid);
 }
 
 @Module({ name: 'Authentication', namespaced: true, stateFactory: true })
@@ -45,8 +46,8 @@ class AuthenticationModule extends VuexModule {
             this.setError(e);
             this.setAuthenticationStatus('error');
           },
-          user => {
-            initCloudStores(user.uid);
+          async user => {
+            await initCloudStores(user.uid);
             this.setAuthenticationStatus('login');
           },
         ),
