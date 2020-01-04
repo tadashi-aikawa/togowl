@@ -7,8 +7,8 @@ import { Api } from '~/external/toggl';
 export class TimerServiceImpl implements TimerService {
   client: Api.RestClient;
 
-  constructor(togglToken: string) {
-    this.client = new Api.RestClient(togglToken);
+  constructor(togglToken: string, proxy?: string) {
+    this.client = new Api.RestClient(togglToken, proxy);
   }
 
   async fetchCurrentEntry(): Promise<Either<TogowlError, Entry>> {

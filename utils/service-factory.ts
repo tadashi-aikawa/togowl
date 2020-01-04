@@ -9,7 +9,7 @@ export async function createTimerService(): Promise<TimerService | null> {
     await cloudRepository.getTimerConfig(),
     fold(
       _err => null,
-      config => new TimerServiceImpl(config.token!),
+      config => new TimerServiceImpl(config.token!, config.proxy),
     ),
   );
 }

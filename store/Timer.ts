@@ -9,13 +9,10 @@ import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { createTimerService } from '~/utils/service-factory';
+import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
 
 const firestore = firebase.firestore();
 let service: TimerService | null;
-
-export interface FirestoreTimer {
-  token?: string;
-}
 
 /**
  * Concrete implementation by using firebase
@@ -28,7 +25,7 @@ class TimerModule extends VuexModule {
   error: TogowlError | null = null;
 
   get timerConfig(): TimerConfig | null {
-    return TimerConfig.create(this._timer?.token);
+    return TimerConfig.create(this._timer?.token, this._timer?.proxy);
   }
 
   // @Mutation

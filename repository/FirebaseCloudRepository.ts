@@ -16,6 +16,7 @@ export interface FirestoreSlack {
 
 export interface FirestoreTimer {
   token?: string;
+  proxy?: string;
 }
 
 class FirebaseCloudRepository implements CloudRepository {
@@ -72,7 +73,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .then(x => {
         const data = x.data() as FirestoreTimer;
         return data
-          ? right(TimerConfig.create(data.token))
+          ? right(TimerConfig.create(data.token, data.proxy))
           : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
       })
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
