@@ -28,6 +28,18 @@
               />
             </v-col>
           </v-row>
+
+          <v-row align="center" justify="center">
+            <v-col cols="10">
+              <v-text-field
+                v-model="slackProxy"
+                label="Proxy server host for avoiding CORS"
+                placeholder="your.proxy.host"
+                clearable
+              />
+            </v-col>
+          </v-row>
+
           <v-row align="center" justify="center">
             <v-btn
               :disabled="!slackConfigIsValid"
@@ -77,6 +89,7 @@
               />
             </v-col>
           </v-row>
+
           <v-row align="center" justify="center">
             <v-btn
               :disabled="!timerConfigIsValid"
@@ -111,8 +124,8 @@ import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 
 @Component({})
 class Root extends Vue {
+  // Slack
   slackConfigIsValid = false;
-  timerConfigIsValid = false;
 
   incomingWebHookUrl = '';
   incomingWebHookUrlRules = [
@@ -123,6 +136,11 @@ class Root extends Vue {
   notifyChannel = '';
   notifyChannelRules = [(v: string) => ChannelName.isValid(v) || 'Channel name must start with "#"'];
 
+  slackProxy = '';
+
+  // Toggl
+  timerConfigIsValid = false;
+
   togglApiToken = '';
   togglApiTokenRules = [(v: string) => !!v || 'Toggl API token is required'];
 
@@ -131,6 +149,7 @@ class Root extends Vue {
   mounted() {
     this.incomingWebHookUrl = notificationStore.slackConfig?.incomingWebHookUrl?.value ?? '';
     this.notifyChannel = notificationStore.slackConfig?.notifyTo?.value ?? '';
+    this.slackProxy = notificationStore.slackConfig?.proxy ?? '';
     this.togglApiToken = timerStore.timerConfig?.token ?? '';
     this.togglProxy = timerStore.timerConfig?.proxy ?? '';
   }
@@ -144,7 +163,9 @@ class Root extends Vue {
   }
 
   saveSlackConfig() {
-    notificationStore.updateSlackConfig(SlackConfig.create(this.incomingWebHookUrl, this.notifyChannel));
+    notificationStore.updateSlackConfig(
+      SlackConfig.create(this.incomingWebHookUrl, this.notifyChannel, this.slackProxy),
+    );
   }
 
   get timerConfigUpdateError(): TogowlError | null {

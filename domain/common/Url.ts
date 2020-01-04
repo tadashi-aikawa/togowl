@@ -13,4 +13,8 @@ export class Url extends PrimitiveValueObject<string> {
   static isValid(value: string): boolean {
     return /^https?:\/\/.+/.test(value);
   }
+
+  getProxyAddedValue(proxy?: string): string {
+    return proxy ? this._value!.replace('://', `://${proxy}/`) : this._value!;
+  }
 }

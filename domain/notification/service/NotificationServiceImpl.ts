@@ -5,8 +5,20 @@ import { NotificationService } from '~/domain/notification/service/NotificationS
 import * as slack from '~/external/slack';
 
 export class NotificationServiceImpl implements NotificationService {
-  async notifyToSlack(incomingWebHookUrl: Url, message: string, channel?: ChannelName): Promise<TogowlError | null> {
-    const ret = await slack.send(incomingWebHookUrl.value, message, 'Togowl', ':togowl:', channel?.value);
+  // TODO: Create constructor (incomingWebHookUrl, proxy, channel)
+  async notifyToSlack(
+    incomingWebHookUrl: Url,
+    message: string,
+    channel?: ChannelName,
+    proxy?: string,
+  ): Promise<TogowlError | null> {
+    const ret = await slack.send(
+      incomingWebHookUrl.getProxyAddedValue(proxy),
+      message,
+      'Togowl',
+      ':togowl:',
+      channel?.value,
+    );
     return ret === 'ok' ? null : TogowlError.create('FAIL_INCOMING_WEB_HOOK', `Fail to notify slack! detail: ${ret}`);
   }
 }

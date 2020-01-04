@@ -22,7 +22,7 @@ class SlackModule extends VuexModule {
   updateError: TogowlError | null = null;
 
   get slackConfig(): SlackConfig | null {
-    return SlackConfig.create(this._slack?.incomingWebHookUrl, this._slack?.notifyTo);
+    return SlackConfig.create(this._slack?.incomingWebHookUrl, this._slack?.notifyTo, this._slack?.proxy);
   }
 
   @Mutation
@@ -58,7 +58,7 @@ class SlackModule extends VuexModule {
       return;
     }
 
-    const err = await service.notifyToSlack(config.incomingWebHookUrl, message, config.notifyTo);
+    const err = await service.notifyToSlack(config.incomingWebHookUrl, message, config.notifyTo, config.proxy);
     if (err) {
       // TODO: Show on UI
       console.error(err.messageForLog);

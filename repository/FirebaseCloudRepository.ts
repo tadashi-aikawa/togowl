@@ -12,6 +12,7 @@ import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 export interface FirestoreSlack {
   notifyTo?: string;
   incomingWebHookUrl?: string;
+  proxy?: string;
 }
 
 export interface FirestoreTimer {
@@ -52,6 +53,7 @@ class FirebaseCloudRepository implements CloudRepository {
     const document: FirestoreSlack = {
       incomingWebHookUrl: config.incomingWebHookUrl?.value,
       notifyTo: config.notifyTo?.value,
+      proxy: config.proxy,
     };
     return firebase
       .firestore()
