@@ -99,6 +99,11 @@ export default class extends Vue {
       title: 'Settings',
       to: '/settings',
     },
+    {
+      icon: 'mdi-spider',
+      title: 'Debug',
+      to: '/debug',
+    },
   ];
 
   mounted() {

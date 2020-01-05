@@ -17,6 +17,10 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return new DateTime(dayjs(value));
   }
 
+  static now(): DateTime {
+    return new DateTime(dayjs());
+  }
+
   get displayTime(): string {
     return this._value!.format('HH:mm:ss');
   }

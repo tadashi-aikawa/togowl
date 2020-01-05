@@ -25,9 +25,10 @@ export namespace SocketApi {
     onInsertEntry?: (entry: TimeEntry) => void;
     onUpdateEntry?: (entry: TimeEntry) => void;
     onDeleteEntry?: (entry: TimeEntry) => void;
+    onPing?: () => void;
   }
 
-  type ActionType = 'INSERT' | 'UPDATE' | 'DELETE' | 'ping' | string;
+  type ActionType = 'INSERT' | 'UPDATE' | 'DELETE' | string;
   interface TimeEntryEvent {
     action: ActionType;
     model: 'time_entry';
@@ -39,7 +40,11 @@ export namespace SocketApi {
     model: 'project';
     data: Project;
   }
-  type EventMessage = TimeEntryEvent | ProjectEvent;
+  interface PingEvent {
+    type: 'ping';
+    model: null;
+  }
+  type EventMessage = TimeEntryEvent | ProjectEvent | PingEvent;
 
   export class Client {
     private constructor(socket: WebSocket) {}
@@ -82,8 +87,10 @@ export namespace SocketApi {
             // TODO
             break;
           default:
-          // {type: "ping"} or {session_id: "...."}
-          // DO NOTHING
+            // {type: "ping"} or {session_id: "...."}
+            if (data.type === 'ping') {
+              listener.onPing?.();
+            }
         }
       });
       return socket;
