@@ -15,6 +15,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
     "@slack/webhook": "^5.0.2",
+    "@types/lodash": "^4.14.149",
     "dayjs": "^1.8.18",
     "firebase": "^7.6.1",
     "fp-ts": "^2.3.1",

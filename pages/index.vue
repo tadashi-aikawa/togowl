@@ -1,11 +1,11 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-img src="https://lohas.nicoseiga.jp/thumb/4998905i?" />
+      <v-img v-if="currentEntry" src="https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png" />
+      <v-img v-else src="https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg" />
       <template v-if="currentEntry">
         <v-row align="center" justify="center">
-          <span style="padding: 15px 0 0;">
-            <v-icon>mdi-lead-pencil</v-icon>
+          <span style="padding: 15px 0 0; font-size: 110%;">
             {{ currentEntry.description }}
           </span>
         </v-row>
@@ -15,11 +15,25 @@
             {{ currentEntryTime }}
           </span>
         </v-row>
+        <v-row align="center" justify="center">
+          <v-btn color="info" @click="notify">
+            Share my Entry
+          </v-btn>
+        </v-row>
       </template>
-      <v-row align="center" justify="center">
-        <v-btn color="info" class="mr-4" @click="notify">
-          Share my Entry :)
-        </v-btn>
+      <template v-if="!currentEntryTime && !error">
+        <v-row align="center" justify="center">
+          <span style="padding: 15px 0 0; font-size: 125%;">
+            I'm not doing anything :)
+          </span>
+        </v-row>
+      </template>
+      <v-row v-if="error" align="center" justify="center">
+        <div style="padding: 15px;">
+          <v-alert type="error">
+            {{ error.message }}
+          </v-alert>
+        </div>
       </v-row>
     </v-flex>
     <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top vertical>
@@ -32,9 +46,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
+import { Component, Vue, Watch } from 'nuxt-property-decorator';
 import { notificationStore, timerStore, userStore } from '~/utils/store-accessor';
 import { Entry } from '~/domain/timer/vo/Entry';
+import { TogowlError } from '~/domain/common/TogowlError';
 
 @Component({})
 class Root extends Vue {
@@ -42,7 +57,7 @@ class Root extends Vue {
   currentEntryTime = '';
 
   snackbar = false;
-  snackbarColor = '';
+  snackbarColor: string | null = null;
   snackMessage = '';
 
   async notify() {
@@ -56,21 +71,25 @@ class Root extends Vue {
       this.snackbarColor = 'error';
     } else {
       this.snackMessage = `Notify to ${notificationStore.slackConfig?.notifyTo?.value}`;
-      this.snackbarColor = 'success';
+      this.snackbarColor = null;
     }
   }
 
+  @Watch('currentEntry')
+  countUp() {
+    this.currentEntryTime = this.currentEntry?.start.displayDiffFromNow() ?? '';
+  }
+
   created() {
-    timerStore.fetchCurrentEntry();
-    const countUp = () => {
-      this.currentEntryTime = this.currentEntry?.start.displayDiffFromNow() ?? '';
-    };
-    countUp();
-    this.timerSubscriberId = window.setInterval(countUp, 1000);
+    this.timerSubscriberId = window.setInterval(this.countUp, 1000);
   }
 
   beforeDestroy(): void {
     window.clearInterval(this.timerSubscriberId);
+  }
+
+  get error(): TogowlError | null {
+    return timerStore.error;
   }
 
   get currentEntry(): Entry | null {

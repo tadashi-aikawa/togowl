@@ -10,7 +10,6 @@ import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { createTimerService } from '~/utils/service-factory';
 import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
-import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
 import { cloudRepository } from '~/store/index';
 import { UpdateStatus } from '~/domain/notification/vo/UpdateStatus';
 
@@ -76,12 +75,31 @@ class TimerModule extends VuexModule {
       return;
     }
 
-    pipe(await service!.fetchCurrentEntry(), fold(this.setError, this.setCurrentEntry));
+    pipe(
+      await service!.fetchCurrentEntry(),
+      fold(
+        err => {
+          this.setError(err);
+          this.setCurrentEntry(null);
+        },
+        entry => {
+          this.setCurrentEntry(entry);
+          this.setError(null);
+        },
+      ),
+    );
   }
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    service = await createTimerService();
+    service = await createTimerService({
+      onStartSubscribe: () => this.fetchCurrentEntry(),
+      onEndSubscribe: () => console.log('end subscribe'),
+      onError: this.setError,
+      onInsertEntry: _entry => this.fetchCurrentEntry(),
+      onUpdateEntry: _entry => this.fetchCurrentEntry(),
+      onDeleteEntry: _entry => this.fetchCurrentEntry(),
+    });
 
     const action = firestoreAction(({ bindFirestoreRef }) => {
       return bindFirestoreRef('_timer', firestore.doc(`timer/${uid.value}`));
