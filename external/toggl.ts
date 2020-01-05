@@ -20,8 +20,8 @@ export interface TimeEntry {
 export namespace SocketApi {
   interface EventListener {
     onOpen?: () => void;
-    onClose?: () => void;
-    onError?: (err: unknown) => void;
+    onClose?: (event: CloseEvent) => void;
+    onError?: (err: any) => void;
     onInsertEntry?: (entry: TimeEntry) => void;
     onUpdateEntry?: (entry: TimeEntry) => void;
     onDeleteEntry?: (entry: TimeEntry) => void;
@@ -66,8 +66,8 @@ export namespace SocketApi {
           listener.onError?.(err);
         }
       });
-      socket.addEventListener('close', ev => listener.onClose?.());
-      socket.addEventListener('error', err => listener.onError?.(err));
+      socket.addEventListener('close', ev => listener.onClose?.(ev));
+      socket.addEventListener('error', ev => listener.onError?.(ev));
       socket.addEventListener('message', ev => {
         const data: EventMessage = JSON.parse(ev.data);
         switch (data.model) {

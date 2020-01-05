@@ -19,13 +19,17 @@ export class TimerServiceImpl implements TimerService {
         logger.put('TimerServiceImpl.onOpen');
         listener.onStartSubscribe?.();
       },
-      onClose: () => {
+      onClose: event => {
         logger.put('TimerServiceImpl.onClose');
+        logger.put(`[Code] ${event.code}`);
+        logger.put(`[Reason] ${event.reason}`);
         listener.onEndSubscribe?.();
       },
-      onError: err => {
+      onError: event => {
         logger.put('TimerServiceImpl.onError');
-        listener.onError?.(TogowlError.create('SUBSCRIBE_TIMER_ERROR', 'Fail to subscribe timer event', String(err)));
+        logger.put(`[Code] ${event.code}`);
+        logger.put(`[Reason] ${event.reason}`);
+        listener.onError?.(TogowlError.create('SUBSCRIBE_TIMER_ERROR', 'Fail to subscribe timer event', event.reason));
       },
       onInsertEntry: entry => {
         logger.put('TimerServiceImpl.onInsertEntry');

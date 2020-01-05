@@ -92,14 +92,18 @@ class TimerModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    service = await createTimerService({
-      onStartSubscribe: () => this.fetchCurrentEntry(),
-      onEndSubscribe: () => console.log('end subscribe'),
-      onError: this.setError,
-      onInsertEntry: _entry => this.fetchCurrentEntry(),
-      onUpdateEntry: _entry => this.fetchCurrentEntry(),
-      onDeleteEntry: _entry => this.fetchCurrentEntry(),
-    });
+    const createService = (): Promise<TimerService | null> =>
+      createTimerService({
+        onStartSubscribe: () => this.fetchCurrentEntry(),
+        onEndSubscribe: async () => {
+          service = await createService();
+        },
+        onError: this.setError,
+        onInsertEntry: _entry => this.fetchCurrentEntry(),
+        onUpdateEntry: _entry => this.fetchCurrentEntry(),
+        onDeleteEntry: _entry => this.fetchCurrentEntry(),
+      });
+    service = await createService();
 
     const action = firestoreAction(({ bindFirestoreRef }) => {
       return bindFirestoreRef('_timer', firestore.doc(`timer/${uid.value}`));
