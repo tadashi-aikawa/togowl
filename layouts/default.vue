@@ -36,7 +36,7 @@
       <v-spacer />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" @click="logout">
+          <v-btn icon v-on="on" @click="logoutConfirmDialog = true">
             <v-icon>mdi-exit-to-app</v-icon>
           </v-btn>
         </template>
@@ -63,6 +63,24 @@
     <v-footer :fixed="fixed" app>
       <span>&copy; 2019 MAMANSOFT</span>
     </v-footer>
+
+    <v-dialog v-model="logoutConfirmDialog" max-width="290">
+      <v-card>
+        <v-card-title class="headline">Confirm</v-card-title>
+        <v-card-text> Are you sure you want to log out?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="green darken-1" text @click="logout">
+            Logout
+          </v-btn>
+
+          <v-btn color="green darken-1" text @click="logoutConfirmDialog = false">
+            Keep login
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
   <v-app v-else dark>
     <Login />
@@ -87,6 +105,7 @@ export default class extends Vue {
   miniVariant = false;
   right = true;
   rightDrawer = false;
+  logoutConfirmDialog = false;
 
   items = [
     {
@@ -112,6 +131,7 @@ export default class extends Vue {
 
   logout() {
     authenticationStore.logout();
+    this.logoutConfirmDialog = false;
   }
 
   get isChecking(): boolean {
