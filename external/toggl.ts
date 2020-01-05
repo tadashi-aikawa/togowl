@@ -25,7 +25,7 @@ export namespace SocketApi {
     onInsertEntry?: (entry: TimeEntry) => void;
     onUpdateEntry?: (entry: TimeEntry) => void;
     onDeleteEntry?: (entry: TimeEntry) => void;
-    onPing?: () => void;
+    onResponsePing?: () => void;
   }
 
   type ActionType = 'INSERT' | 'UPDATE' | 'DELETE' | string;
@@ -54,10 +54,13 @@ export namespace SocketApi {
     }
 
     static createSocket(url: string, token: string, listener: EventListener): WebSocket {
+      const authentication = JSON.stringify({ type: 'authenticate', api_token: token });
+      const pingResponse = JSON.stringify({ type: 'pong' });
+
       const socket = new WebSocket(url);
       socket.addEventListener('open', ev => {
         try {
-          socket.send(JSON.stringify({ type: 'authenticate', api_token: token }));
+          socket.send(authentication);
           listener.onOpen?.();
         } catch (err) {
           listener.onError?.(err);
@@ -89,7 +92,8 @@ export namespace SocketApi {
           default:
             // {type: "ping"} or {session_id: "...."}
             if (data.type === 'ping') {
-              listener.onPing?.();
+              socket.send(pingResponse);
+              listener.onResponsePing?.();
             }
         }
       });

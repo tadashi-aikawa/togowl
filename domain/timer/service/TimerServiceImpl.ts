@@ -39,7 +39,7 @@ export class TimerServiceImpl implements TimerService {
         logger.put('TimerServiceImpl.onDeleteEntry');
         listener.onDeleteEntry?.(transformEntry(entry));
       },
-      onPing: () => logger.put('TimerServiceImpl.ping'),
+      onResponsePing: () => logger.put('TimerServiceImpl.onResponsePing'),
     });
   }
 
