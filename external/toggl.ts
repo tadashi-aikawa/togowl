@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-export namespace Api {
+export namespace RestApi {
   export interface Project {
     id: number;
     name: string;
@@ -16,7 +16,7 @@ export namespace Api {
     at: string;
   }
 
-  export class RestClient {
+  export class Client {
     baseUrl: string;
     token: string;
 

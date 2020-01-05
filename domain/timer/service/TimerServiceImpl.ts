@@ -2,13 +2,13 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { Either, right } from '~/node_modules/fp-ts/lib/Either';
 import { TimerService } from '~/domain/timer/service/TimerService';
-import { Api } from '~/external/toggl';
+import { RestApi } from '~/external/toggl';
 
 export class TimerServiceImpl implements TimerService {
-  client: Api.RestClient;
+  client: RestApi.Client;
 
   constructor(togglToken: string, proxy?: string) {
-    this.client = new Api.RestClient(togglToken, proxy);
+    this.client = new RestApi.Client(togglToken, proxy);
   }
 
   async fetchCurrentEntry(): Promise<Either<TogowlError, Entry>> {
