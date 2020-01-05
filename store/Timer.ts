@@ -6,7 +6,7 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { TimerService } from '~/domain/timer/service/TimerService';
 import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
-import { fold } from '~/node_modules/fp-ts/lib/Either';
+import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { createTimerService } from '~/utils/service-factory';
 import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
@@ -67,7 +67,7 @@ class TimerModule extends VuexModule {
   }
 
   @Action
-  async fetchCurrentEntry() {
+  async fetchCurrentEntry(): Promise<void> {
     const config = this.timerConfig;
     if (!config?.token) {
       // TODO: Show on UI
@@ -85,6 +85,33 @@ class TimerModule extends VuexModule {
         entry => {
           this.setCurrentEntry(entry);
           this.setError(null);
+        },
+      ),
+    );
+  }
+
+  @Action
+  async completeCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+    const config = this.timerConfig;
+    if (!config?.token) {
+      // TODO: Show on UI
+      return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
+    }
+    if (!this.currentEntry) {
+      return left(TogowlError.create('CURRENT_ENTRY_IS_EMPTY', 'Current entry is empty!'));
+    }
+
+    return pipe(
+      await service!.stopEntry(this.currentEntry),
+      fold(
+        err => {
+          this.setError(err);
+          return left(err);
+        },
+        entry => {
+          this.setCurrentEntry(null);
+          this.setError(null);
+          return right(entry);
         },
       ),
     );

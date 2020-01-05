@@ -107,6 +107,10 @@ export namespace RestApi {
     data: TimeEntry;
   }
 
+  export interface TimeEntryStopResponse {
+    data: TimeEntry;
+  }
+
   export class Client {
     baseUrl: string;
     token: string;
@@ -125,6 +129,12 @@ export namespace RestApi {
 
     timeEntryCurrent(): Promise<TimeEntryCurrentResponse> {
       return Axios.get(`${this.baseUrl}/time_entries/current`, {
+        auth: this.auth,
+      }).then(p => p.data);
+    }
+
+    timeEntryStop(timeEntryId: number): Promise<TimeEntryCurrentResponse> {
+      return Axios.put(`${this.baseUrl}/time_entries/${timeEntryId}/stop`, undefined, {
         auth: this.auth,
       }).then(p => p.data);
     }

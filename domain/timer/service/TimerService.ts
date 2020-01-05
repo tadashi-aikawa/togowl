@@ -13,4 +13,5 @@ export interface TimerEventListener {
 
 export interface TimerService {
   fetchCurrentEntry: () => Promise<Either<TogowlError, Entry | null>>;
+  stopEntry: (entry: Entry) => Promise<Either<TogowlError, Entry>>;
 }

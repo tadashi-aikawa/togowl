@@ -16,8 +16,8 @@
           </span>
         </v-row>
         <v-row align="center" justify="center">
-          <v-btn color="info" @click="notify">
-            Share my Entry
+          <v-btn color="info" @click="complete">
+            Complete
           </v-btn>
         </v-row>
       </template>
@@ -47,9 +47,11 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'nuxt-property-decorator';
-import { notificationStore, timerStore, userStore } from '~/utils/store-accessor';
+import { notificationStore, timerStore } from '~/utils/store-accessor';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { TogowlError } from '~/domain/common/TogowlError';
+import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
+import { fold } from '~/node_modules/fp-ts/lib/Either';
 
 @Component({})
 class Root extends Vue {
@@ -60,10 +62,8 @@ class Root extends Vue {
   snackbarColor: string | null = null;
   snackMessage = '';
 
-  async notify() {
-    const err = await notificationStore.notifyToSlack(
-      `:smile: ${userStore.user?.name.value} は \`${this.currentEntry?.description}\` に \`${this.currentEntryTime}\` 取り組んでいます`,
-    );
+  async notify(message: string) {
+    const err = await notificationStore.notifyToSlack(message);
 
     this.snackbar = true;
     if (err) {
@@ -73,6 +73,20 @@ class Root extends Vue {
       this.snackMessage = `Notify to ${notificationStore.slackConfig?.notifyTo?.value}`;
       this.snackbarColor = null;
     }
+  }
+
+  async complete() {
+    pipe(
+      await timerStore.completeCurrentEntry(),
+      fold(
+        _err => {},
+        async stoppedEntry => {
+          await this.notify(
+            `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${stoppedEntry!.description}*`,
+          );
+        },
+      ),
+    );
   }
 
   @Watch('currentEntry')

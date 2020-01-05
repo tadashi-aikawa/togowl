@@ -55,4 +55,13 @@ export class TimerServiceImpl implements TimerService {
       return left(TogowlError.create('FETCH_CURRENT_ENTRY', "Can't fetch current entry from Toggl", err.message));
     }
   }
+
+  async stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
+    try {
+      const afterEntry = (await this.restClient.timeEntryStop(entry.id.asNumber)).data;
+      return right(transformEntry(afterEntry));
+    } catch (err) {
+      return left(TogowlError.create('STOP_CURRENT_ENTRY', "Can't stop current entry from Toggl", err.message));
+    }
+  }
 }
