@@ -81,6 +81,7 @@ class Root extends Vue {
   }
 
   created() {
+    this.countUp();
     this.timerSubscriberId = window.setInterval(this.countUp, 1000);
   }
 
