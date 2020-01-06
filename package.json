@@ -11,7 +11,8 @@
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint:fix": "eslint --ext .js,.vue --fix --ignore-path .gitignore .",
-    "test": "jest"
+    "test": "jest",
+    "release": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
