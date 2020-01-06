@@ -16,7 +16,7 @@
           </span>
         </v-row>
         <v-row align="center" justify="center">
-          <v-btn color="info" @click="complete">
+          <v-btn color="info" @click="complete" :loading="waitForCompleteEntry">
             Complete
           </v-btn>
         </v-row>
@@ -61,6 +61,7 @@ class Root extends Vue {
   snackbar = false;
   snackbarColor: string | null = null;
   snackMessage = '';
+  waitForCompleteEntry = false;
 
   async notify(message: string) {
     const err = await notificationStore.notifyToSlack(message);
@@ -76,6 +77,7 @@ class Root extends Vue {
   }
 
   async complete() {
+    this.waitForCompleteEntry = true;
     pipe(
       await timerStore.completeCurrentEntry(),
       fold(
@@ -87,6 +89,7 @@ class Root extends Vue {
         },
       ),
     );
+    this.waitForCompleteEntry = false;
   }
 
   @Watch('currentEntry')
