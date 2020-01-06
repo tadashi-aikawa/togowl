@@ -10,13 +10,17 @@
           </span>
         </v-row>
         <v-row align="center" justify="center">
-          <span style="padding: 10px; font-size: 200%;">
+          <div v-if="isRealtimeEnabled" class="current-entry">
             <v-icon>mdi-timer</v-icon>
             {{ currentEntryTime }}
-          </span>
+          </div>
+          <div v-else class="current-entry" style="color: grey;">
+            <v-icon color="grey">mdi-timer</v-icon>
+            {{ currentEntryTime }}
+          </div>
         </v-row>
         <v-row align="center" justify="center">
-          <v-btn color="info" :loading="waitForCompleteEntry" @click="complete">
+          <v-btn color="info" :loading="waitForCompleteEntry" :disabled="!isRealtimeEnabled" @click="complete">
             Complete
           </v-btn>
         </v-row>
@@ -113,7 +117,18 @@ class Root extends Vue {
   get currentEntry(): Entry | null {
     return timerStore.currentEntry;
   }
+
+  get isRealtimeEnabled(): boolean {
+    return timerStore.realtime;
+  }
 }
 
 export default Root;
 </script>
+
+<style scoped>
+.current-entry {
+  padding: 10px;
+  font-size: 200%;
+}
+</style>

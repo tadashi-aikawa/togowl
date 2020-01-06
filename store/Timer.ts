@@ -22,34 +22,39 @@ let service: TimerService | null;
 @Module({ name: 'Timer', namespaced: true, stateFactory: true })
 class TimerModule extends VuexModule {
   _timer: FirestoreTimer | null = null;
+
   updateStatus: UpdateStatus = 'init';
-  updateError: TogowlError | null = null;
-
-  currentEntry: Entry | null = null;
-  error: TogowlError | null = null;
-
-  get timerConfig(): TimerConfig | null {
-    return TimerConfig.create(this._timer?.token, this._timer?.proxy);
-  }
-
-  @Mutation
-  setCurrentEntry(entry: Entry | null) {
-    this.currentEntry = entry;
-  }
-
-  @Mutation
-  setError(error: TogowlError | null) {
-    this.error = error;
-  }
-
   @Mutation
   setUpdateStatus(status: UpdateStatus) {
     this.updateStatus = status;
   }
 
+  updateError: TogowlError | null = null;
   @Mutation
   setUpdateError(error: TogowlError | null) {
     this.updateError = error;
+  }
+
+  currentEntry: Entry | null = null;
+  @Mutation
+  setCurrentEntry(entry: Entry | null) {
+    this.currentEntry = entry;
+  }
+
+  error: TogowlError | null = null;
+  @Mutation
+  setError(error: TogowlError | null) {
+    this.error = error;
+  }
+
+  realtime: boolean = false;
+  @Mutation
+  setRealtime(realtime: boolean) {
+    this.realtime = realtime;
+  }
+
+  get timerConfig(): TimerConfig | null {
+    return TimerConfig.create(this._timer?.token, this._timer?.proxy);
   }
 
   @Action
@@ -121,8 +126,12 @@ class TimerModule extends VuexModule {
   async init(uid: UId) {
     const createService = (): Promise<TimerService | null> =>
       createTimerService({
-        onStartSubscribe: () => this.fetchCurrentEntry(),
+        onStartSubscribe: () => {
+          this.setRealtime(true);
+          this.fetchCurrentEntry();
+        },
         onEndSubscribe: async () => {
+          this.setRealtime(false);
           service = await createService();
         },
         onError: this.setError,
