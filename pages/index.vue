@@ -16,7 +16,7 @@
           </span>
         </v-row>
         <v-row align="center" justify="center">
-          <v-btn color="info" @click="complete" :loading="waitForCompleteEntry">
+          <v-btn color="info" :loading="waitForCompleteEntry" @click="complete">
             Complete
           </v-btn>
         </v-row>
