@@ -60,9 +60,22 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; 2020 MAMANSOFT</span>
-    </v-footer>
+    <v-bottom-navigation :value="activeBtn" grow color="teal">
+      <v-btn>
+        <span>???</span>
+        <v-icon>mdi-history</v-icon>
+      </v-btn>
+
+      <v-btn>
+        <span>???</span>
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+
+      <v-btn>
+        <span>???</span>
+        <v-icon>mdi-question</v-icon>
+      </v-btn>
+    </v-bottom-navigation>
 
     <v-dialog v-model="logoutConfirmDialog" max-width="290">
       <v-card>
@@ -106,6 +119,8 @@ export default class extends Vue {
   right = true;
   rightDrawer = false;
   logoutConfirmDialog = false;
+
+  activeBtn = 'recent';
 
   items = [
     {
