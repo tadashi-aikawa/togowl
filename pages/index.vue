@@ -3,39 +3,19 @@
     <v-flex xs12 sm8 md6>
       <v-img v-if="currentEntry" src="https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png" />
       <v-img v-else src="https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg" />
-      <template v-if="currentEntry">
-        <v-row align="center" justify="center">
-          <span style="padding: 15px 0 0; font-size: 110%;">
-            {{ currentEntry.description }}
-          </span>
-        </v-row>
-        <v-row align="center" justify="center">
-          <div v-if="isRealtimeEnabled" class="current-entry">
-            <v-icon>mdi-timer</v-icon>
-            {{ currentEntryTime }}
-          </div>
-          <div v-else class="current-entry" style="color: grey;">
-            <v-icon color="grey">mdi-timer</v-icon>
-            {{ currentEntryTime }}
-          </div>
-        </v-row>
-        <v-row align="center" justify="center">
-          <v-btn color="info" :loading="waitForCompleteEntry" :disabled="!isRealtimeEnabled" @click="complete">
-            Complete
-          </v-btn>
-        </v-row>
-      </template>
-      <template v-if="!currentEntryTime && !error">
-        <v-row align="center" justify="center">
-          <span style="padding: 15px 0 0; font-size: 125%;">
-            I'm not doing anything :)
-          </span>
-        </v-row>
-      </template>
-      <v-row v-if="error" align="center" justify="center">
+
+      <TimerEntryComponent
+        v-if="currentEntry"
+        :current-entry="currentEntry"
+        :disabled="!isRealtimeEnabled"
+        :loading="fetchingStatus === 'in_progress'"
+        :complete-button-loading="waitForCompleteEntry"
+        @on-click-complete="complete"
+      />
+      <v-row v-if="fetchingError" align="center" justify="center">
         <div style="padding: 15px;">
           <v-alert type="error">
-            {{ error.message }}
+            {{ fetchingError.message }}
           </v-alert>
         </div>
       </v-row>
@@ -50,18 +30,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'nuxt-property-decorator';
+import { Component, Vue } from 'nuxt-property-decorator';
 import { notificationStore, timerStore } from '~/utils/store-accessor';
 import { Entry } from '~/domain/timer/vo/Entry';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
+import { ActionStatus } from '~/domain/common/ActionStatus';
+import TimerEntryComponent from '~/components/TimerEntryComponent.vue';
 
-@Component({})
+@Component({
+  components: { TimerEntryComponent },
+})
 class Root extends Vue {
-  timerSubscriberId: number;
-  currentEntryTime = '';
-
   snackbar = false;
   snackbarColor: string | null = null;
   snackMessage = '';
@@ -96,22 +77,12 @@ class Root extends Vue {
     this.waitForCompleteEntry = false;
   }
 
-  @Watch('currentEntry')
-  countUp() {
-    this.currentEntryTime = this.currentEntry?.start.displayDiffFromNow() ?? '';
+  get fetchingStatus(): ActionStatus {
+    return timerStore.fetchingStatus;
   }
 
-  created() {
-    this.countUp();
-    this.timerSubscriberId = window.setInterval(this.countUp, 1000);
-  }
-
-  beforeDestroy(): void {
-    window.clearInterval(this.timerSubscriberId);
-  }
-
-  get error(): TogowlError | null {
-    return timerStore.error;
+  get fetchingError(): TogowlError | null {
+    return timerStore.fetchingError;
   }
 
   get currentEntry(): Entry | null {
@@ -125,10 +96,3 @@ class Root extends Vue {
 
 export default Root;
 </script>
-
-<style scoped>
-.current-entry {
-  padding: 10px;
-  font-size: 200%;
-}
-</style>

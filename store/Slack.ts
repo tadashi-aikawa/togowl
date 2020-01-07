@@ -6,8 +6,8 @@ import { NotificationServiceImpl } from '~/domain/notification/service/Notificat
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
 import { FirestoreSlack } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
-import { UpdateStatus } from '~/domain/notification/vo/UpdateStatus';
 import { TogowlError } from '~/domain/common/TogowlError';
+import { ActionStatus } from '~/domain/common/ActionStatus';
 
 const service = new NotificationServiceImpl();
 const firestore = firebase.firestore();
@@ -18,7 +18,7 @@ const firestore = firebase.firestore();
 @Module({ name: 'Slack', namespaced: true, stateFactory: true })
 class SlackModule extends VuexModule {
   _slack: FirestoreSlack | null = null;
-  updateStatus: UpdateStatus = 'init';
+  updateStatus: ActionStatus = 'init';
   updateError: TogowlError | null = null;
 
   get slackConfig(): SlackConfig | null {
@@ -26,7 +26,7 @@ class SlackModule extends VuexModule {
   }
 
   @Mutation
-  setUpdateStatus(status: UpdateStatus) {
+  setUpdateStatus(status: ActionStatus) {
     this.updateStatus = status;
   }
 
@@ -38,7 +38,7 @@ class SlackModule extends VuexModule {
   @Action
   async updateSlackConfig(config: SlackConfig) {
     this.setUpdateError(null);
-    this.setUpdateStatus('updating');
+    this.setUpdateStatus('in_progress');
 
     const err = await cloudRepository.saveSlackConfig(config);
     if (err) {

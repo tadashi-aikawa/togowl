@@ -11,7 +11,7 @@ import { Entry } from '~/domain/timer/vo/Entry';
 import { createTimerService } from '~/utils/service-factory';
 import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
-import { UpdateStatus } from '~/domain/notification/vo/UpdateStatus';
+import { ActionStatus } from '~/domain/common/ActionStatus';
 
 const firestore = firebase.firestore();
 let service: TimerService | null;
@@ -21,11 +21,23 @@ let service: TimerService | null;
  */
 @Module({ name: 'Timer', namespaced: true, stateFactory: true })
 class TimerModule extends VuexModule {
-  _timer: FirestoreTimer | null = null;
+  private _timer: FirestoreTimer | null = null;
 
-  updateStatus: UpdateStatus = 'init';
+  realtime: boolean = false;
   @Mutation
-  setUpdateStatus(status: UpdateStatus) {
+  setRealtime(realtime: boolean) {
+    this.realtime = realtime;
+  }
+
+  currentEntry: Entry | null = null;
+  @Mutation
+  setCurrentEntry(entry: Entry | null) {
+    this.currentEntry = entry;
+  }
+
+  updateStatus: ActionStatus = 'init';
+  @Mutation
+  setUpdateStatus(status: ActionStatus) {
     this.updateStatus = status;
   }
 
@@ -35,22 +47,16 @@ class TimerModule extends VuexModule {
     this.updateError = error;
   }
 
-  currentEntry: Entry | null = null;
+  fetchingStatus: ActionStatus = 'init';
   @Mutation
-  setCurrentEntry(entry: Entry | null) {
-    this.currentEntry = entry;
+  setFetchingStatus(status: ActionStatus) {
+    this.fetchingStatus = status;
   }
 
-  error: TogowlError | null = null;
+  fetchingError: TogowlError | null = null;
   @Mutation
-  setError(error: TogowlError | null) {
-    this.error = error;
-  }
-
-  realtime: boolean = false;
-  @Mutation
-  setRealtime(realtime: boolean) {
-    this.realtime = realtime;
+  setFetchingError(error: TogowlError | null) {
+    this.fetchingError = error;
   }
 
   get timerConfig(): TimerConfig | null {
@@ -60,7 +66,7 @@ class TimerModule extends VuexModule {
   @Action
   async updateTimerConfig(config: TimerConfig) {
     this.setUpdateError(null);
-    this.setUpdateStatus('updating');
+    this.setUpdateStatus('in_progress');
 
     const err = await cloudRepository.saveTimerConfig(config);
     if (err) {
@@ -80,16 +86,19 @@ class TimerModule extends VuexModule {
       return;
     }
 
+    this.setFetchingStatus('in_progress');
     pipe(
       await service!.fetchCurrentEntry(),
       fold(
         err => {
-          this.setError(err);
+          this.setFetchingError(err);
           this.setCurrentEntry(null);
+          this.setFetchingStatus('success');
         },
         entry => {
           this.setCurrentEntry(entry);
-          this.setError(null);
+          this.setFetchingError(null);
+          this.setFetchingStatus('error');
         },
       ),
     );
@@ -110,12 +119,10 @@ class TimerModule extends VuexModule {
       await service!.stopEntry(this.currentEntry),
       fold(
         err => {
-          this.setError(err);
           return left(err);
         },
         entry => {
           this.setCurrentEntry(null);
-          this.setError(null);
           return right(entry);
         },
       ),
@@ -134,7 +141,7 @@ class TimerModule extends VuexModule {
           this.setRealtime(false);
           service = await createService();
         },
-        onError: this.setError,
+        onError: this.setFetchingError,
         onInsertEntry: _entry => this.fetchCurrentEntry(),
         onUpdateEntry: _entry => this.fetchCurrentEntry(),
         onDeleteEntry: _entry => this.fetchCurrentEntry(),

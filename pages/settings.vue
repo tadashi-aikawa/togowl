@@ -157,7 +157,7 @@ class Root extends Vue {
   }
 
   get isSlackConfigUpdating(): boolean {
-    return notificationStore.updateStatus === 'updating';
+    return notificationStore.updateStatus === 'in_progress';
   }
 
   saveSlackConfig() {
@@ -171,7 +171,7 @@ class Root extends Vue {
   }
 
   get isTimerConfigUpdating(): boolean {
-    return timerStore.updateStatus === 'updating';
+    return timerStore.updateStatus === 'in_progress';
   }
 
   saveTimerConfig() {
