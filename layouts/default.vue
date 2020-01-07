@@ -61,7 +61,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-footer :fixed="fixed" app>
-      <span>&copy; 2019 MAMANSOFT</span>
+      <span>&copy; 2020-01-07 MAMANSOFT</span>
     </v-footer>
 
     <v-dialog v-model="logoutConfirmDialog" max-width="290">
