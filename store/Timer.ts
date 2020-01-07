@@ -93,12 +93,12 @@ class TimerModule extends VuexModule {
         err => {
           this.setFetchingError(err);
           this.setCurrentEntry(null);
-          this.setFetchingStatus('success');
+          this.setFetchingStatus('error');
         },
         entry => {
           this.setCurrentEntry(entry);
           this.setFetchingError(null);
-          this.setFetchingStatus('error');
+          this.setFetchingStatus('success');
         },
       ),
     );

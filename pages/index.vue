@@ -7,7 +7,7 @@
       <TimerEntryComponent
         v-if="currentEntry"
         :current-entry="currentEntry"
-        :disabled="!isRealtimeEnabled"
+        :disabled="!isRealtimeEnabled || fetchingStatus !== 'success'"
         :loading="fetchingStatus === 'in_progress'"
         :complete-button-loading="waitForCompleteEntry"
         @on-click-complete="complete"
