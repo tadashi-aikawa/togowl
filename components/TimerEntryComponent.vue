@@ -5,7 +5,7 @@
     </v-row>
     <v-row align="center" justify="center">
       <span style="padding: 15px 0 0; font-size: 110%;">
-        {{ currentEntry.description }}
+        {{ displayEntry }}
       </span>
     </v-row>
     <v-row align="center" justify="center">
@@ -17,11 +17,6 @@
         <v-icon color="grey">mdi-timer</v-icon>
         {{ currentEntryTime }}
       </div>
-    </v-row>
-    <v-row align="center" justify="center">
-      <v-btn color="info" :loading="completeButtonLoading" :disabled="disabled" @click="onClickComplete">
-        Complete
-      </v-btn>
     </v-row>
   </div>
 </template>
@@ -40,15 +35,12 @@ class TimerEntryComponent extends Vue {
   @Prop()
   loading: boolean;
 
-  @Prop()
-  completeButtonLoading: boolean;
-
   currentEntryTime = '';
   timerSubscriberId: number;
 
   @Watch('currentEntry')
   countUp() {
-    this.currentEntryTime = this.currentEntry?.start.displayDiffFromNow() ?? '';
+    this.currentEntryTime = this.currentEntry?.start.displayDiffFromNow() ?? '__ : __ : __';
   }
 
   created() {
@@ -60,8 +52,8 @@ class TimerEntryComponent extends Vue {
     window.clearInterval(this.timerSubscriberId);
   }
 
-  onClickComplete(): void {
-    this.$emit('on-click-complete');
+  get displayEntry(): string {
+    return this.currentEntry?.description ?? 'Take a break ( ´▽｀)';
   }
 }
 export default TimerEntryComponent;

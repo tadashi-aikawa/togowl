@@ -1,17 +1,31 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-img v-if="currentEntry" src="https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png" />
-      <v-img v-else src="https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg" />
+      <v-img v-if="currentEntry" src="https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png" max-width="400" height="200">
+        <template v-slot:placeholder>
+          <v-row class="fill-height ma-0" align="center" justify="center">
+            <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+          </v-row>
+        </template>
+      </v-img>
+      <v-img v-else src="https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg" max-width="400" height="200">
+        <template v-slot:placeholder>
+          <v-row class="fill-height ma-0" align="center" justify="center">
+            <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+          </v-row>
+        </template>
+      </v-img>
 
       <TimerEntryComponent
-        v-if="currentEntry"
         :current-entry="currentEntry"
-        :disabled="!isRealtimeEnabled || fetchingStatus !== 'success'"
+        :disabled="!isTimeEntryTrusted"
         :loading="fetchingStatus === 'in_progress'"
-        :complete-button-loading="waitForCompleteEntry"
-        @on-click-complete="complete"
       />
+      <v-row align="center" justify="center">
+        <v-btn color="info" :loading="waitForCompleteEntry" :disabled="!canComplete" @click="complete">
+          Complete
+        </v-btn>
+      </v-row>
       <v-row v-if="fetchingError" align="center" justify="center">
         <div style="padding: 15px;">
           <v-alert type="error">
@@ -91,6 +105,14 @@ class Root extends Vue {
 
   get isRealtimeEnabled(): boolean {
     return timerStore.realtime;
+  }
+
+  get isTimeEntryTrusted(): boolean {
+    return this.isRealtimeEnabled && this.fetchingStatus === 'success';
+  }
+
+  get canComplete(): boolean {
+    return this.isTimeEntryTrusted && !!this.currentEntry;
   }
 }
 
