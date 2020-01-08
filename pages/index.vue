@@ -1,14 +1,7 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-img v-if="currentEntry" src="https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png" max-width="400" height="200">
-        <template v-slot:placeholder>
-          <v-row class="fill-height ma-0" align="center" justify="center">
-            <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-          </v-row>
-        </template>
-      </v-img>
-      <v-img v-else src="https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg" max-width="400" height="200">
+      <v-img :src="imageUrl" max-width="400" height="200">
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
@@ -34,7 +27,7 @@
         </div>
       </v-row>
     </v-flex>
-    <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top vertical>
+    <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top>
       {{ snackMessage }}
       <v-btn color="blue" text @click="snackbar = false">
         Close
@@ -113,6 +106,12 @@ class Root extends Vue {
 
   get canComplete(): boolean {
     return this.isTimeEntryTrusted && !!this.currentEntry;
+  }
+
+  get imageUrl(): string {
+    return this.currentEntry
+      ? 'https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png'
+      : 'https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg';
   }
 }
 

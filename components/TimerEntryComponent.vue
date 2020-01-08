@@ -53,7 +53,10 @@ class TimerEntryComponent extends Vue {
   }
 
   get displayEntry(): string {
-    return this.currentEntry?.description ?? 'Take a break ( ´▽｀)';
+    if (!this.currentEntry) {
+      return 'Take a break ( ´▽｀)';
+    }
+    return this.currentEntry.description ?? 'What are you doing?';
   }
 }
 export default TimerEntryComponent;
