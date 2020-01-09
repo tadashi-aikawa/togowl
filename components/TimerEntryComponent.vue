@@ -4,9 +4,12 @@
       <v-progress-linear :active="loading" indeterminate color="red darken-2"></v-progress-linear>
     </v-row>
     <v-row align="center" justify="center">
-      <span style="padding: 15px 0 0; font-size: 110%;">
+      <div style="padding: 15px 0 0; font-size: 110%;">
         {{ displayEntry }}
-      </span>
+      </div>
+    </v-row>
+    <v-row align="center" justify="center">
+      <div style="font-size: 80%; color: darkgrey;">{{ displayProject }}</div>
     </v-row>
     <v-row align="center" justify="center">
       <div v-if="!disabled" class="current-entry">
@@ -57,6 +60,13 @@ class TimerEntryComponent extends Vue {
       return 'Take a break ( ´▽｀)';
     }
     return this.currentEntry.description ?? 'What are you doing?';
+  }
+
+  get displayProject(): string {
+    if (!this.currentEntry) {
+      return '';
+    }
+    return this.currentEntry.project?.name.value ?? 'No project';
   }
 }
 export default TimerEntryComponent;

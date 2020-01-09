@@ -76,7 +76,9 @@ class Root extends Vue {
         _err => {},
         async stoppedEntry => {
           await this.notify(
-            `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${stoppedEntry!.description}*`,
+            `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
+              stoppedEntry!.description
+            }*    :card_index_dividers: \`${stoppedEntry!.project?.name.value ?? 'No Project'}\``,
           );
         },
       ),

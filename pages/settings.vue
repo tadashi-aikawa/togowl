@@ -80,6 +80,18 @@
           <v-row align="center" justify="center">
             <v-col cols="10">
               <v-text-field
+                v-model="togglWorkSpaceId"
+                :rules="togglWorkSpaceIdRules"
+                label="Toggl Workspace ID"
+                placeholder="toggl.com/app/settings (URL)"
+                clearable
+              />
+            </v-col>
+          </v-row>
+
+          <v-row align="center" justify="center">
+            <v-col cols="10">
+              <v-text-field
                 v-model="togglProxy"
                 label="Proxy server host for avoiding CORS"
                 placeholder="your.proxy.host"
@@ -142,6 +154,12 @@ class Root extends Vue {
   togglApiToken = '';
   togglApiTokenRules = [(v: string) => !!v || 'Toggl API token is required'];
 
+  togglWorkSpaceId = '';
+  togglWorkSpaceIdRules = [
+    (v: string) => !!v || 'Toggl workspace ID is required',
+    (v: string) => /^[0-9]+$/.test(v) || 'Toggl workspace ID must be numbers',
+  ];
+
   togglProxy = '';
 
   mounted() {
@@ -149,6 +167,7 @@ class Root extends Vue {
     this.notifyChannel = notificationStore.slackConfig?.notifyTo?.value ?? '';
     this.slackProxy = notificationStore.slackConfig?.proxy ?? '';
     this.togglApiToken = timerStore.timerConfig?.token ?? '';
+    this.togglWorkSpaceId = String(timerStore.timerConfig?.workspaceId) ?? '';
     this.togglProxy = timerStore.timerConfig?.proxy ?? '';
   }
 
@@ -175,7 +194,9 @@ class Root extends Vue {
   }
 
   saveTimerConfig() {
-    timerStore.updateTimerConfig(TimerConfig.create(this.togglApiToken, this.togglProxy));
+    timerStore.updateTimerConfig(
+      TimerConfig.create(this.togglApiToken, Number(this.togglWorkSpaceId), this.togglProxy),
+    );
   }
 }
 

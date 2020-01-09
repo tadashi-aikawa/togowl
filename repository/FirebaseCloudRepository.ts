@@ -17,6 +17,7 @@ export interface FirestoreSlack {
 
 export interface FirestoreTimer {
   token?: string;
+  workspaceId?: number;
   proxy?: string;
 }
 
@@ -69,6 +70,7 @@ class FirebaseCloudRepository implements CloudRepository {
   saveTimerConfig(config: TimerConfig): Promise<TogowlError | null> {
     const document: FirestoreTimer = {
       token: config.token,
+      workspaceId: config.workspaceId,
       proxy: config.proxy,
     };
     return firebase
@@ -91,7 +93,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .then(x => {
         const data = x.data() as FirestoreTimer;
         return data
-          ? right(TimerConfig.create(data.token, data.proxy))
+          ? right(TimerConfig.create(data.token, data.workspaceId, data.proxy))
           : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
       })
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));

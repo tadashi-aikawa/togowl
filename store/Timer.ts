@@ -60,7 +60,7 @@ class TimerModule extends VuexModule {
   }
 
   get timerConfig(): TimerConfig | null {
-    return TimerConfig.create(this._timer?.token, this._timer?.proxy);
+    return TimerConfig.create(this._timer?.token, this._timer?.workspaceId, this._timer?.proxy);
   }
 
   @Action
@@ -68,11 +68,13 @@ class TimerModule extends VuexModule {
     this.setUpdateError(null);
     this.setUpdateStatus('in_progress');
 
+    // TODO: Recreate service?
     const err = await cloudRepository.saveTimerConfig(config);
     if (err) {
       this.setUpdateStatus('error');
       this.setUpdateError(err);
     } else {
+      await this.updateService();
       this.setUpdateStatus('success');
     }
   }
@@ -130,23 +132,27 @@ class TimerModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  private async updateService(): Promise<void> {
+    service = await createTimerService({
+      onStartSubscribe: () => {
+        this.setRealtime(true);
+        this.fetchCurrentEntry();
+      },
+      onEndSubscribe: async () => {
+        this.setRealtime(false);
+        await this.updateService();
+      },
+      onError: this.setFetchingError,
+      onInsertEntry: _entry => this.fetchCurrentEntry(),
+      onUpdateEntry: _entry => this.fetchCurrentEntry(),
+      onDeleteEntry: _entry => this.fetchCurrentEntry(),
+      onUpdateProject: () => this.fetchCurrentEntry(),
+    });
+  }
+
+  @Action({ rawError: true })
   async init(uid: UId) {
-    const createService = (): Promise<TimerService | null> =>
-      createTimerService({
-        onStartSubscribe: () => {
-          this.setRealtime(true);
-          this.fetchCurrentEntry();
-        },
-        onEndSubscribe: async () => {
-          this.setRealtime(false);
-          service = await createService();
-        },
-        onError: this.setFetchingError,
-        onInsertEntry: _entry => this.fetchCurrentEntry(),
-        onUpdateEntry: _entry => this.fetchCurrentEntry(),
-        onDeleteEntry: _entry => this.fetchCurrentEntry(),
-      });
-    service = await createService();
+    await this.updateService();
 
     const action = firestoreAction(({ bindFirestoreRef }) => {
       return bindFirestoreRef('_timer', firestore.doc(`timer/${uid.value}`));

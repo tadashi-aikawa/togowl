@@ -139,11 +139,11 @@ export namespace RestApi {
       }).then(p => p.data);
     }
 
-    // projects(workspaceId: number): AxiosPromise<Project[]> {
-    //   return Axios.get(`${this.baseUrl}/workspaces/${workspaceId}/projects`, {
-    //     auth: this.auth,
-    //   });
-    // }
+    projects(workspaceId: number): Promise<Project[]> {
+      return Axios.get(`${this.baseUrl}/workspaces/${workspaceId}/projects`, {
+        auth: this.auth,
+      }).then(p => p.data);
+    }
 
     // startTimeEntry(description: string, projectId: number | undefined): AxiosPromise<any> {
     //   return Axios.post(
