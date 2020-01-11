@@ -47,28 +47,29 @@ export namespace SocketApi {
   type EventMessage = TimeEntryEvent | ProjectEvent | PingEvent;
 
   export class Client {
-    private constructor(socket: WebSocket) {}
+    private constructor(private socket: WebSocket, private onCloseListener: any) {}
 
-    static use(token: string, listener: EventListener): Client {
-      return new Client(this.createSocket('wss://stream.toggl.com/ws', token, listener));
+    terminate() {
+      this.socket.removeEventListener('close', this.onCloseListener);
+      this.socket.close(1000, 'Terminate client.');
     }
 
-    static createSocket(url: string, token: string, listener: EventListener): WebSocket {
-      const authentication = JSON.stringify({ type: 'authenticate', api_token: token });
-      const pingResponse = JSON.stringify({ type: 'pong' });
+    static use(token: string, listener: EventListener): Client {
+      const socket = new WebSocket('wss://stream.toggl.com/ws');
 
-      const socket = new WebSocket(url);
-      socket.addEventListener('open', ev => {
+      const onOpenListener = (ev: WebSocketEventMap['open']) => {
+        const authentication = JSON.stringify({ type: 'authenticate', api_token: token });
         try {
           socket.send(authentication);
           listener.onOpen?.();
         } catch (err) {
           listener.onError?.(err);
         }
-      });
-      socket.addEventListener('close', ev => listener.onClose?.(ev));
-      socket.addEventListener('error', ev => listener.onError?.(ev));
-      socket.addEventListener('message', ev => {
+      };
+      const onCloseListener = (ev: WebSocketEventMap['close']) => listener.onClose?.(ev);
+      const onErrorListener = (ev: WebSocketEventMap['error']) => listener.onError?.(ev);
+      const onMessageListener = (ev: WebSocketEventMap['message']) => {
+        const pingResponse = JSON.stringify({ type: 'pong' });
         const data: EventMessage = JSON.parse(ev.data);
         switch (data.model) {
           case 'time_entry':
@@ -96,8 +97,14 @@ export namespace SocketApi {
               listener.onResponsePing?.();
             }
         }
-      });
-      return socket;
+      };
+
+      socket.addEventListener('open', onOpenListener);
+      socket.addEventListener('close', onCloseListener);
+      socket.addEventListener('error', onErrorListener);
+      socket.addEventListener('message', onMessageListener);
+
+      return new Client(socket, onCloseListener);
     }
   }
 }

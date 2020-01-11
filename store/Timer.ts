@@ -133,6 +133,10 @@ class TimerModule extends VuexModule {
 
   @Action({ rawError: true })
   private async updateService(): Promise<void> {
+    if (service) {
+      service.terminate();
+    }
+
     service = await createTimerService({
       onStartSubscribe: () => {
         this.setRealtime(true);

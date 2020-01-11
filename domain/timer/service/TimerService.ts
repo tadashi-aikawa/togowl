@@ -17,4 +17,5 @@ export interface TimerService {
   fetchCurrentEntry: () => Promise<Either<TogowlError, Entry | null>>;
   stopEntry: (entry: Entry) => Promise<Either<TogowlError, Entry>>;
   fetchProjects(): Promise<Either<TogowlError, Project[]>>;
+  terminate(): void;
 }

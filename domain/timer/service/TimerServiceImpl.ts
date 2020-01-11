@@ -70,6 +70,10 @@ export class TimerServiceImpl implements TimerService {
     });
   }
 
+  terminate() {
+    this.socketClient.terminate();
+  }
+
   async fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     try {
       const entry = (await this.restClient.timeEntryCurrent()).data;
