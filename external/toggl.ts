@@ -25,18 +25,22 @@ export namespace SocketApi {
     onInsertEntry?: (entry: TimeEntry) => void;
     onUpdateEntry?: (entry: TimeEntry) => void;
     onDeleteEntry?: (entry: TimeEntry) => void;
+    // onInsertProject is not existed
+    onUpdateProject?: (entry: Project) => void;
+    onDeleteProject?: (entry: Project) => void;
     onResponsePing?: () => void;
   }
 
-  type ActionType = 'INSERT' | 'UPDATE' | 'DELETE' | string;
+  type TimeEntryActionType = 'INSERT' | 'UPDATE' | 'DELETE' | string;
+  type ProjectActionType = 'update' | 'delete' | string;
   interface TimeEntryEvent {
-    action: ActionType;
+    action: TimeEntryActionType;
     model: 'time_entry';
     data: TimeEntry;
   }
   // 仮
   interface ProjectEvent {
-    action: ActionType;
+    action: ProjectActionType;
     model: 'project';
     data: Project;
   }
@@ -88,7 +92,17 @@ export namespace SocketApi {
             }
             break;
           case 'project':
-            // TODO
+            switch (data.action) {
+              // case 'insert' is not existed
+              case 'update':
+                listener.onUpdateProject?.(data.data);
+                break;
+              case 'delete':
+                listener.onDeleteProject?.(data.data);
+                break;
+              default:
+                console.error('Unexpected action: ', data.action);
+            }
             break;
           default:
             // {type: "ping"} or {session_id: "...."}

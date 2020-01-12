@@ -20,21 +20,8 @@ export class TimerServiceImpl implements TimerService {
   constructor(togglToken: string, listener: TimerEventListener, workspaceId: number, proxy?: string) {
     this.restClient = new toggl.RestApi.Client(togglToken, proxy);
     this.workspaceId = workspaceId;
-    // XXX: FIXME:
-    if (this.workspaceId) {
-      this.fetchProjects().then(errOrProjects => {
-        pipe(
-          errOrProjects,
-          fold(
-            err => listener.onError?.(err),
-            projects => {
-              this.projectById = _.keyBy(projects, x => x.id.value);
-              listener.onUpdateProject?.();
-            },
-          ),
-        );
-      });
-    }
+
+    this.updateProjectById(listener);
 
     // TODO: subscribe project changed
     this.socketClient = toggl.SocketApi.Client.use(togglToken, {
@@ -66,12 +53,43 @@ export class TimerServiceImpl implements TimerService {
         logger.put('TimerServiceImpl.onDeleteEntry');
         listener.onDeleteEntry?.(this.transformEntry(entry));
       },
+      onUpdateProject: _project => {
+        logger.put('TimerServiceImpl.onUpdateProject');
+        this.updateProjectById(listener);
+      },
+      onDeleteProject: _project => {
+        logger.put('TimerServiceImpl.onDeleteProject');
+        this.updateProjectById(listener);
+      },
       onResponsePing: () => logger.put('TimerServiceImpl.onResponsePing'),
     });
   }
 
   terminate() {
     this.socketClient.terminate();
+  }
+
+  private updateProjectById(listener: TimerEventListener): Promise<TogowlError | null> {
+    if (!this.workspaceId) {
+      return Promise.resolve(TogowlError.create('WORKSPACE_ID_IS_EMPTY', 'Toggl workspaceID is empty.'));
+    }
+
+    return this.fetchProjects().then(errOrProjects =>
+      pipe(
+        errOrProjects,
+        fold(
+          err => {
+            listener.onError?.(err);
+            return null;
+          },
+          projects => {
+            this.projectById = _.keyBy(projects, x => x.id.value);
+            listener.onUpdateProject?.();
+            return null;
+          },
+        ),
+      ),
+    );
   }
 
   async fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {

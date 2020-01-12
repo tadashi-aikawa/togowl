@@ -152,6 +152,7 @@ class TimerModule extends VuexModule {
       onDeleteEntry: _entry => this.fetchCurrentEntry(),
       onUpdateProject: () => this.fetchCurrentEntry(),
     });
+    this.fetchCurrentEntry()
   }
 
   @Action({ rawError: true })
