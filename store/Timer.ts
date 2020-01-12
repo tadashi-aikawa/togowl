@@ -108,6 +108,33 @@ class TimerModule extends VuexModule {
 
   @Action
   async completeCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+    // TODO: Complete Todoist task and Add complete tag to toggl entry
+    const config = this.timerConfig;
+    if (!config?.token) {
+      // TODO: Show on UI
+      return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
+    }
+    if (!this.currentEntry) {
+      return left(TogowlError.create('CURRENT_ENTRY_IS_EMPTY', 'Current entry is empty!'));
+    }
+
+    return pipe(
+      await service!.stopEntry(this.currentEntry),
+      fold(
+        err => {
+          return left(err);
+        },
+        entry => {
+          this.setCurrentEntry(null);
+          return right(entry);
+        },
+      ),
+    );
+  }
+
+  @Action
+  async pauseCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+    // XXX: This action is similar to completeCurrentEntry but not same
     const config = this.timerConfig;
     if (!config?.token) {
       // TODO: Show on UI
@@ -152,7 +179,7 @@ class TimerModule extends VuexModule {
       onDeleteEntry: _entry => this.fetchCurrentEntry(),
       onUpdateProject: () => this.fetchCurrentEntry(),
     });
-    this.fetchCurrentEntry()
+    this.fetchCurrentEntry();
   }
 
   @Action({ rawError: true })

@@ -15,8 +15,11 @@
         :loading="fetchingStatus === 'in_progress'"
       />
       <v-row align="center" justify="center">
-        <v-btn color="info" :loading="waitForCompleteEntry" :disabled="!canComplete" @click="complete">
-          Complete
+        <v-btn class="mx-2" fab dark color="grey" :disabled="!canAction" @click="pause">
+          <v-icon dark large>mdi-pause</v-icon>
+        </v-btn>
+        <v-btn class="mx-2" fab dark color="teal" :disabled="!canAction" @click="complete">
+          <v-icon dark large>mdi-check-bold</v-icon>
         </v-btn>
       </v-row>
       <v-row v-if="fetchingError" align="center" justify="center">
@@ -33,6 +36,10 @@
         Close
       </v-btn>
     </v-snackbar>
+
+    <v-overlay :value="waitForBlockedAction">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </v-layout>
 </template>
 
@@ -53,7 +60,7 @@ class Root extends Vue {
   snackbar = false;
   snackbarColor: string | null = null;
   snackMessage = '';
-  waitForCompleteEntry = false;
+  waitForBlockedAction = false;
 
   async notify(message: string) {
     const err = await notificationStore.notifyToSlack(message);
@@ -69,7 +76,7 @@ class Root extends Vue {
   }
 
   async complete() {
-    this.waitForCompleteEntry = true;
+    this.waitForBlockedAction = true;
     pipe(
       await timerStore.completeCurrentEntry(),
       fold(
@@ -83,7 +90,25 @@ class Root extends Vue {
         },
       ),
     );
-    this.waitForCompleteEntry = false;
+    this.waitForBlockedAction = false;
+  }
+
+  async pause() {
+    this.waitForBlockedAction = true;
+    pipe(
+      await timerStore.completeCurrentEntry(),
+      fold(
+        _err => {},
+        async stoppedEntry => {
+          await this.notify(
+            `:zzz_kirby: \`中断\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
+              stoppedEntry!.description
+            }*    :card_index_dividers: \`${stoppedEntry!.project?.name.value ?? 'No Project'}\``,
+          );
+        },
+      ),
+    );
+    this.waitForBlockedAction = false;
   }
 
   get fetchingStatus(): ActionStatus {
@@ -106,7 +131,7 @@ class Root extends Vue {
     return this.isRealtimeEnabled && this.fetchingStatus === 'success';
   }
 
-  get canComplete(): boolean {
+  get canAction(): boolean {
     return this.isTimeEntryTrusted && !!this.currentEntry;
   }
 
