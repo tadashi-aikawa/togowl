@@ -66,7 +66,7 @@ class TimerEntryComponent extends Vue {
     if (!this.currentEntry) {
       return '';
     }
-    return this.currentEntry.project?.name.value ?? 'No project';
+    return this.currentEntry.project?.nameWithoutBracket ?? 'No project';
   }
 }
 export default TimerEntryComponent;

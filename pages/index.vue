@@ -85,7 +85,7 @@ class Root extends Vue {
           await this.notify(
             `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
               stoppedEntry!.description
-            }*    :card_index_dividers: \`${stoppedEntry!.project?.name.value ?? 'No Project'}\``,
+            }*    :card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``,
           );
         },
       ),
@@ -103,7 +103,7 @@ class Root extends Vue {
           await this.notify(
             `:zzz_kirby: \`中断\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
               stoppedEntry!.description
-            }*    :card_index_dividers: \`${stoppedEntry!.project?.name.value ?? 'No Project'}\``,
+            }*    :card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``,
           );
         },
       ),
