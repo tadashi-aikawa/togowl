@@ -94,7 +94,7 @@ export class TimerServiceImpl implements TimerService {
     );
   }
 
-  async fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+  private async _fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     try {
       const entry = (await this.restClient.timeEntryCurrent()).data;
       logger.put('TSI.fetchCurrentEntry.success');
@@ -104,6 +104,12 @@ export class TimerServiceImpl implements TimerService {
       logger.put(err.message);
       return left(TogowlError.create('FETCH_CURRENT_ENTRY', "Can't fetch current entry from Toggl", err.message));
     }
+  }
+
+  private throttleFetchCurrentEntry = _.throttle(this._fetchCurrentEntry, 1000, { trailing: false });
+
+  fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+    return this.throttleFetchCurrentEntry();
   }
 
   async stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
