@@ -1,6 +1,6 @@
 # togowl-next
 
-<img src="https://github.com/tadashi-aikawa/togowl/raw/master/public/icon.png" width="240" />
+<img src="./static/icon.png" width="240" />
 
 Togowl is task and life management tools for next generation owls.  
 It integrates with Toggl, Todoist and Slack.
