@@ -7,6 +7,10 @@ class Logger {
     this._logs.push(`[${DateTime.now().displayTime}] ${log}`);
   }
 
+  clear(): void {
+    this._logs = [];
+  }
+
   get logs(): string[] {
     return this._logs;
   }
