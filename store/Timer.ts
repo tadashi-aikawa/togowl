@@ -184,14 +184,13 @@ class TimerModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    await this.updateService();
-
     const action = firestoreAction(({ bindFirestoreRef }) => {
       return bindFirestoreRef('_timer', firestore.doc(`timer/${uid.value}`));
     }) as Function;
 
     // Call function that firebaseAction returns
-    return action(this.context);
+    action(this.context);
+    await this.updateService();
   }
 }
 

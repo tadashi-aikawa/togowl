@@ -67,8 +67,8 @@ class AuthenticationModule extends VuexModule {
           this.setError(e);
           this.setAuthenticationStatus('error');
         },
-        user => {
-          initCloudStores(user.uid);
+        async user => {
+          await initCloudStores(user.uid);
           this.setAuthenticationStatus('login');
         },
       ),
