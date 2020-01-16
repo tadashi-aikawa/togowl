@@ -9,10 +9,13 @@ import { Project } from '~/domain/timer/entity/Project';
 import { ProjectId } from '~/domain/timer/vo/ProjectId';
 import { ProjectName } from '~/domain/timer/vo/ProjectlName';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
+import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
+import { ProjectCategoryId } from '~/domain/timer/vo/ProjectCategoryId';
+import { ProjectCategoryName } from '~/domain/timer/vo/ProjectCategoryName';
 
 export class TimerServiceImpl implements TimerService {
-  private restClient: toggl.RestApi.Client;
-  private socketClient: toggl.SocketApi.Client;
+  private restClient: toggl.RestApi.ApiClient;
+  private socketClient: toggl.SocketApi.ApiClient;
   private readonly workspaceId: number;
 
   private projectById: { [projectId: string]: Project } = {};
@@ -20,13 +23,13 @@ export class TimerServiceImpl implements TimerService {
   constructor(togglToken: string, listener: TimerEventListener, workspaceId: number, proxy?: string) {
     logger.put('TSI.constructor');
 
-    this.restClient = new toggl.RestApi.Client(togglToken, proxy);
+    this.restClient = new toggl.RestApi.ApiClient(togglToken, proxy);
     this.workspaceId = workspaceId;
 
     this.updateProjectById(listener);
 
     // TODO: subscribe project changed
-    this.socketClient = toggl.SocketApi.Client.use(togglToken, {
+    this.socketClient = toggl.SocketApi.ApiClient.use(togglToken, {
       onOpen: () => {
         logger.put('TSI.onOpen');
         listener.onStartSubscribe?.();
@@ -126,9 +129,22 @@ export class TimerServiceImpl implements TimerService {
 
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
     try {
-      const projects = await this.restClient.projects(this.workspaceId);
+      const [projects, clients] = await Promise.all([
+        this.restClient.projects(this.workspaceId),
+        this.restClient.clients(this.workspaceId),
+      ]);
       logger.put('TSI.fetchProjects.success');
-      return right(projects.map(this.transformProject));
+      return right(
+        projects.map((x: toggl.Project) =>
+          this.transformProject(
+            x,
+            _(clients)
+              .map(this.transformProjectCategory)
+              .keyBy(x => x.id.value)
+              .value(),
+          ),
+        ),
+      );
     } catch (err) {
       logger.put('TSI.fetchProjects.err');
       logger.put(err.message);
@@ -140,7 +156,18 @@ export class TimerServiceImpl implements TimerService {
     return Entry.create(entry.id, entry.description, entry.start, entry.duration, this.projectById[entry.pid]);
   }
 
-  private transformProject(project: toggl.Project): Project {
-    return new Project(ProjectId.create(project.id), ProjectName.create(project.name));
+  private transformProjectCategory(client: toggl.Client): ProjectCategory {
+    return new ProjectCategory(ProjectCategoryId.create(client.id), ProjectCategoryName.create(client.name));
+  }
+
+  private transformProject(
+    project: toggl.Project,
+    projectCategoryById: { [projectCategoryId: string]: ProjectCategory },
+  ): Project {
+    return new Project(
+      ProjectId.create(project.id),
+      ProjectName.create(project.name),
+      project.cid ? projectCategoryById[project.cid] : undefined,
+    );
   }
 }

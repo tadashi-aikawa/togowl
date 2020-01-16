@@ -3,6 +3,7 @@ import { DateTime } from '~/domain/common/DateTime';
 import { EntryId } from '~/domain/timer/vo/EntryId';
 import { Duration } from '~/domain/timer/vo/Duration';
 import { Project } from '~/domain/timer/entity/Project';
+import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 
 interface Props {
   id: EntryId;
@@ -41,5 +42,9 @@ export class Entry extends ValueObject<Props> {
 
   get project(): Project | undefined {
     return this._value!.project;
+  }
+
+  get projectCategory(): ProjectCategory | undefined {
+    return this._value!.project?.category
   }
 }

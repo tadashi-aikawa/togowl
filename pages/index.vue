@@ -82,10 +82,15 @@ class Root extends Vue {
       fold(
         _err => {},
         async stoppedEntry => {
+          // FIXME: Move NotificationService as domain service
+          const project = `:card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``;
+          const projectCategory = stoppedEntry!.projectCategory
+            ? `:busts_in_silhouette: \`${stoppedEntry!.projectCategory.nameWithoutBracket}\` > `
+            : '';
           await this.notify(
             `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
               stoppedEntry!.description
-            }*    :card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``,
+            }*    ${projectCategory}${project}`,
           );
         },
       ),
@@ -100,10 +105,15 @@ class Root extends Vue {
       fold(
         _err => {},
         async stoppedEntry => {
+          // FIXME: Move NotificationService as domain service
+          const project = `:card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``;
+          const projectCategory = stoppedEntry!.projectCategory
+            ? `:busts_in_silhouette: \`${stoppedEntry!.projectCategory.nameWithoutBracket}\` > `
+            : '';
           await this.notify(
             `:zzz_kirby: \`中断\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
               stoppedEntry!.description
-            }*    :card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``,
+            }*    ${projectCategory}${project}`,
           );
         },
       ),

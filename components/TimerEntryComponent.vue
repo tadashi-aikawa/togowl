@@ -8,8 +8,11 @@
         {{ displayEntry }}
       </div>
     </v-row>
-    <v-row align="center" justify="center">
-      <div style="font-size: 80%; color: darkgrey;">{{ displayProject }}</div>
+    <v-row align="center" justify="center" style="margin-top: 5px;">
+      <div v-if="displayProjectCategory" style="font-size: 80%; color: darkgrey;">
+        {{ displayProjectCategory }}<span style="padding: 0 8px 0;">></span>
+      </div>
+      <div v-if="displayProject" style="font-size: 80%; color: darkgrey;">{{ displayProject }}</div>
     </v-row>
     <v-row align="center" justify="center">
       <div v-if="!disabled" class="current-entry">
@@ -62,11 +65,18 @@ class TimerEntryComponent extends Vue {
     return this.currentEntry.description ?? 'What are you doing?';
   }
 
-  get displayProject(): string {
+  get displayProjectCategory(): string | undefined {
+    return this.currentEntry?.projectCategory?.nameWithoutBracket;
+  }
+
+  get displayProject(): string | undefined {
     if (!this.currentEntry) {
-      return '';
+      return undefined;
     }
-    return this.currentEntry.project?.nameWithoutBracket ?? 'No project';
+    if (!this.currentEntry.project) {
+      return 'No project';
+    }
+    return this.currentEntry.project.nameWithoutBracket;
   }
 }
 export default TimerEntryComponent;

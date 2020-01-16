@@ -2,6 +2,12 @@ import Axios from 'axios';
 
 export interface Project {
   id: number;
+  cid?: number;
+  name: string;
+}
+
+export interface Client {
+  id: number;
   name: string;
 }
 
@@ -50,7 +56,7 @@ export namespace SocketApi {
   }
   type EventMessage = TimeEntryEvent | ProjectEvent | PingEvent;
 
-  export class Client {
+  export class ApiClient {
     private constructor(private socket: WebSocket, private onCloseListener: any) {}
 
     terminate() {
@@ -58,7 +64,7 @@ export namespace SocketApi {
       this.socket.close(1000, 'Terminate client.');
     }
 
-    static use(token: string, listener: EventListener): Client {
+    static use(token: string, listener: EventListener): ApiClient {
       const socket = new WebSocket('wss://stream.toggl.com/ws');
 
       const onOpenListener = (ev: WebSocketEventMap['open']) => {
@@ -118,7 +124,7 @@ export namespace SocketApi {
       socket.addEventListener('error', onErrorListener);
       socket.addEventListener('message', onMessageListener);
 
-      return new Client(socket, onCloseListener);
+      return new ApiClient(socket, onCloseListener);
     }
   }
 }
@@ -132,7 +138,7 @@ export namespace RestApi {
     data: TimeEntry;
   }
 
-  export class Client {
+  export class ApiClient {
     baseUrl: string;
     token: string;
 
@@ -162,6 +168,12 @@ export namespace RestApi {
 
     projects(workspaceId: number): Promise<Project[]> {
       return Axios.get(`${this.baseUrl}/workspaces/${workspaceId}/projects`, {
+        auth: this.auth,
+      }).then(p => p.data);
+    }
+
+    clients(workspaceId: number): Promise<Client[]> {
+      return Axios.get(`${this.baseUrl}/workspaces/${workspaceId}/clients`, {
         auth: this.auth,
       }).then(p => p.data);
     }
