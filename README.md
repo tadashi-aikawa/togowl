@@ -63,13 +63,10 @@ $ npm run start
 
 ### Deploy
 
-Before deploy, you need to
-
-- Build as production ( `npm run build` )
-- Login with your firebase account ( `firebase login` )
+Before deploy, you need to login with your firebase account. (`firebase login`)
 
 Then
 
 ```
-$ firebase deploy
+$ npm run release
 ```
