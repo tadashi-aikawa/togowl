@@ -134,6 +134,16 @@ class TimerModule extends VuexModule {
   }
 
   @Action
+  async startEntry(entry: Entry): Promise<TogowlError | null> {
+    if (!this.timerConfig?.token) {
+      return TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!');
+    }
+    const err = await service!.startEntry(entry);
+    this.setCurrentEntry(err ? null : entry);
+    return err;
+  }
+
+  @Action
   async completeCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     // TODO: Complete Todoist task and Add complete tag to toggl entry
     const config = this.timerConfig;

@@ -14,7 +14,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <v-btn icon>
+        <v-btn icon @click="handleClickPlayButton(entry)">
           <v-icon large>mdi-play-circle-outline</v-icon>
         </v-btn>
       </v-list-item-action>
@@ -37,6 +37,10 @@ class TimeEntry extends Vue {
     const project = entry.project?.nameWithoutBracket ?? '';
     const projectCategory = entry.projectCategory?.nameWithoutBracket ?? '';
     return projectCategory ? `${projectCategory} > ${project}` : project;
+  }
+
+  handleClickPlayButton(entry: Entry) {
+    this.$emit('on-click-start', entry);
   }
 }
 export default TimeEntry;

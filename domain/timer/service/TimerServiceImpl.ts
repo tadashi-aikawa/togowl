@@ -124,6 +124,18 @@ export class TimerServiceImpl implements TimerService {
     return this.throttleFetchCurrentEntry();
   }
 
+  async startEntry(entry: Entry): Promise<TogowlError | null> {
+    try {
+      await this.restClient.timeEntryStart(entry.description, entry.project?.id.asNumber)
+      logger.put('TSI.startEntry.success');
+      return null
+    } catch (err) {
+      logger.put('TSI.startEntry.err');
+      logger.put(err.message);
+      return TogowlError.create('START_ENTRY', "Can't start entry from Toggl", err.message);
+    }
+  }
+
   async stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
       const afterEntry = (await this.restClient.timeEntryStop(entry.id.asNumber)).data;
@@ -204,4 +216,5 @@ export class TimerServiceImpl implements TimerService {
       project.cid ? projectCategoryById[project.cid] : undefined,
     );
   }
+
 }

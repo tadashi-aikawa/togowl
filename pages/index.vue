@@ -9,7 +9,7 @@
         </template>
       </v-img>
 
-      <TimerEntryComponent :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
+      <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
       <v-row align="center" justify="center">
         <v-btn class="mx-2" fab dark color="grey" :disabled="!canAction" @click="pause">
           <v-icon dark large>mdi-pause</v-icon>
@@ -43,7 +43,7 @@
       </v-tab>
 
       <v-tab-item value="tabs-1">
-        <TimeEntry :entries="entries" />
+        <TimeEntry :entries="entries" @on-click-start="start" />
         <v-row v-if="entriesError" align="center" justify="center">
           <div style="padding: 15px;">
             <v-alert type="error">
@@ -77,11 +77,11 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { ActionStatus } from '~/domain/common/ActionStatus';
-import TimerEntryComponent from '~/components/CurrentTimeEntry.vue';
+import CurrentTimeEntry from '~/components/CurrentTimeEntry.vue';
 import TimeEntry from '~/components/TimeEntry.vue';
 
 @Component({
-  components: { TimerEntryComponent, TimeEntry },
+  components: { CurrentTimeEntry, TimeEntry },
 })
 class Root extends Vue {
   snackbar = false;
@@ -101,6 +101,23 @@ class Root extends Vue {
       this.snackMessage = `Notify to ${notificationStore.slackConfig?.notifyTo?.value}`;
       this.snackbarColor = null;
     }
+  }
+
+  async start(entry: Entry) {
+    this.waitForBlockedAction = true;
+    const err = await timerStore.startEntry(entry);
+    this.waitForBlockedAction = false;
+    if (err) {
+      // TODO: err handling
+      return;
+    }
+
+    // FIXME: Move NotificationService as domain service
+    const project = `:card_index_dividers: \`${entry.project?.nameWithoutBracket ?? 'No Project'}\``;
+    const projectCategory = entry.projectCategory
+      ? `:busts_in_silhouette: \`${entry.projectCategory.nameWithoutBracket}\` > `
+      : '';
+    await this.notify(`:tio2: \`開始\`  *${entry!.description}*    ${projectCategory}${project}`);
   }
 
   async complete() {

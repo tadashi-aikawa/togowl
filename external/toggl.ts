@@ -186,6 +186,18 @@ export namespace RestApi {
       return this.__get<TimeEntryCurrentResponse>('/time_entries/current');
     }
 
+    timeEntryStart(description: string, projectId?: number): Promise<void> {
+      return Axios.post(
+        `${this.baseUrl}/time_entries/start`,
+        {
+          time_entry: { description, pid: projectId, created_with: 'togowl' },
+        },
+        {
+          auth: this.auth,
+        },
+      );
+    }
+
     timeEntryStop(timeEntryId: number): Promise<TimeEntryCurrentResponse> {
       return Axios.put(`${this.baseUrl}/time_entries/${timeEntryId}/stop`, undefined, {
         auth: this.auth,
@@ -203,17 +215,5 @@ export namespace RestApi {
     clients(workspaceId: number): Promise<Client[]> {
       return this.__get<Client[]>(`/workspaces/${workspaceId}/clients`);
     }
-
-    // startTimeEntry(description: string, projectId: number | undefined): AxiosPromise<any> {
-    //   return Axios.post(
-    //     `${this.baseUrl}/time_entries/start`,
-    //     {
-    //       time_entry: { description, pid: projectId, created_with: 'togowl' },
-    //     },
-    //     {
-    //       auth: this.auth,
-    //     },
-    //   );
-    // }
   }
 }
