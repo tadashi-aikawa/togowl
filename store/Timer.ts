@@ -8,7 +8,7 @@ import { TimerService } from '~/domain/timer/service/TimerService';
 import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
-import { Entry } from '~/domain/timer/vo/Entry';
+import { Entry } from '~/domain/timer/entity/Entry';
 import { createTimerService } from '~/utils/service-factory';
 import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
@@ -134,13 +134,23 @@ class TimerModule extends VuexModule {
   }
 
   @Action
-  async startEntry(entry: Entry): Promise<TogowlError | null> {
+  async startEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     if (!this.timerConfig?.token) {
-      return TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!');
+      return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
     }
-    const err = await service!.startEntry(entry);
-    this.setCurrentEntry(err ? null : entry);
-    return err;
+    return pipe(
+      await service!.startEntry(entry),
+      fold(
+        err => {
+          this.setCurrentEntry(null);
+          return left(err);
+        },
+        entry => {
+          this.setCurrentEntry(entry);
+          return right(entry);
+        },
+      ),
+    );
   }
 
   @Action

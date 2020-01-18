@@ -1,5 +1,5 @@
 import { TogowlError } from '~/domain/common/TogowlError';
-import { Entry } from '~/domain/timer/vo/Entry';
+import { Entry } from '~/domain/timer/entity/Entry';
 import { Either } from '~/node_modules/fp-ts/lib/Either';
 import { Project } from '~/domain/timer/entity/Project';
 import { DateTime } from '~/domain/common/DateTime';
@@ -16,7 +16,7 @@ export interface TimerEventListener {
 
 export interface TimerService {
   fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>>;
-  startEntry(entry: Entry): Promise<TogowlError | null>;
+  startEntry(entry: Entry): Promise<Either<TogowlError, Entry>>;
   stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>>;
   fetchEntries(since: DateTime): Promise<Either<TogowlError, Entry[]>>;
   fetchProjects(): Promise<Either<TogowlError, Project[]>>;

@@ -72,7 +72,7 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
 import { notificationStore, timerStore } from '~/utils/store-accessor';
-import { Entry } from '~/domain/timer/vo/Entry';
+import { Entry } from '~/domain/timer/entity/Entry';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
@@ -105,19 +105,23 @@ class Root extends Vue {
 
   async start(entry: Entry) {
     this.waitForBlockedAction = true;
-    const err = await timerStore.startEntry(entry);
-    this.waitForBlockedAction = false;
-    if (err) {
-      // TODO: err handling
-      return;
-    }
 
-    // FIXME: Move NotificationService as domain service
-    const project = `:card_index_dividers: \`${entry.project?.nameWithoutBracket ?? 'No Project'}\``;
-    const projectCategory = entry.projectCategory
-      ? `:busts_in_silhouette: \`${entry.projectCategory.nameWithoutBracket}\` > `
-      : '';
-    await this.notify(`:tio2: \`開始\`  *${entry!.description}*    ${projectCategory}${project}`);
+    pipe(
+      await timerStore.startEntry(entry),
+      fold(
+        _err => {},
+        startedEntry => {
+          // FIXME: Move NotificationService as domain service
+          const project = `:card_index_dividers: \`${startedEntry.project?.nameWithoutBracket ?? 'No Project'}\``;
+          const projectCategory = startedEntry.projectCategory
+            ? `:busts_in_silhouette: \`${startedEntry.projectCategory.nameWithoutBracket}\` > `
+            : '';
+          this.notify(`:tio2: \`開始\`  *${startedEntry!.description}*    ${projectCategory}${project}`);
+        },
+      ),
+    );
+
+    this.waitForBlockedAction = false;
   }
 
   async complete() {
@@ -126,13 +130,13 @@ class Root extends Vue {
       await timerStore.completeCurrentEntry(),
       fold(
         _err => {},
-        async stoppedEntry => {
+        stoppedEntry => {
           // FIXME: Move NotificationService as domain service
           const project = `:card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``;
           const projectCategory = stoppedEntry!.projectCategory
             ? `:busts_in_silhouette: \`${stoppedEntry!.projectCategory.nameWithoutBracket}\` > `
             : '';
-          await this.notify(
+          this.notify(
             `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
               stoppedEntry!.description
             }*    ${projectCategory}${project}`,
@@ -149,13 +153,13 @@ class Root extends Vue {
       await timerStore.completeCurrentEntry(),
       fold(
         _err => {},
-        async stoppedEntry => {
+        stoppedEntry => {
           // FIXME: Move NotificationService as domain service
           const project = `:card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``;
           const projectCategory = stoppedEntry!.projectCategory
             ? `:busts_in_silhouette: \`${stoppedEntry!.projectCategory.nameWithoutBracket}\` > `
             : '';
-          await this.notify(
+          this.notify(
             `:zzz_kirby: \`中断\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
               stoppedEntry!.description
             }*    ${projectCategory}${project}`,

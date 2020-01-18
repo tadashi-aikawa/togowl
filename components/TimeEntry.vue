@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import { Entry } from '~/domain/timer/vo/Entry';
+import { Entry } from '~/domain/timer/entity/Entry';
 
 @Component({})
 class TimeEntry extends Vue {

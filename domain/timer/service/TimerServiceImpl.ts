@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { TogowlError } from '~/domain/common/TogowlError';
-import { Entry } from '~/domain/timer/vo/Entry';
+import { Entry } from '~/domain/timer/entity/Entry';
 import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { TimerEventListener, TimerService } from '~/domain/timer/service/TimerService';
 import * as toggl from '~/external/toggl';
@@ -124,15 +124,15 @@ export class TimerServiceImpl implements TimerService {
     return this.throttleFetchCurrentEntry();
   }
 
-  async startEntry(entry: Entry): Promise<TogowlError | null> {
+  async startEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
-      await this.restClient.timeEntryStart(entry.description, entry.project?.id.asNumber)
+      const startedEntry = (await this.restClient.timeEntryStart(entry.description, entry.project?.id.asNumber)).data;
       logger.put('TSI.startEntry.success');
-      return null
+      return right(this.transformEntry(startedEntry));
     } catch (err) {
       logger.put('TSI.startEntry.err');
       logger.put(err.message);
-      return TogowlError.create('START_ENTRY', "Can't start entry from Toggl", err.message);
+      return left(TogowlError.create('START_ENTRY', "Can't start entry from Toggl", err.message));
     }
   }
 
@@ -216,5 +216,4 @@ export class TimerServiceImpl implements TimerService {
       project.cid ? projectCategoryById[project.cid] : undefined,
     );
   }
-
 }
