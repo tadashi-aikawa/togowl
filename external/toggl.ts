@@ -34,27 +34,35 @@ export namespace SocketApi {
     // onInsertProject is not existed
     onUpdateProject?: (entry: Project) => void;
     onDeleteProject?: (entry: Project) => void;
+    // onInsertClient is not existed
+    onUpdateClient?: (entry: Client) => void;
+    onDeleteClient?: (entry: Client) => void;
     onResponsePing?: () => void;
   }
 
   type TimeEntryActionType = 'INSERT' | 'UPDATE' | 'DELETE' | string;
   type ProjectActionType = 'update' | 'delete' | string;
+  type ClientActionType = 'update' | 'delete' | string;
   interface TimeEntryEvent {
     action: TimeEntryActionType;
     model: 'time_entry';
     data: TimeEntry;
   }
-  // 仮
   interface ProjectEvent {
     action: ProjectActionType;
     model: 'project';
     data: Project;
   }
+  interface ClientEvent {
+    action: ClientActionType;
+    model: 'client';
+    data: Client;
+  }
   interface PingEvent {
     type: 'ping';
     model: null;
   }
-  type EventMessage = TimeEntryEvent | ProjectEvent | PingEvent;
+  type EventMessage = TimeEntryEvent | ProjectEvent | ClientEvent | PingEvent;
 
   export class ApiClient {
     private constructor(private socket: WebSocket, private onCloseListener: any) {}
@@ -105,6 +113,19 @@ export namespace SocketApi {
                 break;
               case 'delete':
                 listener.onDeleteProject?.(data.data);
+                break;
+              default:
+                console.error('Unexpected action: ', data.action);
+            }
+            break;
+          case 'client':
+            switch (data.action) {
+              // case 'insert' is not existed
+              case 'update':
+                listener.onUpdateClient?.(data.data);
+                break;
+              case 'delete':
+                listener.onDeleteClient?.(data.data);
                 break;
               default:
                 console.error('Unexpected action: ', data.action);

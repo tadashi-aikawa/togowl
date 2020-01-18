@@ -64,6 +64,14 @@ export class TimerServiceImpl implements TimerService {
         logger.put('TSI.onDeleteProject');
         this.updateProjectById(listener);
       },
+      onUpdateClient: _client => {
+        logger.put('TSI.onUpdateClient');
+        this.updateProjectById(listener);
+      },
+      onDeleteClient: _client => {
+        logger.put('TSI.onDeleteClient');
+        this.updateProjectById(listener);
+      },
       onResponsePing: () => logger.put('TSI.onResponsePing'),
     });
   }
