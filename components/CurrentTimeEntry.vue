@@ -9,17 +9,17 @@
       </div>
     </v-row>
     <v-row align="center" justify="center" style="margin-top: 5px;">
-      <div v-if="displayProjectCategory" style="font-size: 80%; color: darkgrey;">
+      <div v-if="displayProjectCategory" class="sub-title">
         {{ displayProjectCategory }}<span style="padding: 0 8px 0;">></span>
       </div>
-      <div v-if="displayProject" style="font-size: 80%; color: darkgrey;">{{ displayProject }}</div>
+      <div v-if="displayProject" class="sub-title">{{ displayProject }}</div>
     </v-row>
     <v-row align="center" justify="center">
-      <div v-if="!disabled" class="current-entry">
+      <div v-if="!disabled" class="timer">
         <v-icon>mdi-timer</v-icon>
         {{ currentEntryTime }}
       </div>
-      <div v-else class="current-entry" style="color: grey;">
+      <div v-else class="timer" style="color: grey;">
         <v-icon color="grey">mdi-timer</v-icon>
         {{ currentEntryTime }}
       </div>
@@ -31,7 +31,7 @@ import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decora
 import { Entry } from '~/domain/timer/vo/Entry';
 
 @Component({})
-class TimerEntryComponent extends Vue {
+class CurrentTimeEntry extends Vue {
   @Prop()
   currentEntry: Entry;
 
@@ -79,11 +79,15 @@ class TimerEntryComponent extends Vue {
     return this.currentEntry.project.nameWithoutBracket;
   }
 }
-export default TimerEntryComponent;
+export default CurrentTimeEntry;
 </script>
 <style scoped>
-.current-entry {
+.timer {
   padding: 10px;
   font-size: 200%;
+}
+.sub-title {
+  font-size: 80%;
+  color: darkgrey;
 }
 </style>

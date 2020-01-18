@@ -20,7 +20,7 @@ export interface TimeEntry {
   duration: number;
   description: string;
   at: string;
-  tags: number[];
+  tags?: number[];
 }
 
 export namespace SocketApi {
@@ -175,10 +175,15 @@ export namespace RestApi {
       this.baseUrl = proxy ? `https://${proxy}/toggl.com/api/v8` : 'https://toggl.com/api/v8';
     }
 
-    timeEntryCurrent(): Promise<TimeEntryCurrentResponse> {
-      return Axios.get(`${this.baseUrl}/time_entries/current`, {
+    __get<T>(path: string, params?: Object): Promise<T> {
+      return Axios.get(`${this.baseUrl}${path}`, {
         auth: this.auth,
+        params,
       }).then(p => p.data);
+    }
+
+    timeEntryCurrent(): Promise<TimeEntryCurrentResponse> {
+      return this.__get<TimeEntryCurrentResponse>('/time_entries/current');
     }
 
     timeEntryStop(timeEntryId: number): Promise<TimeEntryCurrentResponse> {
@@ -187,16 +192,16 @@ export namespace RestApi {
       }).then(p => p.data);
     }
 
+    entries(startDate: string): Promise<TimeEntry[]> {
+      return this.__get<TimeEntry[]>(`/time_entries`, { start_date: startDate });
+    }
+
     projects(workspaceId: number): Promise<Project[]> {
-      return Axios.get(`${this.baseUrl}/workspaces/${workspaceId}/projects`, {
-        auth: this.auth,
-      }).then(p => p.data);
+      return this.__get<Project[]>(`/workspaces/${workspaceId}/projects`);
     }
 
     clients(workspaceId: number): Promise<Client[]> {
-      return Axios.get(`${this.baseUrl}/workspaces/${workspaceId}/clients`, {
-        auth: this.auth,
-      }).then(p => p.data);
+      return this.__get<Client[]>(`/workspaces/${workspaceId}/clients`);
     }
 
     // startTimeEntry(description: string, projectId: number | undefined): AxiosPromise<any> {

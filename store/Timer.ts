@@ -1,4 +1,5 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import _ from 'lodash';
 import firebase from '~/plugins/firebase';
 import { firestoreAction } from '~/node_modules/vuexfire';
 import { UId } from '~/domain/authentication/vo/UId';
@@ -12,6 +13,7 @@ import { createTimerService } from '~/utils/service-factory';
 import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
 import { ActionStatus } from '~/domain/common/ActionStatus';
+import { DateTime } from '~/domain/common/DateTime';
 
 const firestore = firebase.firestore();
 let service: TimerService | null;
@@ -22,18 +24,6 @@ let service: TimerService | null;
 @Module({ name: 'Timer', namespaced: true, stateFactory: true })
 class TimerModule extends VuexModule {
   private _timer: FirestoreTimer | null = null;
-
-  realtime: boolean = false;
-  @Mutation
-  setRealtime(realtime: boolean) {
-    this.realtime = realtime;
-  }
-
-  currentEntry: Entry | null = null;
-  @Mutation
-  setCurrentEntry(entry: Entry | null) {
-    this.currentEntry = entry;
-  }
 
   updateStatus: ActionStatus = 'init';
   @Mutation
@@ -47,6 +37,18 @@ class TimerModule extends VuexModule {
     this.updateError = error;
   }
 
+  realtime: boolean = false;
+  @Mutation
+  setRealtime(realtime: boolean) {
+    this.realtime = realtime;
+  }
+
+  currentEntry: Entry | null = null;
+  @Mutation
+  setCurrentEntry(entry: Entry | null) {
+    this.currentEntry = entry;
+  }
+
   fetchingStatus: ActionStatus = 'init';
   @Mutation
   setFetchingStatus(status: ActionStatus) {
@@ -57,6 +59,31 @@ class TimerModule extends VuexModule {
   @Mutation
   setFetchingError(error: TogowlError | null) {
     this.fetchingError = error;
+  }
+
+  entries: Entry[] | null = null;
+  @Mutation
+  setEntries(entries: Entry[] | null) {
+    this.entries = entries;
+  }
+
+  get entriesWithinDay(): Entry[] {
+    return _(this.entries)
+      .filter(e => e.stop?.within(24 * 60 * 60) ?? false)
+      .orderBy(e => e.start.unix, 'desc')
+      .value();
+  }
+
+  entriesStatus: ActionStatus = 'init';
+  @Mutation
+  setEntriesStatus(status: ActionStatus) {
+    this.entriesStatus = status;
+  }
+
+  entriesError: TogowlError | null = null;
+  @Mutation
+  setEntriesError(error: TogowlError | null) {
+    this.entriesError = error;
   }
 
   get timerConfig(): TimerConfig | null {
@@ -158,6 +185,34 @@ class TimerModule extends VuexModule {
     );
   }
 
+  @Action
+  async fetchEntries(): Promise<void> {
+    // XXX: Show current tab state?
+    const config = this.timerConfig;
+    if (!config?.token) {
+      // TODO: Show on UI
+      console.error('Token for timer is required! It is empty!');
+      return;
+    }
+
+    this.setEntriesStatus('in_progress');
+    pipe(
+      await service!.fetchEntries(DateTime.now().minusDays(7)),
+      fold(
+        err => {
+          this.setEntriesError(err);
+          this.setCurrentEntry(null);
+          this.setEntriesStatus('error');
+        },
+        entries => {
+          this.setEntries(entries);
+          this.setEntriesError(null);
+          this.setEntriesStatus('success');
+        },
+      ),
+    );
+  }
+
   @Action({ rawError: true })
   private async updateService(): Promise<void> {
     if (service) {
@@ -168,18 +223,36 @@ class TimerModule extends VuexModule {
       onStartSubscribe: () => {
         this.setRealtime(true);
         this.fetchCurrentEntry();
+        this.fetchEntries();
       },
       onEndSubscribe: async () => {
         this.setRealtime(false);
         await this.updateService();
       },
       onError: this.setFetchingError,
-      onInsertEntry: _entry => this.fetchCurrentEntry(),
-      onUpdateEntry: _entry => this.fetchCurrentEntry(),
-      onDeleteEntry: _entry => this.fetchCurrentEntry(),
-      onUpdateProject: () => this.fetchCurrentEntry(),
+      onInsertEntry: _entry => {
+        this.fetchCurrentEntry();
+        // TODO: Remove if partial update is implemented
+        this.fetchEntries();
+      },
+      onUpdateEntry: _entry => {
+        this.fetchCurrentEntry();
+        // TODO: Remove if partial update is implemented
+        this.fetchEntries();
+      },
+      onDeleteEntry: _entry => {
+        this.fetchCurrentEntry();
+        // TODO: Remove if partial update is implemented
+        this.fetchEntries();
+      },
+      onUpdateProject: () => {
+        this.fetchCurrentEntry();
+        // TODO: Remove if partial update is implemented
+        this.fetchEntries();
+      },
     });
     this.fetchCurrentEntry();
+    this.fetchEntries();
   }
 
   @Action({ rawError: true })

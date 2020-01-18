@@ -12,6 +12,7 @@ import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 import { ProjectCategoryId } from '~/domain/timer/vo/ProjectCategoryId';
 import { ProjectCategoryName } from '~/domain/timer/vo/ProjectCategoryName';
+import { DateTime } from '~/domain/common/DateTime';
 
 export class TimerServiceImpl implements TimerService {
   private restClient: toggl.RestApi.ApiClient;
@@ -135,6 +136,24 @@ export class TimerServiceImpl implements TimerService {
     }
   }
 
+  async _fetchEntries(since: DateTime): Promise<Either<TogowlError, Entry[]>> {
+    try {
+      const entries = await this.restClient.entries(since.rfc3339);
+      logger.put('TSI.fetchEntries.success');
+      return right(entries.map(e => this.transformEntry(e)));
+    } catch (err) {
+      logger.put('TSI.fetchEntries.err');
+      logger.put(err.message);
+      return left(TogowlError.create('FETCH_ENTRIES', "Can't fetch entries from Toggl", err.message));
+    }
+  }
+
+  private throttleFetchEntries = _.throttle(this._fetchEntries, 1000, { trailing: false });
+
+  fetchEntries(since: DateTime): Promise<Either<TogowlError, Entry[]>> {
+    return this.throttleFetchEntries(since);
+  }
+
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
     try {
       const [projects, clients] = await Promise.all([
@@ -161,7 +180,14 @@ export class TimerServiceImpl implements TimerService {
   }
 
   private transformEntry(entry: toggl.TimeEntry): Entry {
-    return Entry.create(entry.id, entry.description, entry.start, entry.duration, this.projectById[entry.pid]);
+    return Entry.create({
+      id: entry.id,
+      description: entry.description,
+      start: entry.start,
+      stop: entry.stop,
+      duration: entry.duration,
+      project: this.projectById[entry.pid],
+    });
   }
 
   private transformProjectCategory(client: toggl.Client): ProjectCategory {

@@ -9,11 +9,7 @@
         </template>
       </v-img>
 
-      <TimerEntryComponent
-        :current-entry="currentEntry"
-        :disabled="!isTimeEntryTrusted"
-        :loading="fetchingStatus === 'in_progress'"
-      />
+      <TimerEntryComponent :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
       <v-row align="center" justify="center">
         <v-btn class="mx-2" fab dark color="grey" :disabled="!canAction" @click="pause">
           <v-icon dark large>mdi-pause</v-icon>
@@ -30,6 +26,36 @@
         </div>
       </v-row>
     </v-flex>
+
+    <v-tabs v-model="tabs" fixed-tabs style="margin-top: 20px;">
+      <v-tabs-slider></v-tabs-slider>
+
+      <v-tab href="#tabs-1" class="primary--text">
+        <v-icon>mdi-history</v-icon>
+      </v-tab>
+
+      <v-tab disabled href="#tabs-2" class="primary--text">
+        <v-icon>mdi-lock-question</v-icon>
+      </v-tab>
+
+      <v-tab disabled href="#tabs-3" class="primary--text">
+        <v-icon>mdi-lock-question</v-icon>
+      </v-tab>
+
+      <v-tab-item value="tabs-1">
+        <TimeEntry :entries="entries" />
+        <v-row v-if="entriesError" align="center" justify="center">
+          <div style="padding: 15px;">
+            <v-alert type="error">
+              {{ entriesError.message }}
+            </v-alert>
+          </div>
+        </v-row>
+      </v-tab-item>
+      <v-tab-item value="tabs-2">???</v-tab-item>
+      <v-tab-item value="tabs-3">???</v-tab-item>
+    </v-tabs>
+
     <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top>
       {{ snackMessage }}
       <v-btn color="blue" text @click="snackbar = false">
@@ -51,16 +77,18 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { ActionStatus } from '~/domain/common/ActionStatus';
-import TimerEntryComponent from '~/components/TimerEntryComponent.vue';
+import TimerEntryComponent from '~/components/CurrentTimeEntry.vue';
+import TimeEntry from '~/components/TimeEntry.vue';
 
 @Component({
-  components: { TimerEntryComponent },
+  components: { TimerEntryComponent, TimeEntry },
 })
 class Root extends Vue {
   snackbar = false;
   snackbarColor: string | null = null;
   snackMessage = '';
   waitForBlockedAction = false;
+  tabs = null;
 
   async notify(message: string) {
     const err = await notificationStore.notifyToSlack(message);
@@ -133,6 +161,14 @@ class Root extends Vue {
     return timerStore.currentEntry;
   }
 
+  get entries(): Entry[] | null {
+    return timerStore.entriesWithinDay;
+  }
+
+  get entriesError(): TogowlError | null {
+    return timerStore.entriesError;
+  }
+
   get isRealtimeEnabled(): boolean {
     return timerStore.realtime;
   }
@@ -149,6 +185,10 @@ class Root extends Vue {
     return this.currentEntry
       ? 'https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png'
       : 'https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg';
+  }
+
+  get isLoading(): boolean {
+    return this.fetchingStatus === 'in_progress' || timerStore.entriesStatus === 'in_progress';
   }
 }
 
