@@ -1,15 +1,47 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
-      <v-row align="center" justify="center">
-        <v-btn class="mx-2" fab dark color="grey" :disabled="!canAction" @click="pause">
-          <v-icon dark large>mdi-pause</v-icon>
-        </v-btn>
-        <v-btn class="mx-2" fab dark color="teal" :disabled="!canAction" @click="complete">
-          <v-icon dark large>mdi-check-bold</v-icon>
-        </v-btn>
-      </v-row>
+      <template v-if="currentEntry">
+        <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
+        <v-row align="center" justify="center" style="margin-bottom: 20px;">
+          <v-btn class="mx-2" fab small dark color="grey" :disabled="!canAction" @click="pause">
+            <v-icon dark>mdi-pause</v-icon>
+          </v-btn>
+          <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
+            <v-icon dark>mdi-check-bold</v-icon>
+          </v-btn>
+        </v-row>
+      </template>
+      <template v-else>
+        <v-row align="center" justify="center">
+          <v-col cols="9">
+            <v-autocomplete
+              v-model="selectedEntry"
+              :items="candidatedEntries"
+              item-text="description"
+              full-width
+              placeholder="Search entries past"
+              return-object
+            >
+              <template v-slot:selection="data">
+                <div style="padding: 5px;">
+                  <EntrySummary :entry="data.item" width="70vw" />
+                </div>
+              </template>
+              <template v-slot:item="data">
+                <div style="padding: 5px;">
+                  <EntrySummary :entry="data.item" />
+                </div>
+              </template>
+            </v-autocomplete>
+          </v-col>
+          <v-col cols="2">
+            <v-btn class="mx-2" fab small dark color="green" :disabled="!selectedEntry" @click="start(selectedEntry)">
+              <v-icon dark large>mdi-play</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </template>
       <v-row v-if="fetchingError" align="center" justify="center">
         <div style="padding: 15px;">
           <v-alert type="error">
@@ -19,7 +51,7 @@
       </v-row>
     </v-flex>
 
-    <v-tabs v-model="tabs" fixed-tabs style="margin-top: 20px;">
+    <v-tabs v-model="tabs" fixed-tabs>
       <v-tabs-slider></v-tabs-slider>
 
       <v-tab href="#tabs-1" class="primary--text">
@@ -80,9 +112,10 @@ import { ActionStatus } from '~/domain/common/ActionStatus';
 import CurrentTimeEntry from '~/components/CurrentTimeEntry.vue';
 import TimeEntry from '~/components/TimeEntry.vue';
 import EntryCalendar from '~/components/EntryCalendar.vue';
+import EntrySummary from '~/components/EntrySummary.vue';
 
 @Component({
-  components: { CurrentTimeEntry, TimeEntry, EntryCalendar },
+  components: { CurrentTimeEntry, TimeEntry, EntryCalendar, EntrySummary },
 })
 class Root extends Vue {
   snackbar = false;
@@ -93,6 +126,8 @@ class Root extends Vue {
 
   calendarBottomSheet = false;
   currentCalendarEntry: Entry | null = null;
+
+  selectedEntry: Entry | null = null;
 
   handleClickCalendarEntry(entry: Entry) {
     this.currentCalendarEntry = entry;
@@ -191,8 +226,12 @@ class Root extends Vue {
     return timerStore.currentEntry;
   }
 
-  get entries(): Entry[] | null {
+  get entries(): Entry[] {
     return timerStore.entriesWithinDay;
+  }
+
+  get candidatedEntries(): Entry[] {
+    return timerStore.candidatedEntries;
   }
 
   get entriesError(): TogowlError | null {

@@ -18,6 +18,8 @@ import { DateTime } from '~/domain/common/DateTime';
 const firestore = firebase.firestore();
 let service: TimerService | null;
 
+const MAX_HISTORY_DAYS = 7;
+
 /**
  * Concrete implementation by using firebase
  */
@@ -71,6 +73,16 @@ class TimerModule extends VuexModule {
     return _(this.entries)
       .filter(e => e.stop?.within(24 * 60 * 60) ?? false)
       .orderBy(e => e.start.unix, 'desc')
+      .value();
+  }
+
+  get candidatedEntries(): Entry[] {
+    const toKey = (e: Entry) => [e.description, e.project?.id, e.projectCategory?.id].join();
+    return _(this.entries)
+      .groupBy(toKey)
+      .values()
+      .orderBy(es => es.length, 'desc')
+      .map(es => es[0])
       .value();
   }
 
@@ -217,7 +229,7 @@ class TimerModule extends VuexModule {
 
     this.setEntriesStatus('in_progress');
     pipe(
-      await service!.fetchEntries(DateTime.now().minusDays(7)),
+      await service!.fetchEntries(DateTime.now().minusDays(MAX_HISTORY_DAYS)),
       fold(
         err => {
           this.setEntriesError(err);

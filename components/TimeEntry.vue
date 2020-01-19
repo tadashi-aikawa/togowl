@@ -5,8 +5,9 @@
         <v-img src="https://dl.dropboxusercontent.com/s/7muflol9doqsj0q/shachiku.png"></v-img>
       </v-list-item-avatar>
       <v-list-item-content>
-        <v-list-item-title v-text="entry.description"></v-list-item-title>
-        <v-list-item-subtitle class="sub-title" v-text="toSubtitle(entry)"></v-list-item-subtitle>
+        <v-list-item-title>
+          <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
+        </v-list-item-title>
         <v-list-item-subtitle class="sub-title">
           <span style="padding: 0 4px 0 0;"
             >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
@@ -26,8 +27,11 @@
 <script lang="ts">
 import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
 import { Entry } from '~/domain/timer/entity/Entry';
+import EntrySummary from '~/components/EntrySummary.vue';
 
-@Component({})
+@Component({
+  components: { EntrySummary },
+})
 class TimeEntry extends Vue {
   @Prop()
   entries: Entry[];

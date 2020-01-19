@@ -46,7 +46,7 @@ class CurrentTimeEntry extends Vue {
 
   @Watch('currentEntry')
   countUp() {
-    this.currentEntryTime = this.currentEntry?.start.displayDiffFromNow() ?? '__ : __ : __';
+    this.currentEntryTime = this.currentEntry.start.displayDiffFromNow();
   }
 
   created() {
@@ -59,9 +59,6 @@ class CurrentTimeEntry extends Vue {
   }
 
   get displayEntry(): string {
-    if (!this.currentEntry) {
-      return 'Take a break ( ´▽｀)';
-    }
     return this.currentEntry.description ?? 'What are you doing?';
   }
 
