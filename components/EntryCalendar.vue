@@ -4,14 +4,16 @@
       <v-calendar
         ref="calendar"
         type="day"
-        event-color="rgba(0, 255, 0, 0.5)"
-        :events="events"
         dark
         hide-header
-        :event-overlap-threshold="30"
+        :events="events"
+        event-color="rgba(0, 255, 0, 0.5)"
+        :event-overlap-threshold="10"
         interval-minutes="30"
         interval-height="96"
         interval-count="48"
+        interval-width="35"
+        :interval-format="d => d.time"
       >
         <template v-slot:event="{ event }">
           <div style="height: 100%; padding: 2px;" @click="handleClickEntry(event.entry)">

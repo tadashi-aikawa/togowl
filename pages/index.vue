@@ -53,7 +53,7 @@
         </v-row>
       </v-tab-item>
       <v-tab-item value="tabs-2">
-          <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
+        <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
 
         <v-bottom-sheet v-if="currentCalendarEntry" v-model="calendarBottomSheet">
           <TimeEntry :entries="[currentCalendarEntry]" @on-click-start="start" />
