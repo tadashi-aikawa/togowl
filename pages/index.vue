@@ -1,14 +1,6 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-img :src="imageUrl" max-width="400" height="200">
-        <template v-slot:placeholder>
-          <v-row class="fill-height ma-0" align="center" justify="center">
-            <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-          </v-row>
-        </template>
-      </v-img>
-
       <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
       <v-row align="center" justify="center">
         <v-btn class="mx-2" fab dark color="grey" :disabled="!canAction" @click="pause">
@@ -43,7 +35,9 @@
       </v-tab>
 
       <v-tab-item value="tabs-1">
-        <TimeEntry :entries="entries" @on-click-start="start" />
+        <v-sheet class="tab-content">
+          <TimeEntry :entries="entries" @on-click-start="start" />
+        </v-sheet>
         <v-row v-if="entriesError" align="center" justify="center">
           <div style="padding: 15px;">
             <v-alert type="error">
@@ -217,12 +211,6 @@ class Root extends Vue {
     return this.isTimeEntryTrusted && !!this.currentEntry;
   }
 
-  get imageUrl(): string {
-    return this.currentEntry
-      ? 'https://pbs.twimg.com/media/CRpxsErUsAQWJOv.png'
-      : 'https://pbs.twimg.com/media/ChSq8rwU4AAel50.jpg';
-  }
-
   get isLoading(): boolean {
     return this.fetchingStatus === 'in_progress' || timerStore.entriesStatus === 'in_progress';
   }
@@ -230,3 +218,10 @@ class Root extends Vue {
 
 export default Root;
 </script>
+
+<style scoped>
+.tab-content {
+  height: calc(100vh - 325px);
+  overflow-y: scroll;
+}
+</style>

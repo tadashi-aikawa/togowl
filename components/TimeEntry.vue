@@ -2,7 +2,7 @@
   <v-list two-line>
     <v-list-item v-for="entry in entries" :key="entry.id.value">
       <v-list-item-avatar>
-        <v-img src="http://dc.dengeki.com/ss/comicweb/pc/images/sp/vitamn-shachiku/cht_01.png"></v-img>
+        <v-img src="https://dl.dropboxusercontent.com/s/7muflol9doqsj0q/shachiku.png"></v-img>
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title v-text="entry.description"></v-list-item-title>
