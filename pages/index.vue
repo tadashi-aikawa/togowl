@@ -34,8 +34,8 @@
         <v-icon>mdi-history</v-icon>
       </v-tab>
 
-      <v-tab disabled href="#tabs-2" class="primary--text">
-        <v-icon>mdi-lock-question</v-icon>
+      <v-tab href="#tabs-2" class="primary--text">
+        <v-icon>mdi-calendar</v-icon>
       </v-tab>
 
       <v-tab disabled href="#tabs-3" class="primary--text">
@@ -52,7 +52,13 @@
           </div>
         </v-row>
       </v-tab-item>
-      <v-tab-item value="tabs-2">???</v-tab-item>
+      <v-tab-item value="tabs-2">
+          <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
+
+        <v-bottom-sheet v-if="currentCalendarEntry" v-model="calendarBottomSheet">
+          <TimeEntry :entries="[currentCalendarEntry]" @on-click-start="start" />
+        </v-bottom-sheet>
+      </v-tab-item>
       <v-tab-item value="tabs-3">???</v-tab-item>
     </v-tabs>
 
@@ -79,9 +85,10 @@ import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { ActionStatus } from '~/domain/common/ActionStatus';
 import CurrentTimeEntry from '~/components/CurrentTimeEntry.vue';
 import TimeEntry from '~/components/TimeEntry.vue';
+import EntryCalendar from '~/components/EntryCalendar.vue';
 
 @Component({
-  components: { CurrentTimeEntry, TimeEntry },
+  components: { CurrentTimeEntry, TimeEntry, EntryCalendar },
 })
 class Root extends Vue {
   snackbar = false;
@@ -89,6 +96,14 @@ class Root extends Vue {
   snackMessage = '';
   waitForBlockedAction = false;
   tabs = null;
+
+  calendarBottomSheet = false;
+  currentCalendarEntry: Entry | null = null;
+
+  handleClickCalendarEntry(entry: Entry) {
+    this.currentCalendarEntry = entry;
+    this.calendarBottomSheet = true;
+  }
 
   async notify(message: string) {
     const err = await notificationStore.notifyToSlack(message);

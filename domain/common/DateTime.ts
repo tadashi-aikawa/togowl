@@ -18,8 +18,8 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return new DateTime(this._value!.subtract(days, 'day'));
   }
 
-  get displayTime(): string {
-    return this._value!.format('HH:mm:ss');
+  minusMinutes(minutes: number): DateTime {
+    return new DateTime(this._value!.subtract(minutes, 'minute'));
   }
 
   displayDiffFromNow(): string {
@@ -36,5 +36,21 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
 
   get rfc3339(): string {
     return this._value!.format('YYYY-MM-DDTHH:mm:ssZ');
+  }
+
+  get displayTime(): string {
+    return this._value!.format('HH:mm:ss');
+  }
+
+  get displayTimeWithoutSeconds(): string {
+    return this._value!.format('HH:mm');
+  }
+
+  get displayDateTime(): string {
+    return this._value!.format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  get displayDateTimeWithoutSeconds(): string {
+    return this._value!.format('YYYY-MM-DD HH:mm');
   }
 }
