@@ -8,7 +8,9 @@
         <v-list-item-title v-text="entry.description"></v-list-item-title>
         <v-list-item-subtitle class="sub-title" v-text="toSubtitle(entry)"></v-list-item-subtitle>
         <v-list-item-subtitle class="sub-title">
-          <span style="padding: 0 4px 0 8px;">{{ entry.start.displayTime }} ～ {{ entry.stop.displayTime }}</span>
+          <span style="padding: 0 4px 0 0;"
+            >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
+          >
           <v-icon size="small">mdi-timer</v-icon>
           <span>{{ entry.duration.asJapanese }}</span>
         </v-list-item-subtitle>
