@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-text="title" class="entry-title" :style="{ width: width }" />
-    <div v-text="subtitle" class="entry-sub-title" />
+    <div class="entry-title" :style="{ width: width }" v-text="title" />
+    <div class="entry-sub-title" v-text="subtitle" />
   </div>
 </template>
 <script lang="ts">
