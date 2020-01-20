@@ -89,48 +89,48 @@ export default CurrentTimeEntry;
 }
 
 .loading {
-  animation: rainbow 0.5s infinite;
-  -webkit-animation: rainbow 0.5s infinite;
+  animation: rainbow 0.75s infinite;
+  -webkit-animation: rainbow 0.75s infinite;
 }
 
 @-webkit-keyframes rainbow {
   0% {
-    color: #e74c3c;
+    color: #e74c3c77;
   }
   20% {
-    color: #f1c40f;
+    color: #f1c40f77;
   }
   40% {
-    color: #1abc9c;
+    color: #1abc9c77;
   }
   60% {
-    color: #3498db;
+    color: #3498db77;
   }
   80% {
-    color: #9b59b6;
+    color: #9b59b677;
   }
   100% {
-    color: #e74c3c;
+    color: #e74c3c77;
   }
 }
 @keyframes rainbow {
   0% {
-    color: #e74c3c;
+    color: #e74c3c77;
   }
   20% {
-    color: #f1c40f;
+    color: #f1c40f77;
   }
   40% {
-    color: #1abc9c;
+    color: #1abc9c77;
   }
   60% {
-    color: #3498db;
+    color: #3498db77;
   }
   80% {
-    color: #9b59b6;
+    color: #9b59b677;
   }
   100% {
-    color: #e74c3c;
+    color: #e74c3c77;
   }
 }
 </style>
