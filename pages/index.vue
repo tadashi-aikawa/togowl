@@ -67,7 +67,7 @@
       </v-tab>
 
       <v-tab-item value="tabs-1">
-        <v-sheet class="tab-content">
+        <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
           <TimeEntry :entries="entries" @on-click-start="start" />
         </v-sheet>
         <v-row v-if="entriesError" align="center" justify="center">
@@ -259,8 +259,12 @@ export default Root;
 </script>
 
 <style scoped>
-.tab-content {
+.tab-content-tracking-on {
   height: calc(100vh - 325px);
+  overflow-y: scroll;
+}
+.tab-content-tracking-off {
+  height: calc(100vh - 245px);
   overflow-y: scroll;
 }
 </style>
