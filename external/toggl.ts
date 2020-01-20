@@ -13,13 +13,13 @@ export interface Client {
 
 export interface TimeEntry {
   id: number;
-  wid: number;
-  pid: number;
+  // wid: number;
+  pid?: number;
   start: string;
-  stop: string | null;
+  stop?: string;
   duration: number;
   description: string;
-  at: string;
+  // at: string;
   tags?: number[];
 }
 
@@ -158,6 +158,9 @@ export namespace RestApi {
   export interface TimeEntryStartResponse {
     data: TimeEntry;
   }
+  export interface TimeEntryUpdateResponse {
+    data: TimeEntry;
+  }
   export interface TimeEntryStopResponse {
     data: TimeEntry;
   }
@@ -194,6 +197,18 @@ export namespace RestApi {
         `${this.baseUrl}/time_entries/start`,
         {
           time_entry: { description, pid: projectId, created_with: 'togowl' },
+        },
+        {
+          auth: this.auth,
+        },
+      ).then(p => p.data);
+    }
+
+    timeEntryUpdate(timeEntryId: number, value: Partial<TimeEntry>): Promise<TimeEntryUpdateResponse> {
+      return Axios.put(
+        `${this.baseUrl}/time_entries/${timeEntryId}`,
+        {
+          time_entry: value,
         },
         {
           auth: this.auth,

@@ -43,3 +43,5 @@ export class Entry implements Entity {
     return this.project?.category;
   }
 }
+
+export type PartialEntry = Partial<Omit<Entry, "id">>

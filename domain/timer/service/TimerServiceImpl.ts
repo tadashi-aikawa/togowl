@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { TogowlError } from '~/domain/common/TogowlError';
-import { Entry } from '~/domain/timer/entity/Entry';
+import { Entry, PartialEntry } from '~/domain/timer/entity/Entry';
 import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { TimerEventListener, TimerService } from '~/domain/timer/service/TimerService';
 import * as toggl from '~/external/toggl';
@@ -136,6 +136,20 @@ export class TimerServiceImpl implements TimerService {
     }
   }
 
+  async updateEntry(entry: Entry, value: PartialEntry): Promise<Either<TogowlError, Entry>> {
+    try {
+      const updatedEntry = (
+        await this.restClient.timeEntryUpdate(entry.id.asNumber, this.transformPartialTimeEntry(value))
+      ).data;
+      logger.put('TSI.updateEntry.success');
+      return right(this.transformEntry(updatedEntry));
+    } catch (err) {
+      logger.put('TSI.updateEntry.err');
+      logger.put(err.message);
+      return left(TogowlError.create('UPDATE_ENTRY', "Can't update entry from Toggl", err.message));
+    }
+  }
+
   async stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
       const afterEntry = (await this.restClient.timeEntryStop(entry.id.asNumber)).data;
@@ -198,8 +212,18 @@ export class TimerServiceImpl implements TimerService {
       start: entry.start,
       stop: entry.stop,
       duration: entry.duration,
-      project: this.projectById[entry.pid],
+      project: entry.pid ? this.projectById[entry.pid] : undefined,
     });
+  }
+
+  private transformPartialTimeEntry(entry: PartialEntry): Partial<toggl.TimeEntry> {
+    return {
+      pid: entry.project?.id.asNumber,
+      start: entry.start?.rfc3339,
+      stop: entry.stop?.rfc3339,
+      duration: entry.duration?.value,
+      description: entry.description,
+    };
   }
 
   private transformProjectCategory(client: toggl.Client): ProjectCategory {

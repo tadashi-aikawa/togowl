@@ -76,6 +76,10 @@ class TimerModule extends VuexModule {
       .value();
   }
 
+  get previousEntry(): Entry | undefined {
+    return this.entriesWithinDay?.[0];
+  }
+
   get candidatedEntries(): Entry[] {
     const toKey = (e: Entry) => [e.description, e.project?.id, e.projectCategory?.id].join();
     return _(this.entries)
@@ -211,6 +215,35 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(null);
+          return right(entry);
+        },
+      ),
+    );
+  }
+
+  @Action
+  async connectPreviousEntry(): Promise<Either<TogowlError, Entry | null>> {
+    // XXX: This action is similar to completeCurrentEntry but not same
+    const config = this.timerConfig;
+    if (!config?.token) {
+      // TODO: Show on UI
+      return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
+    }
+    if (!this.currentEntry) {
+      return left(TogowlError.create('CURRENT_ENTRY_IS_EMPTY', 'Current entry is empty!'));
+    }
+    if (!this.previousEntry) {
+      return left(TogowlError.create('PREVIOUS_ENTRY_IS_EMPTY', 'Previous entry is empty!'));
+    }
+
+    return pipe(
+      await service!.updateEntry(this.currentEntry, { start: this.previousEntry.stop?.plusSeconds(1) }),
+      fold(
+        err => {
+          return left(err);
+        },
+        entry => {
+          this.setCurrentEntry(entry);
           return right(entry);
         },
       ),

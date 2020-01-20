@@ -10,6 +10,9 @@
           <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
             <v-icon dark>mdi-check-bold</v-icon>
           </v-btn>
+          <v-btn class="mx-2" fab small dark color="brown darken-1" :disabled="!canAction" @click="connectPrevious">
+            <v-icon dark>mdi-transit-connection-variant</v-icon>
+          </v-btn>
         </v-row>
       </template>
       <template v-else>
@@ -211,6 +214,12 @@ class Root extends Vue {
         },
       ),
     );
+    this.waitForBlockedAction = false;
+  }
+
+  async connectPrevious() {
+    this.waitForBlockedAction = true;
+    await timerStore.connectPreviousEntry();
     this.waitForBlockedAction = false;
   }
 
