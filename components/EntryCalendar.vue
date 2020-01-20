@@ -9,9 +9,9 @@
         :events="events"
         event-color="rgba(0, 255, 0, 0.5)"
         :event-overlap-threshold="10"
-        interval-minutes="30"
+        interval-minutes="60"
         interval-height="96"
-        interval-count="48"
+        interval-count="24"
         interval-width="35"
         :interval-format="d => d.time"
       >
