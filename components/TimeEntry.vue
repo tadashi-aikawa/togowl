@@ -22,6 +22,10 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
+
+    <v-overlay absolute :value="loading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </v-list>
 </template>
 <script lang="ts">

@@ -68,7 +68,7 @@
 
       <v-tab-item value="tabs-1">
         <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TimeEntry :entries="entries" @on-click-start="start" />
+          <TimeEntry :entries="entries" :loading="isEntriesLoading" @on-click-start="start" />
         </v-sheet>
         <v-row v-if="entriesError" align="center" justify="center">
           <div style="padding: 15px;">
@@ -234,6 +234,10 @@ class Root extends Vue {
     return timerStore.candidatedEntries;
   }
 
+  get entriesStatus(): ActionStatus {
+    return timerStore.entriesStatus;
+  }
+
   get entriesError(): TogowlError | null {
     return timerStore.entriesError;
   }
@@ -251,7 +255,11 @@ class Root extends Vue {
   }
 
   get isLoading(): boolean {
-    return this.fetchingStatus === 'in_progress' || timerStore.entriesStatus === 'in_progress';
+    return this.fetchingStatus === 'in_progress';
+  }
+
+  get isEntriesLoading(): boolean {
+    return this.entriesStatus === 'in_progress';
   }
 }
 
