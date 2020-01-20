@@ -40,7 +40,7 @@ class TimeEntry extends Vue {
   @Prop()
   entries: Entry[];
 
-  @Prop()
+  @Prop({ default: false })
   loading: boolean;
 
   toSubtitle(entry: Entry): string {
