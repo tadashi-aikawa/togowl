@@ -259,7 +259,7 @@ class Root extends Vue {
   }
 
   get isEntriesLoading(): boolean {
-    return this.entriesStatus === 'in_progress';
+    return this.entriesStatus === 'in_progress' && this.entries.length === 0;
   }
 }
 
