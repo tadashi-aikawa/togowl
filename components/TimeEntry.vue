@@ -1,9 +1,6 @@
 <template>
   <v-list two-line>
     <v-list-item v-for="entry in entries" :key="entry.id.value">
-      <v-list-item-avatar>
-        <v-img src="https://dl.dropboxusercontent.com/s/7muflol9doqsj0q/shachiku.png"></v-img>
-      </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title>
           <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
@@ -58,7 +55,7 @@ export default TimeEntry;
 
 <style scoped>
 .sub-title {
-  font-size: 80%;
+  font-size: 75%;
   color: darkgrey;
 }
 </style>

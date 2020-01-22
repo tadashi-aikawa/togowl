@@ -1,16 +1,22 @@
 <template>
   <div>
     <v-row align="center" justify="center">
-      <div style="padding: 15px 0 0; font-size: 110%;">
+      <div style="padding: 15px 15px 0; font-size: 110%;">
         <span :class="{ loading }" v-text="displayEntry" />
       </div>
     </v-row>
     <v-row align="center" justify="center" style="margin-top: 5px;">
       <div v-if="displayProjectCategory" class="sub-title">
+        <v-avatar size="16px">
+          <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f465.png" />
+        </v-avatar>
         <span :class="{ loading }" v-text="displayProjectCategory" />
         <span style="padding: 0 8px 0;">></span>
       </div>
       <div v-if="displayProject" class="sub-title">
+        <v-avatar size="16px">
+          <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png" />
+        </v-avatar>
         <span :class="{ loading }" v-text="displayProject" />
       </div>
     </v-row>
@@ -84,7 +90,7 @@ export default CurrentTimeEntry;
   font-size: 200%;
 }
 .sub-title {
-  font-size: 80%;
+  font-size: 85%;
   color: darkgrey;
 }
 

@@ -17,6 +17,9 @@
       >
         <template v-slot:event="{ event }">
           <div style="height: 100%; padding: 2px;" @click="handleClickEntry(event.entry)">
+            <v-avatar size="14px">
+              <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png" />
+            </v-avatar>
             {{ event.name }}
           </div>
         </template>

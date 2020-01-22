@@ -1,7 +1,17 @@
 <template>
   <div>
     <div class="entry-title" :style="{ width: width }" v-text="title" />
-    <div class="entry-sub-title" v-text="subtitle" />
+    <div class="entry-subtitle">
+      <v-avatar size="14px">
+        <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f465.png" />
+      </v-avatar>
+      <span v-text="projectCategory" />
+      <span style="margin: 0 2px;">></span>
+      <v-avatar size="14px">
+        <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png" />
+      </v-avatar>
+      <span v-text="project" />
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -18,6 +28,14 @@ class EntrySummary extends Vue {
 
   get title(): string {
     return this.entry.description;
+  }
+
+  get project(): string {
+    return this.entry.project?.nameWithoutBracket ?? '';
+  }
+
+  get projectCategory(): string {
+    return this.entry.projectCategory?.nameWithoutBracket ?? '';
   }
 
   get subtitle(): string {
@@ -38,8 +56,8 @@ export default EntrySummary;
   white-space: nowrap;
   padding-bottom: 3px;
 }
-.entry-sub-title {
-  font-size: 80%;
+.entry-subtitle {
+  font-size: 75%;
   color: darkgrey;
   overflow: hidden;
   text-overflow: ellipsis;
