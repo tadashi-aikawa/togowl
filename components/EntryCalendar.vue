@@ -17,8 +17,8 @@
       >
         <template v-slot:event="{ event }">
           <div style="height: 100%; padding: 2px;" @click="handleClickEntry(event.entry)">
-            <v-avatar size="14px">
-              <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png" />
+            <v-avatar v-if="event.entry.project" size="14px">
+              <ProjectIcon :project="event.entry.project" :project-category-as-default="true" />
             </v-avatar>
             {{ event.name }}
           </div>
@@ -35,8 +35,9 @@
 import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
 import { Entry } from '~/domain/timer/entity/Entry';
 import { DateTime } from '~/domain/common/DateTime';
+import ProjectIcon from '~/components/ProjectIcon.vue';
 
-@Component({})
+@Component({ components: { ProjectIcon } })
 class EntryCalendar extends Vue {
   @Prop()
   entries: Entry[];

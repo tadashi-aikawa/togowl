@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { User } from '~/domain/authentication/vo/User';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 import { TogowlError } from '~/domain/common/TogowlError';
@@ -8,6 +9,7 @@ import { UId } from '~/domain/authentication/vo/UId';
 import { UserName } from '~/domain/authentication/vo/UserName';
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
 import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
+import { Icon } from '~/domain/common/Icon';
 
 export interface FirestoreSlack {
   notifyTo?: string;
@@ -19,6 +21,18 @@ export interface FirestoreTimer {
   token?: string;
   workspaceId?: number;
   proxy?: string;
+  iconByProject?: {
+    [projectId: string]: {
+      url?: string;
+      emoji?: string;
+    };
+  };
+  iconByProjectCategory?: {
+    [projectCategoryId: string]: {
+      url?: string;
+      emoji?: string;
+    };
+  };
 }
 
 class FirebaseCloudRepository implements CloudRepository {
@@ -72,6 +86,8 @@ class FirebaseCloudRepository implements CloudRepository {
       token: config.token,
       workspaceId: config.workspaceId,
       proxy: config.proxy,
+      iconByProject: config.iconByProject,
+      iconByProjectCategory: config.iconByProjectCategory,
     };
     return firebase
       .firestore()
@@ -93,7 +109,15 @@ class FirebaseCloudRepository implements CloudRepository {
       .then(x => {
         const data = x.data() as FirestoreTimer;
         return data
-          ? right(TimerConfig.create(data.token, data.workspaceId, data.proxy))
+          ? right(
+              TimerConfig.create(
+                data.token,
+                data.workspaceId,
+                data.proxy,
+                _.mapValues(data.iconByProject, obj => Icon.create(obj)),
+                _.mapValues(data.iconByProjectCategory, obj => Icon.create(obj)),
+              ),
+            )
           : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
       })
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));

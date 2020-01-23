@@ -7,15 +7,15 @@
     </v-row>
     <v-row align="center" justify="center" style="margin-top: 5px;">
       <div v-if="displayProjectCategory" class="sub-title">
-        <v-avatar size="16px">
-          <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f465.png" />
+        <v-avatar v-if="currentEntry.projectCategory" size="16px">
+          <ProjectCategoryIcon :project-category="currentEntry.projectCategory" />
         </v-avatar>
         <span :class="{ loading }" v-text="displayProjectCategory" />
         <span style="padding: 0 8px 0;">></span>
       </div>
       <div v-if="displayProject" class="sub-title">
-        <v-avatar size="16px">
-          <img src="https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png" />
+        <v-avatar v-if="currentEntry.project" size="16px">
+          <ProjectIcon :project="currentEntry.project" />
         </v-avatar>
         <span :class="{ loading }" v-text="displayProject" />
       </div>
@@ -35,8 +35,10 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
 import { Entry } from '~/domain/timer/entity/Entry';
+import ProjectIcon from '~/components/ProjectIcon.vue';
+import ProjectCategoryIcon from '~/components/ProjectCategoryIcon.vue';
 
-@Component({})
+@Component({ components: { ProjectIcon, ProjectCategoryIcon } })
 class CurrentTimeEntry extends Vue {
   @Prop()
   currentEntry: Entry;

@@ -14,6 +14,8 @@ import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
 import { ActionStatus } from '~/domain/common/ActionStatus';
 import { DateTime } from '~/domain/common/DateTime';
+import { ProjectId } from '~/domain/timer/vo/ProjectId';
+import { Icon } from '~/domain/common/Icon';
 
 const firestore = firebase.firestore();
 let service: TimerService | null;
@@ -103,7 +105,17 @@ class TimerModule extends VuexModule {
   }
 
   get timerConfig(): TimerConfig | null {
-    return TimerConfig.create(this._timer?.token, this._timer?.workspaceId, this._timer?.proxy);
+    if (!this._timer) {
+      return null;
+    }
+
+    return TimerConfig.create(
+      this._timer?.token,
+      this._timer?.workspaceId,
+      this._timer?.proxy,
+      _.mapValues(this._timer!.iconByProject, obj => Icon.create(obj)),
+      _.mapValues(this._timer!.iconByProjectCategory, obj => Icon.create(obj)),
+    );
   }
 
   @Action
