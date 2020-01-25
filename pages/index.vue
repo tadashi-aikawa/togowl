@@ -23,6 +23,8 @@
               :items="candidatedEntries"
               item-text="hashAsTask"
               full-width
+              clearable
+              open-on-clear
               placeholder="Search entries past"
               return-object
             >
