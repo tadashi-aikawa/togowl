@@ -1,8 +1,8 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-fade-transition group leave-absolute>
-        <div v-if="currentEntry" key="has-entry">
+      <v-fade-transition leave-absolute>
+        <div v-if="currentEntry">
           <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
           <v-row align="center" justify="center" style="margin-bottom: 20px;">
             <v-btn class="mx-2" fab small dark color="grey" :disabled="!canAction" @click="pause">
@@ -16,7 +16,9 @@
             </v-btn>
           </v-row>
         </div>
-        <div v-else key="has-not-entry">
+      </v-fade-transition>
+      <v-fade-transition leave-absolute>
+        <div v-if="!currentEntry">
           <v-row align="center" justify="center">
             <v-col cols="9">
               <v-autocomplete
