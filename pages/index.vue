@@ -1,7 +1,7 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-fade-transition leave-absolute>
+      <v-fade-transition hide-on-leave>
         <div v-if="currentEntry">
           <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
           <v-row align="center" justify="center" style="margin-bottom: 20px;">
@@ -17,7 +17,7 @@
           </v-row>
         </div>
       </v-fade-transition>
-      <v-fade-transition leave-absolute>
+      <v-fade-transition hide-on-leave>
         <div v-if="!currentEntry">
           <v-row align="center" justify="center">
             <v-col cols="9">
