@@ -1,58 +1,63 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <template v-if="currentEntry">
-        <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
-        <v-row align="center" justify="center" style="margin-bottom: 20px;">
-          <v-btn class="mx-2" fab small dark color="grey" :disabled="!canAction" @click="pause">
-            <v-icon dark>mdi-pause</v-icon>
-          </v-btn>
-          <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
-            <v-icon dark>mdi-check-bold</v-icon>
-          </v-btn>
-          <v-btn class="mx-2" fab small dark color="brown darken-1" :disabled="!canAction" @click="connectPrevious">
-            <v-icon dark>mdi-transit-connection-variant</v-icon>
-          </v-btn>
-        </v-row>
-      </template>
-      <template v-else>
-        <v-row align="center" justify="center">
-          <v-col cols="9">
-            <v-autocomplete
-              v-model="selectedEntry"
-              :items="candidatedEntries"
-              :menu-props="{ maxHeight: 220 }"
-              item-text="hashAsTask"
-              placeholder="Search entries past"
-              full-width
-              clearable
-              return-object
-            >
-              <template v-slot:selection="data">
-                <div style="padding: 5px;">
-                  <EntrySummary :entry="data.item" width="70vw" />
-                </div>
-              </template>
-              <template v-slot:item="data">
-                <div style="padding: 5px;">
-                  <EntrySummary :entry="data.item" />
-                </div>
-              </template>
-            </v-autocomplete>
-          </v-col>
-          <v-col cols="2">
-            <v-btn class="mx-2" fab small dark color="green" :disabled="!selectedEntry" @click="start(selectedEntry)">
-              <v-icon dark large>mdi-play</v-icon>
+      <v-slide-x-reverse-transition group leave-absolute>
+        <div v-if="currentEntry" key="has-entry">
+          <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
+          <v-row align="center" justify="center" style="margin-bottom: 20px;">
+            <v-btn class="mx-2" fab small dark color="grey" :disabled="!canAction" @click="pause">
+              <v-icon dark>mdi-pause</v-icon>
             </v-btn>
-          </v-col>
-        </v-row>
-      </template>
-      <v-row v-if="fetchingError" align="center" justify="center">
-        <div style="padding: 15px;">
-          <v-alert type="error">
-            {{ fetchingError.message }}
-          </v-alert>
+            <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
+              <v-icon dark>mdi-check-bold</v-icon>
+            </v-btn>
+            <v-btn class="mx-2" fab small dark color="brown darken-1" :disabled="!canAction" @click="connectPrevious">
+              <v-icon dark>mdi-transit-connection-variant</v-icon>
+            </v-btn>
+          </v-row>
         </div>
+        <div v-else key="has-not-entry">
+          <v-row align="center" justify="center">
+            <v-col cols="9">
+              <v-autocomplete
+                v-model="selectedEntry"
+                :items="candidatedEntries"
+                :menu-props="{ maxHeight: 220 }"
+                item-text="hashAsTask"
+                placeholder="Search entries past"
+                full-width
+                clearable
+                return-object
+              >
+                <template v-slot:selection="data">
+                  <div style="padding: 5px;">
+                    <EntrySummary :entry="data.item" width="70vw" />
+                  </div>
+                </template>
+                <template v-slot:item="data">
+                  <div style="padding: 5px;">
+                    <EntrySummary :entry="data.item" />
+                  </div>
+                </template>
+              </v-autocomplete>
+            </v-col>
+            <v-col cols="2">
+              <v-btn class="mx-2" fab small dark color="green" :disabled="!selectedEntry" @click="start(selectedEntry)">
+                <v-icon dark large>mdi-play</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+      </v-slide-x-reverse-transition>
+
+      <v-row v-if="fetchingError" align="center" justify="center">
+        <v-fade-transition>
+          <div style="padding: 15px;">
+            <v-alert type="error">
+              {{ fetchingError.message }}
+            </v-alert>
+          </div>
+        </v-fade-transition>
       </v-row>
     </v-flex>
 
