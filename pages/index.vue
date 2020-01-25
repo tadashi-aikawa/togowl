@@ -21,11 +21,11 @@
             <v-autocomplete
               v-model="selectedEntry"
               :items="candidatedEntries"
+              :menu-props="{ maxHeight: 220 }"
               item-text="hashAsTask"
+              placeholder="Search entries past"
               full-width
               clearable
-              open-on-clear
-              placeholder="Search entries past"
               return-object
             >
               <template v-slot:selection="data">
