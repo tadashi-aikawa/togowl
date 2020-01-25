@@ -21,7 +21,7 @@
             <v-autocomplete
               v-model="selectedEntry"
               :items="candidatedEntries"
-              item-text="description"
+              item-text="hashAsTask"
               full-width
               placeholder="Search entries past"
               return-object

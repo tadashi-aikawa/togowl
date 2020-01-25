@@ -83,9 +83,8 @@ class TimerModule extends VuexModule {
   }
 
   get candidatedEntries(): Entry[] {
-    const toKey = (e: Entry) => [e.description, e.project?.id, e.projectCategory?.id].join();
     return _(this.entries)
-      .groupBy(toKey)
+      .groupBy(x => x.hashAsTask)
       .values()
       .orderBy(es => es.length, 'desc')
       .map(es => es[0])

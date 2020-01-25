@@ -28,6 +28,10 @@ export class Entry implements Entity {
     return this.id.equals(entry?.id);
   }
 
+  get hashAsTask(): string {
+    return `${this.description}${this.project?.id.value}${this.projectCategory?.id.value}`;
+  }
+
   static create(args: Args): Entry {
     return new Entry(
       EntryId.create(args.id),
@@ -44,4 +48,4 @@ export class Entry implements Entity {
   }
 }
 
-export type PartialEntry = Partial<Omit<Entry, "id">>
+export type PartialEntry = Partial<Omit<Entry, 'id'>>;
