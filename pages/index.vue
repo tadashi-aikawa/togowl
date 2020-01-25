@@ -1,7 +1,7 @@
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
-      <v-slide-x-reverse-transition group leave-absolute>
+      <v-fade-transition group leave-absolute>
         <div v-if="currentEntry" key="has-entry">
           <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
           <v-row align="center" justify="center" style="margin-bottom: 20px;">
@@ -48,7 +48,7 @@
             </v-col>
           </v-row>
         </div>
-      </v-slide-x-reverse-transition>
+      </v-fade-transition>
 
       <v-row v-if="fetchingError" align="center" justify="center">
         <v-fade-transition>
