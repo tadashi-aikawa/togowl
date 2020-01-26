@@ -80,7 +80,7 @@
 
       <v-tab-item value="tabs-1">
         <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TimeEntry :entries="entries" :loading="isEntriesLoading" @on-click-start="start" />
+          <TimeEntries :entries="entries" :loading="isEntriesLoading" @on-click-start="start" />
         </v-sheet>
         <v-row v-if="entriesError" align="center" justify="center">
           <div style="padding: 15px;">
@@ -94,7 +94,7 @@
         <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
 
         <v-bottom-sheet v-if="currentCalendarEntry" v-model="calendarBottomSheet">
-          <TimeEntry :entries="[currentCalendarEntry]" @on-click-start="start" />
+          <TimeEntry :entry="currentCalendarEntry" @on-click-start="start" />
         </v-bottom-sheet>
       </v-tab-item>
       <v-tab-item value="tabs-3">???</v-tab-item>
@@ -125,9 +125,10 @@ import CurrentTimeEntry from '~/components/CurrentTimeEntry.vue';
 import TimeEntry from '~/components/TimeEntry.vue';
 import EntryCalendar from '~/components/EntryCalendar.vue';
 import EntrySummary from '~/components/EntrySummary.vue';
+import TimeEntries from '~/components/TimeEntries.vue';
 
 @Component({
-  components: { CurrentTimeEntry, TimeEntry, EntryCalendar, EntrySummary },
+  components: { CurrentTimeEntry, TimeEntry, TimeEntries, EntryCalendar, EntrySummary },
 })
 class Root extends Vue {
   snackbar = false;

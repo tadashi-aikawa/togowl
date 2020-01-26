@@ -1,32 +1,27 @@
 <template>
-  <v-slide-y-transition group tag="v-list">
-    <template v-for="entry in entries">
-      <v-list-item :key="entry.id.value">
-        <v-list-item-content>
-          <v-list-item-title>
-            <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
-          </v-list-item-title>
-          <v-list-item-subtitle class="sub-title">
-            <span style="padding: 0 4px 0 0;"
-              >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
-            >
-            <v-icon size="small">mdi-timer</v-icon>
-            <span>{{ entry.duration.asJapanese }}</span>
-          </v-list-item-subtitle>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-btn icon @click="handleClickPlayButton(entry)">
-            <v-icon large>mdi-play-circle-outline</v-icon>
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
-    </template>
-
-    <v-overlay key="loading" absolute :value="loading">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
-    </v-overlay>
-  </v-slide-y-transition>
+  <v-list>
+    <v-list-item :key="entry.id.value">
+      <v-list-item-content>
+        <v-list-item-title>
+          <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
+        </v-list-item-title>
+        <v-list-item-subtitle class="sub-title">
+          <span style="padding: 0 4px 0 0;"
+            >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
+          >
+          <v-icon size="small">mdi-timer</v-icon>
+          <span>{{ entry.duration.asJapanese }}</span>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <v-btn icon @click="handleClickPlayButton(entry)">
+          <v-icon large>mdi-play-circle-outline</v-icon>
+        </v-btn>
+      </v-list-item-action>
+    </v-list-item>
+  </v-list>
 </template>
+
 <script lang="ts">
 import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
 import { Entry } from '~/domain/timer/entity/Entry';
@@ -37,16 +32,7 @@ import EntrySummary from '~/components/EntrySummary.vue';
 })
 class TimeEntry extends Vue {
   @Prop()
-  entries: Entry[];
-
-  @Prop({ default: false })
-  loading: boolean;
-
-  toSubtitle(entry: Entry): string {
-    const project = entry.project?.nameWithoutBracket ?? '';
-    const projectCategory = entry.projectCategory?.nameWithoutBracket ?? '';
-    return projectCategory ? `${projectCategory} > ${project}` : project;
-  }
+  entry: Entry;
 
   handleClickPlayButton(entry: Entry) {
     this.$emit('on-click-start', entry);
