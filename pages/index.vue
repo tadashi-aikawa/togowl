@@ -94,7 +94,9 @@
         <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
 
         <v-bottom-sheet v-if="currentCalendarEntry" v-model="calendarBottomSheet">
-          <TimeEntry :entry="currentCalendarEntry" @on-click-start="start" />
+          <v-list>
+            <TimeEntry :entry="currentCalendarEntry" @on-click-start="start" />
+          </v-list>
         </v-bottom-sheet>
       </v-tab-item>
       <v-tab-item value="tabs-3">???</v-tab-item>

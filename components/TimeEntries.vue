@@ -1,5 +1,5 @@
 <template>
-  <v-slide-y-transition group>
+  <v-slide-y-transition group tag="v-list">
     <TimeEntry v-for="entry in entries" :key="entry.id.value" :entry="entry" @on-click-start="handleClickPlayButton" />
     <v-overlay key="loading" absolute :value="loading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>

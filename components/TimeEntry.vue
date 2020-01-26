@@ -1,25 +1,23 @@
 <template>
-  <v-list>
-    <v-list-item :key="entry.id.value">
-      <v-list-item-content>
-        <v-list-item-title>
-          <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
-        </v-list-item-title>
-        <v-list-item-subtitle class="sub-title">
-          <span style="padding: 0 4px 0 0;"
-            >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
-          >
-          <v-icon size="small">mdi-timer</v-icon>
-          <span>{{ entry.duration.asJapanese }}</span>
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-btn icon @click="handleClickPlayButton(entry)">
-          <v-icon large>mdi-play-circle-outline</v-icon>
-        </v-btn>
-      </v-list-item-action>
-    </v-list-item>
-  </v-list>
+  <v-list-item :key="entry.id.value">
+    <v-list-item-content>
+      <v-list-item-title>
+        <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
+      </v-list-item-title>
+      <v-list-item-subtitle class="sub-title">
+        <span style="padding: 0 4px 0 0;"
+          >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
+        >
+        <v-icon size="small">mdi-timer</v-icon>
+        <span>{{ entry.duration.asJapanese }}</span>
+      </v-list-item-subtitle>
+    </v-list-item-content>
+    <v-list-item-action>
+      <v-btn icon @click="handleClickPlayButton(entry)">
+        <v-icon large>mdi-play-circle-outline</v-icon>
+      </v-btn>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang="ts">
