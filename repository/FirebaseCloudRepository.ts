@@ -48,6 +48,10 @@ export function toTimerConfig(data: FirestoreTimer): TimerConfig {
   return TimerConfig.create(data.token, data.workspaceId, data.proxy);
 }
 
+export function toSlackConfig(data: FirestoreSlack): SlackConfig {
+  return SlackConfig.create(data.incomingWebHookUrl, data.notifyTo, data.proxy);
+}
+
 export function toProjectConfig(data: FirestoreProject): ProjectConfig {
   return ProjectConfig.create(
     _.mapValues(data, meta => ({
@@ -106,6 +110,20 @@ class FirebaseCloudRepository implements CloudRepository {
         return null;
       })
       .catch(err => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', 'Fail to save slack config.', err));
+  }
+
+  loadSlackConfig(): Promise<Either<TogowlError, SlackConfig>> {
+    return store
+      .collection('slack')
+      .doc(this.uid)
+      .get()
+      .then(x => {
+        const data = x.data() as FirestoreSlack;
+        return data
+          ? right(toSlackConfig(data))
+          : left(TogowlError.create('GET_SLACK_CONFIG_ERROR', 'Empty slack config.'));
+      })
+      .catch(err => left(TogowlError.create('GET_SLACK_CONFIG_ERROR', 'Fail to get slack config.', err)));
   }
 
   saveTimerConfig(config: TimerConfig): Promise<TogowlError | null> {

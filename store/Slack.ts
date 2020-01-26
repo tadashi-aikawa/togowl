@@ -1,14 +1,17 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { UId } from '~/domain/authentication/vo/UId';
-import { NotificationServiceImpl } from '~/domain/notification/service/NotificationServiceImpl';
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
-import { FirestoreSlack } from '~/repository/FirebaseCloudRepository';
+import { FirestoreSlack, toSlackConfig } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { ActionStatus } from '~/domain/common/ActionStatus';
 import { createAction } from '~/utils/firestore-facade';
+import { NotificationService } from '~/domain/notification/service/NotificationService';
+import { createNotificationService } from '~/utils/service-factory';
+import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
+import { fold } from '~/node_modules/fp-ts/lib/Either';
 
-const service = new NotificationServiceImpl();
+let service: NotificationService | null;
 
 /**
  * Concrete implementation by using firebase
@@ -16,18 +19,17 @@ const service = new NotificationServiceImpl();
 @Module({ name: 'Slack', namespaced: true, stateFactory: true })
 class SlackModule extends VuexModule {
   _slack: FirestoreSlack | null = null;
-  updateStatus: ActionStatus = 'init';
-  updateError: TogowlError | null = null;
-
   get slackConfig(): SlackConfig | null {
-    return SlackConfig.create(this._slack?.incomingWebHookUrl, this._slack?.notifyTo, this._slack?.proxy);
+    return this._slack ? toSlackConfig(this._slack) : null;
   }
 
+  updateStatus: ActionStatus = 'init';
   @Mutation
   setUpdateStatus(status: ActionStatus) {
     this.updateStatus = status;
   }
 
+  updateError: TogowlError | null = null;
   @Mutation
   setUpdateError(error: TogowlError | null) {
     this.updateError = error;
@@ -39,22 +41,28 @@ class SlackModule extends VuexModule {
     this.setUpdateStatus('in_progress');
 
     const err = await cloudRepository.saveSlackConfig(config);
-    if (err) {
+    if (!err) {
       this.setUpdateStatus('error');
       this.setUpdateError(err);
-    } else {
-      this.setUpdateStatus('success');
+      return;
     }
+
+    // TODO: extract & integrate?
+    pipe(
+      await createNotificationService(),
+      fold(
+        err => this.setUpdateError(err),
+        s => {
+          service = s;
+          this.setUpdateStatus('success');
+        },
+      ),
+    );
   }
 
   @Action
   async notifyToSlack(message: string): Promise<TogowlError | null> {
-    const config = this.slackConfig;
-    if (!config?.incomingWebHookUrl) {
-      return TogowlError.create('INCOMING_WEB_HOOK_URL_IS_EMPTY', 'Incoming web hook URL is required! It is empty!');
-    }
-
-    const err = await service.notifyToSlack(config.incomingWebHookUrl, message, config.notifyTo, config.proxy);
+    const err = await service!.notifyToSlack(message);
     if (err) {
       console.error(err.messageForLog);
       return TogowlError.create(err.code, err.message);
@@ -64,8 +72,20 @@ class SlackModule extends VuexModule {
   }
 
   @Action({ rawError: true })
-  init(uid: UId) {
+  async init(uid: UId) {
     createAction(uid.value, '_slack', 'slack')(this.context);
+
+    // TODO: extract & integrate?
+    pipe(
+      await createNotificationService(),
+      fold(
+        err => this.setUpdateError(err),
+        s => {
+          service = s;
+          this.setUpdateStatus('success');
+        },
+      ),
+    );
   }
 }
 

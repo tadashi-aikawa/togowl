@@ -11,6 +11,7 @@ interface CloudRepository {
   login(payload?: LoginPayload): Promise<Either<TogowlError, User>>;
   logout(): void;
   saveSlackConfig(config: SlackConfig): Promise<TogowlError | null>;
+  loadSlackConfig(): Promise<Either<TogowlError, SlackConfig>>;
   saveTimerConfig(config: TimerConfig): Promise<TogowlError | null>;
   loadTimerConfig(): Promise<Either<TogowlError, TimerConfig>>;
   loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>>;
