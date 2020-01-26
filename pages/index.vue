@@ -160,7 +160,7 @@ class Root extends Vue {
       await timerStore.startEntry(entry),
       fold(
         _err => {},
-        async startedEntry => {
+        async _entry => {
           const err = await notificationStore.notifyStartEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);

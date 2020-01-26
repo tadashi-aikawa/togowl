@@ -4,6 +4,8 @@ import { Url } from '~/domain/common/Url';
 import { NotificationService } from '~/domain/notification/service/NotificationService';
 import * as slack from '~/external/slack';
 import { Entry } from '~/domain/timer/entity/Entry';
+import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
+import { Project } from '~/domain/timer/entity/Project';
 
 export class NotificationServiceImpl implements NotificationService {
   constructor(public incomingWebHookUrl: Url, public channel?: ChannelName, public proxy?: string) {}
@@ -24,30 +26,31 @@ export class NotificationServiceImpl implements NotificationService {
   }
 
   start(entry: Entry): Promise<TogowlError | null> {
-    const project = `:card_index_dividers: \`${entry.project?.nameWithoutBracket ?? 'No Project'}\``;
-    const projectCategory = entry.projectCategory
-      ? `:busts_in_silhouette: \`${entry.projectCategory.nameWithoutBracket}\` > `
-      : '';
-    return this.notifyToSlack(`:tio2: \`開始\`  *${entry!.description}*    ${projectCategory}${project}`);
+    const footer = this.createFooter(entry.project, entry.projectCategory);
+    return this.notifyToSlack(`:tio2: \`開始\`  *${entry!.description}*    ${footer}`);
   }
 
   done(entry: Entry): Promise<TogowlError | null> {
-    const project = `:card_index_dividers: \`${entry.project?.nameWithoutBracket ?? 'No Project'}\``;
-    const projectCategory = entry.projectCategory
-      ? `:busts_in_silhouette: \`${entry.projectCategory.nameWithoutBracket}\` > `
-      : '';
-    return this.notifyToSlack(
-      `:renne: \`完了\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${projectCategory}${project}`,
-    );
+    const footer = this.createFooter(entry.project, entry.projectCategory);
+    return this.notifyToSlack(`:renne: \`完了\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`);
   }
 
   pause(entry: Entry): Promise<TogowlError | null> {
-    const project = `:card_index_dividers: \`${entry.project?.nameWithoutBracket ?? 'No Project'}\``;
-    const projectCategory = entry.projectCategory
-      ? `:busts_in_silhouette: \`${entry.projectCategory.nameWithoutBracket}\` > `
-      : '';
+    const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
-      `:zzz_kirby: \`中断\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${projectCategory}${project}`,
+      `:zzz_kirby: \`中断\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`,
     );
+  }
+
+  private createFooter(project?: Project, projectCategory?: ProjectCategory): string {
+    const projectEmoji = `:${project?.icon?.emoji ?? 'card_index_dividers'}:`;
+    const projectStr = `${projectEmoji} \`${project?.nameWithoutBracket ?? 'No Project'}\``;
+
+    const projectCategoryEmoji = `:${projectCategory?.icon?.emoji ?? 'busts_in_silhouette'}:`;
+    const projectCategoryStr = projectCategory
+      ? `${projectCategoryEmoji} \`${projectCategory.nameWithoutBracket}\` > `
+      : '';
+
+    return `${projectCategoryStr}${projectStr}`;
   }
 }

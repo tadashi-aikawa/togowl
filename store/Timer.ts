@@ -228,7 +228,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(null);
-          return right(entry);
+          return right(addMetaToEntry(entry, this.projectConfig, this.projectCategoryConfig));
         },
       ),
     );
@@ -254,7 +254,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(null);
-          return right(entry);
+          return right(addMetaToEntry(entry, this.projectConfig, this.projectCategoryConfig));
         },
       ),
     );
@@ -283,7 +283,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(entry);
-          return right(entry);
+          return right(addMetaToEntry(entry, this.projectConfig, this.projectCategoryConfig));
         },
       ),
     );
