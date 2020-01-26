@@ -25,7 +25,7 @@ import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 
 let service: TimerService | null;
 
-const MAX_HISTORY_DAYS = 7;
+const MAX_HISTORY_DAYS = 10;
 
 function addMetaToEntry(
   entry: Entry,
