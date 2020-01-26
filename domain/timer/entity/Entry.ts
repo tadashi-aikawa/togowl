@@ -46,6 +46,10 @@ export class Entry implements Entity {
   get projectCategory(): ProjectCategory | undefined {
     return this.project?.category;
   }
+
+  cloneWithProject(project?: Project): Entry {
+    return new Entry(this.id, this.description, this.start, this.duration, this.stop, project);
+  }
 }
 
 export type PartialEntry = Partial<Omit<Entry, 'id'>>;

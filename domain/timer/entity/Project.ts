@@ -3,9 +3,10 @@ import { ProjectName } from '~/domain/timer/vo/ProjectlName';
 import { Entity } from '~/utils/entity';
 import { trimBracketContents } from '~/utils/string';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
+import { Icon } from '~/domain/common/Icon';
 
 export class Project implements Entity {
-  constructor(public id: ProjectId, public name: ProjectName, public category?: ProjectCategory) {}
+  constructor(public id: ProjectId, public name: ProjectName, public icon?: Icon, public category?: ProjectCategory) {}
 
   equals(entity?: Project): boolean {
     return this.id.equals(entity?.id);
@@ -13,5 +14,9 @@ export class Project implements Entity {
 
   get nameWithoutBracket(): string {
     return trimBracketContents(this.name.value);
+  }
+
+  cloneWith(icon?: Icon, category?: ProjectCategory): Project {
+    return new Project(this.id, this.name, icon, category);
   }
 }

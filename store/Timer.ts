@@ -1,7 +1,5 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import _ from 'lodash';
-import firebase from '~/plugins/firebase';
-import { firestoreAction } from '~/node_modules/vuexfire';
 import { UId } from '~/domain/authentication/vo/UId';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { TimerService } from '~/domain/timer/service/TimerService';
@@ -10,17 +8,36 @@ import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { Entry } from '~/domain/timer/entity/Entry';
 import { createTimerService } from '~/utils/service-factory';
-import { FirestoreTimer } from '~/repository/FirebaseCloudRepository';
+import {
+  FirestoreProject,
+  FirestoreProjectCategory,
+  FirestoreTimer,
+  toProjectCategoryConfig,
+  toProjectConfig,
+} from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
 import { ActionStatus } from '~/domain/common/ActionStatus';
 import { DateTime } from '~/domain/common/DateTime';
-import { ProjectId } from '~/domain/timer/vo/ProjectId';
-import { Icon } from '~/domain/common/Icon';
+import { createAction } from '~/utils/firestore-facade';
+import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
+import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 
-const firestore = firebase.firestore();
 let service: TimerService | null;
 
 const MAX_HISTORY_DAYS = 7;
+
+function addMetaToEntry(
+  entry: Entry,
+  projectConfig: ProjectConfig | null,
+  projectCategoryConfig: ProjectCategoryConfig | null,
+): Entry {
+  return entry.cloneWithProject(
+    entry.project?.cloneWith(
+      projectConfig?.getIcon(entry.project?.id),
+      entry.projectCategory?.cloneWith(projectCategoryConfig?.getIcon(entry.projectCategory?.id)),
+    ),
+  );
+}
 
 /**
  * Concrete implementation by using firebase
@@ -28,47 +45,29 @@ const MAX_HISTORY_DAYS = 7;
 @Module({ name: 'Timer', namespaced: true, stateFactory: true })
 class TimerModule extends VuexModule {
   private _timer: FirestoreTimer | null = null;
+  private _project: FirestoreProject | null = null;
+  private _projectCategory: FirestoreProjectCategory | null = null;
 
-  updateStatus: ActionStatus = 'init';
-  @Mutation
-  setUpdateStatus(status: ActionStatus) {
-    this.updateStatus = status;
+  get timerConfig(): TimerConfig | null {
+    return this._timer ? TimerConfig.create(this._timer?.token, this._timer?.workspaceId, this._timer?.proxy) : null;
   }
 
-  updateError: TogowlError | null = null;
-  @Mutation
-  setUpdateError(error: TogowlError | null) {
-    this.updateError = error;
+  get projectConfig(): ProjectConfig | null {
+    return this._project ? toProjectConfig(this._project) : null;
   }
 
-  realtime: boolean = false;
-  @Mutation
-  setRealtime(realtime: boolean) {
-    this.realtime = realtime;
+  get projectCategoryConfig(): ProjectCategoryConfig | null {
+    return this._projectCategory ? toProjectCategoryConfig(this._projectCategory) : null;
   }
 
-  currentEntry: Entry | null = null;
-  @Mutation
-  setCurrentEntry(entry: Entry | null) {
-    this.currentEntry = entry;
+  get currentEntry(): Entry | null {
+    return this._currentEntry
+      ? addMetaToEntry(this._currentEntry, this.projectConfig, this.projectCategoryConfig)
+      : null;
   }
 
-  fetchingStatus: ActionStatus = 'init';
-  @Mutation
-  setFetchingStatus(status: ActionStatus) {
-    this.fetchingStatus = status;
-  }
-
-  fetchingError: TogowlError | null = null;
-  @Mutation
-  setFetchingError(error: TogowlError | null) {
-    this.fetchingError = error;
-  }
-
-  entries: Entry[] | null = null;
-  @Mutation
-  setEntries(entries: Entry[] | null) {
-    this.entries = entries;
+  get entries(): Entry[] {
+    return this._entries?.map(e => addMetaToEntry(e, this.projectConfig, this.projectCategoryConfig)) ?? [];
   }
 
   get entriesWithinDay(): Entry[] {
@@ -91,6 +90,48 @@ class TimerModule extends VuexModule {
       .value();
   }
 
+  updateStatus: ActionStatus = 'init';
+  @Mutation
+  setUpdateStatus(status: ActionStatus) {
+    this.updateStatus = status;
+  }
+
+  updateError: TogowlError | null = null;
+  @Mutation
+  setUpdateError(error: TogowlError | null) {
+    this.updateError = error;
+  }
+
+  realtime: boolean = false;
+  @Mutation
+  setRealtime(realtime: boolean) {
+    this.realtime = realtime;
+  }
+
+  _currentEntry: Entry | null = null;
+  @Mutation
+  setCurrentEntry(entry: Entry | null) {
+    this._currentEntry = entry;
+  }
+
+  fetchingStatus: ActionStatus = 'init';
+  @Mutation
+  setFetchingStatus(status: ActionStatus) {
+    this.fetchingStatus = status;
+  }
+
+  fetchingError: TogowlError | null = null;
+  @Mutation
+  setFetchingError(error: TogowlError | null) {
+    this.fetchingError = error;
+  }
+
+  _entries: Entry[] | null = null;
+  @Mutation
+  setEntries(entries: Entry[] | null) {
+    this._entries = entries;
+  }
+
   entriesStatus: ActionStatus = 'init';
   @Mutation
   setEntriesStatus(status: ActionStatus) {
@@ -101,20 +142,6 @@ class TimerModule extends VuexModule {
   @Mutation
   setEntriesError(error: TogowlError | null) {
     this.entriesError = error;
-  }
-
-  get timerConfig(): TimerConfig | null {
-    if (!this._timer) {
-      return null;
-    }
-
-    return TimerConfig.create(
-      this._timer?.token,
-      this._timer?.workspaceId,
-      this._timer?.proxy,
-      _.mapValues(this._timer!.iconByProject, obj => Icon.create(obj)),
-      _.mapValues(this._timer!.iconByProjectCategory, obj => Icon.create(obj)),
-    );
   }
 
   @Action
@@ -333,12 +360,9 @@ class TimerModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    const action = firestoreAction(({ bindFirestoreRef }) => {
-      return bindFirestoreRef('_timer', firestore.doc(`timer/${uid.value}`));
-    }) as Function;
-
-    // Call function that firebaseAction returns
-    action(this.context);
+    createAction(uid.value, '_timer', 'timer')(this.context);
+    createAction(uid.value, '_project', 'projects')(this.context);
+    createAction(uid.value, '_projectCategory', 'projectCategories')(this.context);
     await this.updateService();
   }
 }

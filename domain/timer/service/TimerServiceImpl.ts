@@ -237,6 +237,7 @@ export class TimerServiceImpl implements TimerService {
     return new Project(
       ProjectId.create(project.id),
       ProjectName.create(project.name),
+      undefined,
       project.cid ? projectCategoryById[project.cid] : undefined,
     );
   }

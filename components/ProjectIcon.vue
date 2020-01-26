@@ -16,16 +16,12 @@ class ProjectIcon extends Vue {
   projectCategoryAsDefault: boolean;
 
   get src(): Icon {
-    const projectIcon = timerStore.timerConfig?.getProjectIcon(this.project.id);
-    if (projectIcon) {
-      return projectIcon;
+    if (this.project.icon) {
+      return this.project.icon;
     }
 
-    if (this.projectCategoryAsDefault && this.project.category) {
-      const projectCategoryIcon = timerStore.timerConfig?.getProjectCategoryIcon(this.project.category.id);
-      if (projectCategoryIcon) {
-        return projectCategoryIcon;
-      }
+    if (this.projectCategoryAsDefault && this.project.category?.icon) {
+      return this.project.category.icon;
     }
 
     return Icon.create({

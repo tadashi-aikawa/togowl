@@ -10,6 +10,8 @@ import { UserName } from '~/domain/authentication/vo/UserName';
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
 import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 import { Icon } from '~/domain/common/Icon';
+import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
+import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 
 export interface FirestoreSlack {
   notifyTo?: string;
@@ -21,18 +23,40 @@ export interface FirestoreTimer {
   token?: string;
   workspaceId?: number;
   proxy?: string;
-  iconByProject?: {
-    [projectId: string]: {
+}
+
+export interface FirestoreProject {
+  [projectId: string]: {
+    icon?: {
       url?: string;
       emoji?: string;
     };
   };
-  iconByProjectCategory?: {
-    [projectCategoryId: string]: {
+}
+
+export interface FirestoreProjectCategory {
+  [projectCategoryId: string]: {
+    icon?: {
       url?: string;
       emoji?: string;
     };
   };
+}
+
+export function toProjectConfig(data: FirestoreProject): ProjectConfig {
+  return ProjectConfig.create(
+    _.mapValues(data, meta => ({
+      icon: meta.icon ? Icon.create(meta.icon) : undefined,
+    })),
+  );
+}
+
+export function toProjectCategoryConfig(data: FirestoreProjectCategory): ProjectCategoryConfig {
+  return ProjectCategoryConfig.create(
+    _.mapValues(data, meta => ({
+      icon: meta.icon ? Icon.create(meta.icon) : undefined,
+    })),
+  );
 }
 
 class FirebaseCloudRepository implements CloudRepository {
@@ -86,8 +110,6 @@ class FirebaseCloudRepository implements CloudRepository {
       token: config.token,
       workspaceId: config.workspaceId,
       proxy: config.proxy,
-      iconByProject: config.iconByProject,
-      iconByProjectCategory: config.iconByProjectCategory,
     };
     return firebase
       .firestore()
@@ -100,7 +122,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch(err => TogowlError.create('SAVE_TIMER_CONFIG_ERROR', 'Fail to save timer config.', err));
   }
 
-  getTimerConfig(): Promise<Either<TogowlError, TimerConfig>> {
+  loadTimerConfig(): Promise<Either<TogowlError, TimerConfig>> {
     return firebase
       .firestore()
       .collection('timer')
@@ -108,19 +130,46 @@ class FirebaseCloudRepository implements CloudRepository {
       .get()
       .then(x => {
         const data = x.data() as FirestoreTimer;
+        // TODO: refactoring (integrate to outer)
         return data
-          ? right(
-              TimerConfig.create(
-                data.token,
-                data.workspaceId,
-                data.proxy,
-                _.mapValues(data.iconByProject, obj => Icon.create(obj)),
-                _.mapValues(data.iconByProjectCategory, obj => Icon.create(obj)),
-              ),
-            )
+          ? right(TimerConfig.create(data.token, data.workspaceId, data.proxy))
           : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
       })
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
+  }
+
+  loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>> {
+    return firebase
+      .firestore()
+      .collection('projects')
+      .doc(this.uid)
+      .get()
+      .then(x => {
+        const data = x.data() as FirestoreProject;
+        // TODO: Refactoring (Meta.create?)
+        return data
+          ? right(toProjectConfig(data))
+          : left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Empty project config.'));
+      })
+      .catch(err => left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Fail to get project config.', err)));
+  }
+
+  loadProjectCategoryConfig(): Promise<Either<TogowlError, ProjectCategoryConfig>> {
+    return firebase
+      .firestore()
+      .collection('projectCategories')
+      .doc(this.uid)
+      .get()
+      .then(x => {
+        const data = x.data() as FirestoreProjectCategory;
+        // TODO: Refactoring (Meta.create?)
+        return data
+          ? right(toProjectCategoryConfig(data))
+          : left(TogowlError.create('GET_PROJECT_CATEGORY_CONFIG_ERROR', 'Empty project category config.'));
+      })
+      .catch(err =>
+        left(TogowlError.create('GET_PROJECT_CATEGORY_CONFIG_ERROR', 'Fail to get project category config.', err)),
+      );
   }
 }
 
