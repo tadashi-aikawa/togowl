@@ -1,5 +1,5 @@
 rules_version = '2';
-service cloud.firestoreFacade {
+service cloud.firestore {
   match /databases/{database}/documents {
     // Allow only authenticated content owners access
     match /projects/{userId}/{documents=**} {
