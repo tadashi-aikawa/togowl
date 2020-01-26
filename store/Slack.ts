@@ -10,6 +10,7 @@ import { NotificationService } from '~/domain/notification/service/NotificationS
 import { createNotificationService } from '~/utils/service-factory';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
+import { Entry } from '~/domain/timer/entity/Entry';
 
 let service: NotificationService | null;
 
@@ -41,7 +42,7 @@ class SlackModule extends VuexModule {
     this.setUpdateStatus('in_progress');
 
     const err = await cloudRepository.saveSlackConfig(config);
-    if (!err) {
+    if (err) {
       this.setUpdateStatus('error');
       this.setUpdateError(err);
       return;
@@ -61,14 +62,30 @@ class SlackModule extends VuexModule {
   }
 
   @Action
-  async notifyToSlack(message: string): Promise<TogowlError | null> {
-    const err = await service!.notifyToSlack(message);
+  async notifyStartEvent(entry: Entry): Promise<TogowlError | undefined> {
+    const err = await service!.start(entry);
     if (err) {
       console.error(err.messageForLog);
       return TogowlError.create(err.code, err.message);
     }
+  }
 
-    return null;
+  @Action
+  async notifyDoneEvent(entry: Entry): Promise<TogowlError | undefined> {
+    const err = await service!.done(entry);
+    if (err) {
+      console.error(err.messageForLog);
+      return TogowlError.create(err.code, err.message);
+    }
+  }
+
+  @Action
+  async notifyPauseEvent(entry: Entry): Promise<TogowlError | undefined> {
+    const err = await service!.pause(entry);
+    if (err) {
+      console.error(err.messageForLog);
+      return TogowlError.create(err.code, err.message);
+    }
   }
 
   @Action({ rawError: true })

@@ -209,7 +209,7 @@ class TimerModule extends VuexModule {
   }
 
   @Action
-  async completeCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+  async completeCurrentEntry(): Promise<Either<TogowlError, Entry>> {
     // TODO: Complete Todoist task and Add complete tag to toggl entry
     const config = this.timerConfig;
     if (!config?.token) {

@@ -147,17 +147,10 @@ class Root extends Vue {
     this.calendarBottomSheet = true;
   }
 
-  async notify(message: string) {
-    const err = await notificationStore.notifyToSlack(message);
-
+  showSnackBar(message: string, error: boolean) {
+    this.snackMessage = message;
+    this.snackbarColor = error ? 'error' : null;
     this.snackbar = true;
-    if (err) {
-      this.snackMessage = err.message;
-      this.snackbarColor = 'error';
-    } else {
-      this.snackMessage = `Notify to ${notificationStore.slackConfig?.notifyTo?.value}`;
-      this.snackbarColor = null;
-    }
   }
 
   async start(entry: Entry) {
@@ -167,13 +160,11 @@ class Root extends Vue {
       await timerStore.startEntry(entry),
       fold(
         _err => {},
-        startedEntry => {
-          // FIXME: Move NotificationService as domain service
-          const project = `:card_index_dividers: \`${startedEntry.project?.nameWithoutBracket ?? 'No Project'}\``;
-          const projectCategory = startedEntry.projectCategory
-            ? `:busts_in_silhouette: \`${startedEntry.projectCategory.nameWithoutBracket}\` > `
-            : '';
-          this.notify(`:tio2: \`開始\`  *${startedEntry!.description}*    ${projectCategory}${project}`);
+        async startedEntry => {
+          const err = await notificationStore.notifyStartEvent(entry);
+          if (err) {
+            this.showSnackBar(err.message, true);
+          }
         },
       ),
     );
@@ -187,17 +178,11 @@ class Root extends Vue {
       await timerStore.completeCurrentEntry(),
       fold(
         _err => {},
-        stoppedEntry => {
-          // FIXME: Move NotificationService as domain service
-          const project = `:card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``;
-          const projectCategory = stoppedEntry!.projectCategory
-            ? `:busts_in_silhouette: \`${stoppedEntry!.projectCategory.nameWithoutBracket}\` > `
-            : '';
-          this.notify(
-            `:renne: \`完了\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
-              stoppedEntry!.description
-            }*    ${projectCategory}${project}`,
-          );
+        async entry => {
+          const err = await notificationStore.notifyDoneEvent(entry);
+          if (err) {
+            this.showSnackBar(err.message, true);
+          }
         },
       ),
     );
@@ -210,17 +195,11 @@ class Root extends Vue {
       await timerStore.completeCurrentEntry(),
       fold(
         _err => {},
-        stoppedEntry => {
-          // FIXME: Move NotificationService as domain service
-          const project = `:card_index_dividers: \`${stoppedEntry!.project?.nameWithoutBracket ?? 'No Project'}\``;
-          const projectCategory = stoppedEntry!.projectCategory
-            ? `:busts_in_silhouette: \`${stoppedEntry!.projectCategory.nameWithoutBracket}\` > `
-            : '';
-          this.notify(
-            `:zzz_kirby: \`中断\` \`⏱${stoppedEntry!.duration.asJapanese}\` *${
-              stoppedEntry!.description
-            }*    ${projectCategory}${project}`,
-          );
+        async entry => {
+          const err = await notificationStore.notifyPauseEvent(entry);
+          if (err) {
+            this.showSnackBar(err.message, true);
+          }
         },
       ),
     );

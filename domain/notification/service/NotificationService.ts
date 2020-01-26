@@ -1,7 +1,8 @@
-import { ChannelName } from '~/domain/notification/vo/ChannelName';
 import { TogowlError } from '~/domain/common/TogowlError';
-import { Url } from '~/domain/common/Url';
+import { Entry } from '~/domain/timer/entity/Entry';
 
 export interface NotificationService {
-  notifyToSlack: (message: string) => Promise<TogowlError | null>;
+  start: (entry: Entry) => Promise<TogowlError | null>;
+  done: (entry: Entry) => Promise<TogowlError | null>;
+  pause: (entry: Entry) => Promise<TogowlError | null>;
 }
