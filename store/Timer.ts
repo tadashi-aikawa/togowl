@@ -14,6 +14,7 @@ import {
   FirestoreTimer,
   toProjectCategoryConfig,
   toProjectConfig,
+  toTimerConfig,
 } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
 import { ActionStatus } from '~/domain/common/ActionStatus';
@@ -49,7 +50,7 @@ class TimerModule extends VuexModule {
   private _projectCategory: FirestoreProjectCategory | null = null;
 
   get timerConfig(): TimerConfig | null {
-    return this._timer ? TimerConfig.create(this._timer?.token, this._timer?.workspaceId, this._timer?.proxy) : null;
+    return this._timer ? toTimerConfig(this._timer) : null;
   }
 
   get projectConfig(): ProjectConfig | null {

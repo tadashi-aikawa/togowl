@@ -12,6 +12,7 @@ import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 import { Icon } from '~/domain/common/Icon';
 import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
+import { store } from '~/utils/firestore-facade';
 
 export interface FirestoreSlack {
   notifyTo?: string;
@@ -41,6 +42,10 @@ export interface FirestoreProjectCategory {
       emoji?: string;
     };
   };
+}
+
+export function toTimerConfig(data: FirestoreTimer): TimerConfig {
+  return TimerConfig.create(data.token, data.workspaceId, data.proxy);
 }
 
 export function toProjectConfig(data: FirestoreProject): ProjectConfig {
@@ -73,8 +78,7 @@ class FirebaseCloudRepository implements CloudRepository {
       }
 
       this.uid = user.uid!;
-      const userDoc = await firebase
-        .firestore()
+      const userDoc = await store
         .collection('users')
         .doc(this.uid)
         .get();
@@ -94,8 +98,7 @@ class FirebaseCloudRepository implements CloudRepository {
       notifyTo: config.notifyTo?.value,
       proxy: config.proxy,
     };
-    return firebase
-      .firestore()
+    return store
       .collection('slack')
       .doc(this.uid)
       .set(document)
@@ -111,8 +114,7 @@ class FirebaseCloudRepository implements CloudRepository {
       workspaceId: config.workspaceId,
       proxy: config.proxy,
     };
-    return firebase
-      .firestore()
+    return store
       .collection('timer')
       .doc(this.uid)
       .set(document)
@@ -123,30 +125,26 @@ class FirebaseCloudRepository implements CloudRepository {
   }
 
   loadTimerConfig(): Promise<Either<TogowlError, TimerConfig>> {
-    return firebase
-      .firestore()
+    return store
       .collection('timer')
       .doc(this.uid)
       .get()
       .then(x => {
         const data = x.data() as FirestoreTimer;
-        // TODO: refactoring (integrate to outer)
         return data
-          ? right(TimerConfig.create(data.token, data.workspaceId, data.proxy))
+          ? right(toTimerConfig(data))
           : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
       })
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
   }
 
   loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>> {
-    return firebase
-      .firestore()
+    return store
       .collection('projects')
       .doc(this.uid)
       .get()
       .then(x => {
         const data = x.data() as FirestoreProject;
-        // TODO: Refactoring (Meta.create?)
         return data
           ? right(toProjectConfig(data))
           : left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Empty project config.'));
@@ -155,14 +153,12 @@ class FirebaseCloudRepository implements CloudRepository {
   }
 
   loadProjectCategoryConfig(): Promise<Either<TogowlError, ProjectCategoryConfig>> {
-    return firebase
-      .firestore()
+    return store
       .collection('projectCategories')
       .doc(this.uid)
       .get()
       .then(x => {
         const data = x.data() as FirestoreProjectCategory;
-        // TODO: Refactoring (Meta.create?)
         return data
           ? right(toProjectCategoryConfig(data))
           : left(TogowlError.create('GET_PROJECT_CATEGORY_CONFIG_ERROR', 'Empty project category config.'));
