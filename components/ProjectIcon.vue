@@ -5,7 +5,6 @@
 import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
 import { Project } from '~/domain/timer/entity/Project';
 import { Icon } from '~/domain/common/Icon';
-import { timerStore } from '~/utils/store-accessor';
 
 @Component({})
 class ProjectIcon extends Vue {
