@@ -1,6 +1,4 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import firebase from '~/plugins/firebase';
-import { firestoreAction } from '~/node_modules/vuexfire';
 import { UId } from '~/domain/authentication/vo/UId';
 import { NotificationServiceImpl } from '~/domain/notification/service/NotificationServiceImpl';
 import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
@@ -8,9 +6,9 @@ import { FirestoreSlack } from '~/repository/FirebaseCloudRepository';
 import { cloudRepository } from '~/store/index';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { ActionStatus } from '~/domain/common/ActionStatus';
+import { createAction } from '~/utils/firestore-facade';
 
 const service = new NotificationServiceImpl();
-const firestore = firebase.firestore();
 
 /**
  * Concrete implementation by using firebase
@@ -67,12 +65,7 @@ class SlackModule extends VuexModule {
 
   @Action({ rawError: true })
   init(uid: UId) {
-    const action = firestoreAction(({ bindFirestoreRef }) => {
-      return bindFirestoreRef('_slack', firestore.doc(`slack/${uid.value}`));
-    }) as Function;
-
-    // Call function that firebaseAction returns
-    return action(this.context);
+    createAction(uid.value, '_slack', 'slack')(this.context);
   }
 }
 

@@ -1,11 +1,8 @@
 import { Action, Module, VuexModule } from 'vuex-module-decorators';
 import { User } from '~/domain/authentication/vo/User';
-import firebase from '~/plugins/firebase';
-import { firestoreAction } from '~/node_modules/vuexfire';
 import { UId } from '~/domain/authentication/vo/UId';
 import { UserName } from '~/domain/authentication/vo/UserName';
-
-const firestore = firebase.firestore();
+import { createAction } from '~/utils/firestore-facade';
 
 interface FirestoreUser {
   id: string;
@@ -25,12 +22,7 @@ class CloudUserModule extends VuexModule {
 
   @Action({ rawError: true })
   init(uid: UId) {
-    const action = firestoreAction(({ bindFirestoreRef }) => {
-      return bindFirestoreRef('_user', firestore.doc(`users/${uid.value}`));
-    }) as Function;
-
-    // Call function that firebaseAction returns
-    return action(this.context);
+    createAction(uid.value, '_user', 'users')(this.context);
   }
 }
 
