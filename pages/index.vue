@@ -181,6 +181,7 @@ class Root extends Vue {
       fold(
         _err => {},
         async entry => {
+          this.selectedEntry = null;
           const err = await notificationStore.notifyDoneEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);
@@ -198,6 +199,7 @@ class Root extends Vue {
       fold(
         _err => {},
         async entry => {
+          this.selectedEntry = null;
           const err = await notificationStore.notifyPauseEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);
