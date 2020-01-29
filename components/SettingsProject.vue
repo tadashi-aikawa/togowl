@@ -3,7 +3,7 @@
     <v-treeview :items="projectCategories" item-key="key" open-on-click>
       <template v-slot:prepend="{ item, open }">
         <v-avatar size="14px" style="margin-right: 5px;">
-          <img v-if="item.node.icon" :src="item.node.icon.url" />
+          <img v-if="hasIconUrl(item)" :src="item.node.icon.url" />
           <v-icon v-else small color="grey">mdi-help-circle-outline</v-icon>
         </v-avatar>
         <span v-text="item.node.name.value" />
@@ -40,10 +40,12 @@ interface ProjectCategoryItem {
   children: ProjectItem[];
 }
 
+type Item = ProjectItem | ProjectCategoryItem;
+
 @Component({ components: { SettingsProjectEdit } })
 class SettingsProject extends Vue {
   bottomSheet = false;
-  currentItem: ProjectItem | ProjectCategoryItem | null = null;
+  currentItem: Item | null = null;
 
   async mounted() {
     await timerStore.fetchProjects();
@@ -81,6 +83,10 @@ class SettingsProject extends Vue {
     }
     this.currentItem = null;
     this.bottomSheet = false;
+  }
+
+  hasIconUrl(item: Item): boolean {
+    return !!item.node.icon?.url;
   }
 }
 export default SettingsProject;
