@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="entry" :style="{ width: width }" v-text="title" />
-    <ProjectSummary :project="entry.project" />
+    <ProjectSummary v-if="entry.project" :project="entry.project" />
   </div>
 </template>
 <script lang="ts">

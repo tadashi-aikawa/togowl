@@ -7,7 +7,7 @@
       <span v-text="projectCategoryName" />
       <span style="margin: 0 2px;">></span>
     </template>
-    <v-avatar v-if="project" tile size="14px">
+    <v-avatar tile size="14px">
       <ProjectIcon :project="project" />
     </v-avatar>
     <span v-text="projectName" />
@@ -28,7 +28,7 @@ class ProjectSummary extends Vue {
   width: string;
 
   get projectName(): string {
-    return this.project?.nameWithoutBracket ?? '';
+    return this.project.nameWithoutBracket ?? '';
   }
 
   get projectCategoryName(): string {
