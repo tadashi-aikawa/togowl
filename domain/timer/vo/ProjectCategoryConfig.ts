@@ -21,7 +21,15 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     return new ProjectCategoryConfig(args);
   }
 
+  get value(): Props {
+    return this._value!;
+  }
+
   getIcon(projectCategoryId: ProjectCategoryId): Icon | undefined {
     return this._value?.[projectCategoryId.value]?.icon;
+  }
+
+  cloneWith(projectCategoryId: ProjectCategoryId, icon?: Icon): ProjectCategoryConfig {
+    return ProjectCategoryConfig.create({ ...this.value, [projectCategoryId.value]: { icon } });
   }
 }

@@ -15,7 +15,7 @@ export class Icon extends ValueObject<Props> {
   static create(args: Args): Icon {
     return new Icon({
       url: args.url ? Url.create(args.url) : undefined,
-      emoji: args.emoji,
+      emoji: args.emoji || undefined,
     });
   }
 

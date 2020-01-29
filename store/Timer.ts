@@ -1,5 +1,6 @@
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import _ from 'lodash';
+import { Dictionary } from 'lodash';
 import { UId } from '~/domain/authentication/vo/UId';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { TimerService } from '~/domain/timer/service/TimerService';
@@ -22,10 +23,30 @@ import { DateTime } from '~/domain/common/DateTime';
 import { createAction } from '~/utils/firestore-facade';
 import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
+import { Project } from '~/domain/timer/entity/Project';
+import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 
 let service: TimerService | null;
 
 const MAX_HISTORY_DAYS = 10;
+
+function addMetaToProjectCategory(
+  projectCategory: ProjectCategory,
+  projectCategoryConfig: ProjectCategoryConfig | null,
+): ProjectCategory {
+  return projectCategory.cloneWith(projectCategoryConfig?.getIcon(projectCategory.id));
+}
+
+function addMetaToProject(
+  project: Project,
+  projectConfig: ProjectConfig | null,
+  projectCategoryConfig: ProjectCategoryConfig | null,
+): Project {
+  return project.cloneWith(
+    projectConfig?.getIcon(project.id),
+    project.category ? addMetaToProjectCategory(project.category, projectCategoryConfig) : undefined,
+  );
+}
 
 function addMetaToEntry(
   entry: Entry,
@@ -33,10 +54,7 @@ function addMetaToEntry(
   projectCategoryConfig: ProjectCategoryConfig | null,
 ): Entry {
   return entry.cloneWithProject(
-    entry.project?.cloneWith(
-      projectConfig?.getIcon(entry.project?.id),
-      entry.projectCategory?.cloneWith(projectCategoryConfig?.getIcon(entry.projectCategory?.id)),
-    ),
+    entry.project ? addMetaToProject(entry.project, projectConfig, projectCategoryConfig) : undefined,
   );
 }
 
@@ -91,6 +109,14 @@ class TimerModule extends VuexModule {
       .value();
   }
 
+  get projects(): Project[] {
+    return this._projects?.map(p => addMetaToProject(p, this.projectConfig, this.projectCategoryConfig)) ?? [];
+  }
+
+  get projectsGroupByCategory(): Dictionary<Project[]> {
+    return _.groupBy(this.projects, p => p.category?.id.value);
+  }
+
   updateStatus: ActionStatus = 'init';
   @Mutation
   setUpdateStatus(status: ActionStatus) {
@@ -109,7 +135,7 @@ class TimerModule extends VuexModule {
     this.realtime = realtime;
   }
 
-  _currentEntry: Entry | null = null;
+  private _currentEntry: Entry | null = null;
   @Mutation
   setCurrentEntry(entry: Entry | null) {
     this._currentEntry = entry;
@@ -127,7 +153,7 @@ class TimerModule extends VuexModule {
     this.fetchingError = error;
   }
 
-  _entries: Entry[] | null = null;
+  private _entries: Entry[] | null = null;
   @Mutation
   setEntries(entries: Entry[] | null) {
     this._entries = entries;
@@ -145,6 +171,24 @@ class TimerModule extends VuexModule {
     this.entriesError = error;
   }
 
+  private _projects: Project[] | null = null;
+  @Mutation
+  setProjects(projects: Project[] | null) {
+    this._projects = projects;
+  }
+
+  projectsStatus: ActionStatus = 'init';
+  @Mutation
+  setProjectsStatus(status: ActionStatus) {
+    this.projectsStatus = status;
+  }
+
+  projectsError: TogowlError | null = null;
+  @Mutation
+  setProjectsError(error: TogowlError | null) {
+    this.projectsError = error;
+  }
+
   @Action
   async updateTimerConfig(config: TimerConfig) {
     this.setUpdateError(null);
@@ -158,6 +202,28 @@ class TimerModule extends VuexModule {
     } else {
       await this.updateService();
       this.setUpdateStatus('success');
+    }
+  }
+
+  @Action({ rawError: true })
+  async updateProject(project: Project) {
+    // TODO: status
+    const err = await cloudRepository.saveProjectConfig(this.projectConfig!.cloneWith(project.id, project.icon));
+    if (err) {
+      // TODO: Show on UI
+      console.error('Failure to updateProject');
+    }
+  }
+
+  @Action({ rawError: true })
+  async updateProjectCategory(projectCategory: ProjectCategory) {
+    // TODO: status
+    const err = await cloudRepository.saveProjectCategoryConfig(
+      this.projectCategoryConfig!.cloneWith(projectCategory.id, projectCategory.icon),
+    );
+    if (err) {
+      // TODO: Show on UI
+      console.error('Failure to updateProjectCategory');
     }
   }
 
@@ -312,6 +378,34 @@ class TimerModule extends VuexModule {
           this.setEntries(entries);
           this.setEntriesError(null);
           this.setEntriesStatus('success');
+        },
+      ),
+    );
+  }
+
+  @Action
+  async fetchProjects(): Promise<void> {
+    // XXX: Show current tab state?
+    const config = this.timerConfig;
+    if (!config?.token) {
+      // TODO: Show on UI
+      console.error('Token for timer is required! It is empty!');
+      return;
+    }
+
+    this.setProjectsStatus('in_progress');
+    pipe(
+      await service!.fetchProjects(),
+      fold(
+        err => {
+          this.setProjectsError(err);
+          // setProjects([]) ??
+          this.setProjectsStatus('error');
+        },
+        projects => {
+          this.setProjects(projects);
+          this.setProjectsError(null);
+          this.setProjectsStatus('success');
         },
       ),
     );

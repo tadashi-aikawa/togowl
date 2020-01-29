@@ -60,12 +60,30 @@ export function toProjectConfig(data: FirestoreProject): ProjectConfig {
   );
 }
 
+export function fromProjectConfig(config: ProjectConfig): FirestoreProject {
+  return _.mapValues(config.value, meta => ({
+    icon: {
+      url: meta.icon?.url ?? '',
+      emoji: meta.icon?.emoji ?? '',
+    },
+  }));
+}
+
 export function toProjectCategoryConfig(data: FirestoreProjectCategory): ProjectCategoryConfig {
   return ProjectCategoryConfig.create(
     _.mapValues(data, meta => ({
       icon: meta.icon ? Icon.create(meta.icon) : undefined,
     })),
   );
+}
+
+export function fromProjectCategoryConfig(config: ProjectCategoryConfig): FirestoreProjectCategory {
+  return _.mapValues(config.value, meta => ({
+    icon: {
+      url: meta.icon?.url ?? '',
+      emoji: meta.icon?.emoji ?? '',
+    },
+  }));
 }
 
 class FirebaseCloudRepository implements CloudRepository {
@@ -156,6 +174,17 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
   }
 
+  saveProjectConfig(config: ProjectConfig): Promise<TogowlError | null> {
+    return store
+      .collection('projects')
+      .doc(this.uid)
+      .set(fromProjectConfig(config))
+      .then(() => {
+        return null;
+      })
+      .catch(err => TogowlError.create('SAVE_PROJECT_CONFIG_ERROR', 'Fail to save project config.', err));
+  }
+
   loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>> {
     return store
       .collection('projects')
@@ -168,6 +197,19 @@ class FirebaseCloudRepository implements CloudRepository {
           : left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Empty project config.'));
       })
       .catch(err => left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Fail to get project config.', err)));
+  }
+
+  saveProjectCategoryConfig(config: ProjectCategoryConfig): Promise<TogowlError | null> {
+    return store
+      .collection('projectCategories')
+      .doc(this.uid)
+      .set(fromProjectCategoryConfig(config))
+      .then(() => {
+        return null;
+      })
+      .catch(err =>
+        TogowlError.create('SAVE_PROJECT_CATEGORY_CONFIG_ERROR', 'Fail to save project category config.', err),
+      );
   }
 
   loadProjectCategoryConfig(): Promise<Either<TogowlError, ProjectCategoryConfig>> {

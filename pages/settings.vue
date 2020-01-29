@@ -13,6 +13,10 @@
         />
         <SettingsToggl />
       </v-card>
+
+      <v-card class="card-area">
+        <SettingsProject />
+      </v-card>
     </v-container>
   </v-flex>
 </template>
@@ -21,8 +25,9 @@
 import { Component, Vue } from 'nuxt-property-decorator';
 import SettingsSlack from '~/components/SettingsSlack.vue';
 import SettingsToggl from '~/components/SettingsToggl.vue';
+import SettingsProject from '~/components/SettingsProject.vue';
 
-@Component({ components: { SettingsSlack, SettingsToggl } })
+@Component({ components: { SettingsSlack, SettingsToggl, SettingsProject } })
 class Settings extends Vue {}
 
 export default Settings;
