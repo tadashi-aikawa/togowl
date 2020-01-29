@@ -24,6 +24,7 @@
               <v-autocomplete
                 v-model="selectedEntry"
                 :items="candidatedEntries"
+                :filter="customFilter"
                 :menu-props="{ maxHeight: 220 }"
                 item-text="hashAsTask"
                 placeholder="Search entries past"
@@ -262,6 +263,17 @@ class Root extends Vue {
 
   get isEntriesLoading(): boolean {
     return this.entriesStatus === 'in_progress' && this.entries.length === 0;
+  }
+
+  customFilter(item: Entry, queryText: string): boolean {
+    const description = item.description.toLowerCase();
+    const projectName = item.project?.name.value.toLowerCase();
+    const projectCategoryName = item.projectCategory?.name.value.toLowerCase();
+
+    return queryText
+      .toLowerCase()
+      .split(' ')
+      .every(q => description.includes(q) || projectName?.includes(q) || projectCategoryName?.includes(q));
   }
 }
 
