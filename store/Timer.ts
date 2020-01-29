@@ -114,7 +114,10 @@ class TimerModule extends VuexModule {
   }
 
   get projectsGroupByCategory(): Dictionary<Project[]> {
-    return _.groupBy(this.projects, p => p.category?.id.value);
+    return _(this.projects)
+      .reject(p => !p.category)
+      .groupBy(p => p.category?.id.value)
+      .value();
   }
 
   updateStatus: ActionStatus = 'init';
