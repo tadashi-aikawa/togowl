@@ -7,14 +7,14 @@
     </v-row>
     <v-row align="center" justify="center" style="margin-top: 5px;">
       <div v-if="displayProjectCategory" class="sub-title">
-        <v-avatar v-if="currentEntry.projectCategory" size="16px">
+        <v-avatar tile v-if="currentEntry.projectCategory" size="16px">
           <ProjectCategoryIcon :project-category="currentEntry.projectCategory" />
         </v-avatar>
         <span :class="{ 'rainbow-loading': loading }" v-text="displayProjectCategory" />
         <span style="padding: 0 8px 0;">></span>
       </div>
       <div v-if="displayProject" class="sub-title">
-        <v-avatar v-if="currentEntry.project" size="16px">
+        <v-avatar tile v-if="currentEntry.project" size="16px">
           <ProjectIcon :project="currentEntry.project" />
         </v-avatar>
         <span :class="{ 'rainbow-loading': loading }" v-text="displayProject" />

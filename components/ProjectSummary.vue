@@ -1,13 +1,13 @@
 <template>
   <div class="root">
     <template v-if="project.category">
-      <v-avatar size="14px">
+      <v-avatar tile size="14px">
         <ProjectCategoryIcon :project-category="project.category" />
       </v-avatar>
       <span v-text="projectCategoryName" />
       <span style="margin: 0 2px;">></span>
     </template>
-    <v-avatar v-if="project" size="14px">
+    <v-avatar tile v-if="project" size="14px">
       <ProjectIcon :project="project" />
     </v-avatar>
     <span v-text="projectName" />

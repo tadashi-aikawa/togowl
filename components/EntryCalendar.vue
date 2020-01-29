@@ -17,7 +17,7 @@
       >
         <template v-slot:event="{ event }">
           <div style="height: 100%; padding: 2px;" @click="handleClickEntry(event.entry)">
-            <v-avatar v-if="event.entry.project" size="14px">
+            <v-avatar tile v-if="event.entry.project" size="14px">
               <ProjectIcon :project="event.entry.project" :project-category-as-default="true" />
             </v-avatar>
             {{ event.name }}
