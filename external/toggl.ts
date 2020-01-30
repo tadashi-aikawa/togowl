@@ -222,6 +222,12 @@ export namespace RestApi {
       }).then(p => p.data);
     }
 
+    timeEntryDelete(timeEntryId: number): Promise<void> {
+      return Axios.delete(`${this.baseUrl}/time_entries/${timeEntryId}`, {
+        auth: this.auth,
+      });
+    }
+
     entries(startDate: string): Promise<TimeEntry[]> {
       return this.__get<TimeEntry[]>(`/time_entries`, { start_date: startDate });
     }

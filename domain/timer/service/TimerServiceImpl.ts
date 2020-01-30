@@ -158,7 +158,19 @@ export class TimerServiceImpl implements TimerService {
     } catch (err) {
       logger.put('TSI.stopEntry.err');
       logger.put(err.message);
-      return left(TogowlError.create('STOP_CURRENT_ENTRY', "Can't stop current entry from Toggl", err.message));
+      return left(TogowlError.create('STOP_CURRENT_ENTRY', "Can't stop entry from Toggl", err.message));
+    }
+  }
+
+  async deleteEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
+    try {
+      await this.restClient.timeEntryDelete(entry.id.asNumber);
+      logger.put('TSI.deleteEntry.success');
+      return right(entry);
+    } catch (err) {
+      logger.put('TSI.deleteEntry.err');
+      logger.put(err.message);
+      return left(TogowlError.create('DELETE_CURRENT_ENTRY', "Can't delete entry from Toggl", err.message));
     }
   }
 

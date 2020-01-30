@@ -88,6 +88,15 @@ class SlackModule extends VuexModule {
     }
   }
 
+  @Action
+  async notifyCancelEvent(): Promise<TogowlError | undefined> {
+    const err = await service!.cancel();
+    if (err) {
+      console.error(err.messageForLog);
+      return TogowlError.create(err.code, err.message);
+    }
+  }
+
   @Action({ rawError: true })
   async init(uid: UId) {
     createAction(uid.value, '_slack', 'slack')(this.context);

@@ -5,7 +5,10 @@
         <div v-if="currentEntry">
           <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
           <v-row align="center" justify="center" style="margin-bottom: 20px;">
-            <v-btn class="mx-2" fab small dark color="grey" :disabled="!canAction" @click="pause">
+            <v-btn class="mx-2" fab small dark color="purple darken-1" :disabled="!canAction" @click="cancel">
+              <v-icon dark>mdi-delete</v-icon>
+            </v-btn>
+            <v-btn class="mx-2" fab small dark color="grey darken-1" :disabled="!canAction" @click="pause">
               <v-icon dark>mdi-pause</v-icon>
             </v-btn>
             <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
@@ -214,6 +217,24 @@ class Root extends Vue {
   async connectPrevious() {
     this.waitForBlockedAction = true;
     await timerStore.connectPreviousEntry();
+    this.waitForBlockedAction = false;
+  }
+
+  async cancel() {
+    this.waitForBlockedAction = true;
+    pipe(
+      await timerStore.cancelCurrentEntry(),
+      fold(
+        _err => {},
+        async _entry => {
+          this.selectedEntry = null;
+          const err = await notificationStore.notifyCancelEvent();
+          if (err) {
+            this.showSnackBar(err.message, true);
+          }
+        },
+      ),
+    );
     this.waitForBlockedAction = false;
   }
 

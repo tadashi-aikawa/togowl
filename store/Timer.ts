@@ -330,6 +330,33 @@ class TimerModule extends VuexModule {
   }
 
   @Action
+  async cancelCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+    // XXX: This action is similar to completeCurrentEntry but not same
+    const config = this.timerConfig;
+    if (!config?.token) {
+      // TODO: Show on UI
+      return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
+    }
+    if (!this.currentEntry) {
+      return left(TogowlError.create('CURRENT_ENTRY_IS_EMPTY', 'Current entry is empty!'));
+    }
+
+    return pipe(
+      await service!.deleteEntry(this.currentEntry),
+      fold(
+        err => {
+          return left(err);
+        },
+        () => {
+          const entry = this.currentEntry;
+          this.setCurrentEntry(null);
+          return right(entry);
+        },
+      ),
+    );
+  }
+
+  @Action
   async connectPreviousEntry(): Promise<Either<TogowlError, Entry | null>> {
     // XXX: This action is similar to completeCurrentEntry but not same
     const config = this.timerConfig;

@@ -42,6 +42,10 @@ export class NotificationServiceImpl implements NotificationService {
     );
   }
 
+  cancel(): Promise<TogowlError | null> {
+    return this.notifyToSlack(`:unitychan_ng: \`やっぱナシ\``);
+  }
+
   private createFooter(project?: Project, projectCategory?: ProjectCategory): string {
     const projectEmoji = `:${project?.icon?.emoji ?? 'card_index_dividers'}:`;
     const projectStr = `${projectEmoji} \`${project?.nameWithoutBracket ?? 'No Project'}\``;
