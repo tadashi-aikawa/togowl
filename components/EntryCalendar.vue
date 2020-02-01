@@ -15,7 +15,7 @@
         interval-width="35"
         :interval-format="d => d.time"
       >
-        <template v-slot:event="{ event }">
+        <template #event="{ event }">
           <div style="height: 100%; padding: 2px;" @click="handleClickEntry(event.entry)">
             <v-avatar v-if="event.entry.project" tile size="14px">
               <ProjectIcon :project="event.entry.project" :project-category-as-default="true" />

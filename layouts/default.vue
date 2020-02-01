@@ -35,7 +35,7 @@
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-btn icon v-on="on" @click="logoutConfirmDialog = true">
             <v-icon>mdi-exit-to-app</v-icon>
           </v-btn>

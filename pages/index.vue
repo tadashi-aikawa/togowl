@@ -35,12 +35,12 @@
                 clearable
                 return-object
               >
-                <template v-slot:selection="data">
+                <template #selection="data">
                   <div style="padding: 5px;">
                     <EntrySummary :entry="data.item" width="70vw" />
                   </div>
                 </template>
-                <template v-slot:item="data">
+                <template #item="data">
                   <div style="padding: 5px;">
                     <EntrySummary :entry="data.item" />
                   </div>
