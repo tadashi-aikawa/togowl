@@ -48,14 +48,8 @@ function addMetaToProject(
   );
 }
 
-function addMetaToEntry(
-  entry: Entry,
-  projectConfig: ProjectConfig | null,
-  projectCategoryConfig: ProjectCategoryConfig | null,
-): Entry {
-  return entry.cloneWithProject(
-    entry.project ? addMetaToProject(entry.project, projectConfig, projectCategoryConfig) : undefined,
-  );
+function addMetaToEntry(entry: Entry, projectById: { [projectId: number]: Project }): Entry {
+  return entry.cloneWithProject(entry._projectId ? projectById[entry._projectId.asNumber] : undefined);
 }
 
 /**
@@ -80,13 +74,11 @@ class TimerModule extends VuexModule {
   }
 
   get currentEntry(): Entry | null {
-    return this._currentEntry
-      ? addMetaToEntry(this._currentEntry, this.projectConfig, this.projectCategoryConfig)
-      : null;
+    return this._currentEntry ? addMetaToEntry(this._currentEntry, this.projectById) : null;
   }
 
   get entries(): Entry[] {
-    return this._entries?.map(e => addMetaToEntry(e, this.projectConfig, this.projectCategoryConfig)) ?? [];
+    return this._entries?.map(e => addMetaToEntry(e, this.projectById)) ?? [];
   }
 
   get entriesWithinDay(): Entry[] {
@@ -111,6 +103,10 @@ class TimerModule extends VuexModule {
 
   get projects(): Project[] {
     return this._projects?.map(p => addMetaToProject(p, this.projectConfig, this.projectCategoryConfig)) ?? [];
+  }
+
+  get projectById(): { [projectId: number]: Project } {
+    return _.keyBy(this.projects, p => p.id.asNumber);
   }
 
   get projectsGroupByCategory(): Dictionary<Project[]> {
@@ -271,7 +267,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(entry);
-          return right(entry);
+          return right(addMetaToEntry(entry, this.projectById));
         },
       ),
     );
@@ -297,7 +293,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(null);
-          return right(addMetaToEntry(entry, this.projectConfig, this.projectCategoryConfig));
+          return right(addMetaToEntry(entry, this.projectById));
         },
       ),
     );
@@ -323,7 +319,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(null);
-          return right(addMetaToEntry(entry, this.projectConfig, this.projectCategoryConfig));
+          return right(addMetaToEntry(entry, this.projectById));
         },
       ),
     );
@@ -348,9 +344,9 @@ class TimerModule extends VuexModule {
           return left(err);
         },
         () => {
-          const entry = this.currentEntry;
+          const entry = this.currentEntry!;
           this.setCurrentEntry(null);
-          return right(entry);
+          return right(addMetaToEntry(entry, this.projectById));
         },
       ),
     );
@@ -379,7 +375,7 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(entry);
-          return right(addMetaToEntry(entry, this.projectConfig, this.projectCategoryConfig));
+          return right(addMetaToEntry(entry, this.projectById));
         },
       ),
     );
@@ -401,7 +397,6 @@ class TimerModule extends VuexModule {
       fold(
         err => {
           this.setEntriesError(err);
-          this.setCurrentEntry(null);
           this.setEntriesStatus('error');
         },
         entries => {
@@ -429,7 +424,6 @@ class TimerModule extends VuexModule {
       fold(
         err => {
           this.setProjectsError(err);
-          // setProjects([]) ??
           this.setProjectsStatus('error');
         },
         projects => {
@@ -452,6 +446,7 @@ class TimerModule extends VuexModule {
         this.setRealtime(true);
         this.fetchCurrentEntry();
         this.fetchEntries();
+        this.fetchProjects();
       },
       onEndSubscribe: async () => {
         this.setRealtime(false);
@@ -474,13 +469,10 @@ class TimerModule extends VuexModule {
         this.fetchEntries();
       },
       onUpdateProject: () => {
-        this.fetchCurrentEntry();
         // TODO: Remove if partial update is implemented
-        this.fetchEntries();
+        this.fetchProjects();
       },
     });
-    this.fetchCurrentEntry();
-    this.fetchEntries();
   }
 
   @Action({ rawError: true })

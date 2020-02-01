@@ -4,6 +4,7 @@ import { Duration } from '~/domain/timer/vo/Duration';
 import { Project } from '~/domain/timer/entity/Project';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 import { Entity } from '~/utils/entity';
+import { ProjectId } from '~/domain/timer/vo/ProjectId';
 
 interface Args {
   id: string | number;
@@ -12,6 +13,7 @@ interface Args {
   stop?: string | null;
   duration: number;
   project?: Project;
+  _projectId?: ProjectId;
 }
 
 export class Entry implements Entity {
@@ -22,6 +24,7 @@ export class Entry implements Entity {
     public duration: Duration,
     public stop?: DateTime,
     public project?: Project,
+    public _projectId?: ProjectId,
   ) {}
 
   equals(entry?: Entry): boolean {
@@ -40,6 +43,7 @@ export class Entry implements Entity {
       Duration.create(args.duration),
       args.stop ? DateTime.create(args.stop) : undefined,
       args.project,
+      args._projectId,
     );
   }
 

@@ -1,14 +1,13 @@
 import _ from 'lodash';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { Entry, PartialEntry } from '~/domain/timer/entity/Entry';
-import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
+import { Either, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { TimerEventListener, TimerService } from '~/domain/timer/service/TimerService';
 import * as toggl from '~/external/toggl';
 import logger from '~/utils/global-logger';
 import { Project } from '~/domain/timer/entity/Project';
 import { ProjectId } from '~/domain/timer/vo/ProjectId';
 import { ProjectName } from '~/domain/timer/vo/ProjectlName';
-import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 import { ProjectCategoryId } from '~/domain/timer/vo/ProjectCategoryId';
 import { ProjectCategoryName } from '~/domain/timer/vo/ProjectCategoryName';
@@ -19,17 +18,12 @@ export class TimerServiceImpl implements TimerService {
   private socketClient: toggl.SocketApi.ApiClient;
   private readonly workspaceId: number;
 
-  private projectById: { [projectId: string]: Project } = {};
-
   constructor(togglToken: string, listener: TimerEventListener, workspaceId: number, proxy?: string) {
     logger.put('TSI.constructor');
 
     this.restClient = new toggl.RestApi.ApiClient(togglToken, proxy);
     this.workspaceId = workspaceId;
 
-    this.updateProjectById(listener);
-
-    // TODO: subscribe project changed
     this.socketClient = toggl.SocketApi.ApiClient.use(togglToken, {
       onOpen: () => {
         logger.put('TSI.onOpen');
@@ -59,19 +53,19 @@ export class TimerServiceImpl implements TimerService {
       },
       onUpdateProject: _project => {
         logger.put('TSI.onUpdateProject');
-        this.updateProjectById(listener);
+        listener.onUpdateProject?.();
       },
       onDeleteProject: _project => {
         logger.put('TSI.onDeleteProject');
-        this.updateProjectById(listener);
+        listener.onUpdateProject?.();
       },
       onUpdateClient: _client => {
         logger.put('TSI.onUpdateClient');
-        this.updateProjectById(listener);
+        listener.onUpdateProject?.();
       },
       onDeleteClient: _client => {
         logger.put('TSI.onDeleteClient');
-        this.updateProjectById(listener);
+        listener.onUpdateProject?.();
       },
       onResponsePing: () => logger.put('TSI.onResponsePing'),
     });
@@ -80,30 +74,6 @@ export class TimerServiceImpl implements TimerService {
   terminate() {
     logger.put('TSI.terminate');
     this.socketClient.terminate();
-  }
-
-  private updateProjectById(listener: TimerEventListener): Promise<TogowlError | null> {
-    if (!this.workspaceId) {
-      logger.put('WORKSPACE_ID_IS_EMPTY');
-      return Promise.resolve(TogowlError.create('WORKSPACE_ID_IS_EMPTY', 'Toggl workspaceID is empty.'));
-    }
-
-    return this.fetchProjects().then(errOrProjects =>
-      pipe(
-        errOrProjects,
-        fold(
-          err => {
-            listener.onError?.(err);
-            return null;
-          },
-          projects => {
-            this.projectById = _.keyBy(projects, x => x.id.value);
-            listener.onUpdateProject?.();
-            return null;
-          },
-        ),
-      ),
-    );
   }
 
   private async _fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
@@ -119,7 +89,6 @@ export class TimerServiceImpl implements TimerService {
   }
 
   private throttleFetchCurrentEntry = _.throttle(this._fetchCurrentEntry, 1000, { trailing: false });
-
   fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     return this.throttleFetchCurrentEntry();
   }
@@ -224,7 +193,7 @@ export class TimerServiceImpl implements TimerService {
       start: entry.start,
       stop: entry.stop,
       duration: entry.duration,
-      project: entry.pid ? this.projectById[entry.pid] : undefined,
+      _projectId: entry.pid ? ProjectId.create(entry.pid) : undefined,
     });
   }
 
