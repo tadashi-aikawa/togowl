@@ -259,11 +259,11 @@ class Root extends Vue {
   }
 
   get entriesStatus(): ActionStatus {
-    return timerStore.entriesStatus;
+    return timerStore.entryByIdStatus;
   }
 
   get entriesError(): TogowlError | null {
-    return timerStore.entriesError;
+    return timerStore.entryByIdError;
   }
 
   get isRealtimeEnabled(): boolean {

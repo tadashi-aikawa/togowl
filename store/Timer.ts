@@ -78,7 +78,7 @@ class TimerModule extends VuexModule {
   }
 
   get entries(): Entry[] {
-    return this._entries?.map(e => addMetaToEntry(e, this.projectById)) ?? [];
+    return Object.values(this._entryById).map(e => addMetaToEntry(e, this.projectById)) ?? [];
   }
 
   get entriesWithinDay(): Entry[] {
@@ -152,22 +152,22 @@ class TimerModule extends VuexModule {
     this.fetchingError = error;
   }
 
-  private _entries: Entry[] | null = null;
+  private _entryById: { [entryId: number]: Entry } = {};
   @Mutation
-  setEntries(entries: Entry[] | null) {
-    this._entries = entries;
+  setEntryById(entryById: { [entryId: number]: Entry }) {
+    this._entryById = entryById;
   }
 
-  entriesStatus: ActionStatus = 'init';
+  entryByIdStatus: ActionStatus = 'init';
   @Mutation
-  setEntriesStatus(status: ActionStatus) {
-    this.entriesStatus = status;
+  setEntryByIdStatus(status: ActionStatus) {
+    this.entryByIdStatus = status;
   }
 
-  entriesError: TogowlError | null = null;
+  entryByIdError: TogowlError | null = null;
   @Mutation
-  setEntriesError(error: TogowlError | null) {
-    this.entriesError = error;
+  setEntryByIdError(error: TogowlError | null) {
+    this.entryByIdError = error;
   }
 
   private _projects: Project[] | null = null;
@@ -391,18 +391,18 @@ class TimerModule extends VuexModule {
       return;
     }
 
-    this.setEntriesStatus('in_progress');
+    this.setEntryByIdStatus('in_progress');
     pipe(
       await service!.fetchEntries(DateTime.now().minusDays(MAX_HISTORY_DAYS)),
       fold(
         err => {
-          this.setEntriesError(err);
-          this.setEntriesStatus('error');
+          this.setEntryByIdError(err);
+          this.setEntryByIdStatus('error');
         },
         entries => {
-          this.setEntries(entries);
-          this.setEntriesError(null);
-          this.setEntriesStatus('success');
+          this.setEntryById(_.keyBy(entries, x => x.id.asNumber));
+          this.setEntryByIdError(null);
+          this.setEntryByIdStatus('success');
         },
       ),
     );
@@ -453,20 +453,23 @@ class TimerModule extends VuexModule {
         await this.updateService();
       },
       onError: this.setFetchingError,
-      onInsertEntry: _entry => {
-        this.fetchCurrentEntry();
-        // TODO: Remove if partial update is implemented
-        this.fetchEntries();
+      onInsertEntry: entry => {
+        if (!this.currentEntry) {
+          this.setCurrentEntry(entry);
+        }
+        this.setEntryById({ ...this._entryById, [entry.id.asNumber]: entry });
       },
-      onUpdateEntry: _entry => {
-        this.fetchCurrentEntry();
-        // TODO: Remove if partial update is implemented
-        this.fetchEntries();
+      onUpdateEntry: entry => {
+        if (this.currentEntry?.equals(entry)) {
+          this.setCurrentEntry(entry.stop ? null : entry);
+        }
+        this.setEntryById({ ...this._entryById, [entry.id.asNumber]: entry });
       },
-      onDeleteEntry: _entry => {
-        this.fetchCurrentEntry();
-        // TODO: Remove if partial update is implemented
-        this.fetchEntries();
+      onDeleteEntry: entry => {
+        if (this.currentEntry?.equals(entry)) {
+          this.setCurrentEntry(null);
+        }
+        this.setEntryById(_.omit(this._entryById, [entry.id.asNumber]));
       },
       onUpdateProject: () => {
         // TODO: Remove if partial update is implemented
