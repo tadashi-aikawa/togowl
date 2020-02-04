@@ -10,7 +10,7 @@ import { FirestoreTask, toTaskConfig } from '~/repository/FirebaseCloudRepositor
 import { TaskConfig } from '~/domain/task/vo/TaskConfig';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
-import { cloudRepository, timerStore } from '~/store/index';
+import { cloudRepository, projectStore } from '~/store/index';
 import { createAction } from '~/utils/firestore-facade';
 
 let service: TaskService | null;
@@ -29,7 +29,7 @@ class TaskModule extends VuexModule {
   get tasks(): Task[] {
     // FIXME: refactoring extract
     return Object.values(this._taskById).map(x =>
-      x.cloneWith(x.projectId ? timerStore.projectByTaskProjectId[x.projectId.asNumber] : undefined),
+      x.cloneWith(x.projectId ? projectStore.projectByTaskProjectId[x.projectId.asNumber] : undefined),
     );
   }
 

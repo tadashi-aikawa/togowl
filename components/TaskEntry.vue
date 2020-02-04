@@ -3,9 +3,9 @@
     <v-list-item-avatar style="margin-right: 5px;">
       <v-icon
         class="check-button"
-        v-text="checkIcon"
         @mouseenter="checkIcon = 'mdi-check-circle-outline'"
         @mouseleave="checkIcon = 'mdi-checkbox-blank-circle-outline'"
+        v-text="checkIcon"
       />
     </v-list-item-avatar>
     <v-list-item-content>

@@ -3,7 +3,7 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { fold } from '~/node_modules/fp-ts/lib/Either';
-import { notificationStore, timerStore, userStore, taskStore } from '~/utils/store-accessor';
+import { notificationStore, timerStore, userStore, taskStore, projectStore } from '~/utils/store-accessor';
 import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { AuthenticationStatus } from '~/domain/authentication/vo/AuthenticationStatus';
@@ -13,6 +13,7 @@ async function initCloudStores(uid: UId) {
   userStore.init(uid);
   notificationStore.init(uid);
   taskStore.init(uid);
+  projectStore.init(uid);
   await timerStore.init(uid);
 }
 

@@ -21,7 +21,7 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Component, Vue } from '~/node_modules/nuxt-property-decorator';
-import { timerStore } from '~/utils/store-accessor';
+import { projectStore } from '~/utils/store-accessor';
 import { Project } from '~/domain/timer/entity/Project';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 import SettingsProjectEdit from '~/components/SettingsProjectEdit.vue';
@@ -48,11 +48,11 @@ class SettingsProject extends Vue {
   currentItem: Item | null = null;
 
   async mounted() {
-    await timerStore.fetchProjects();
+    await projectStore.fetchProjects();
   }
 
   get projectCategories(): ProjectCategoryItem[] {
-    return _(timerStore.projectsGroupByCategory)
+    return _(projectStore.projectsGroupByCategory)
       .values()
       .map(
         pjs =>
@@ -75,10 +75,10 @@ class SettingsProject extends Vue {
   saveItem(icon: Icon) {
     switch (this.currentItem?.type) {
       case 'project':
-        timerStore.updateProject(this.currentItem.node.cloneWith(icon, this.currentItem.node.category));
+        projectStore.updateProject(this.currentItem.node.cloneWith(icon, this.currentItem.node.category));
         break;
       case 'project_category':
-        timerStore.updateProjectCategory(this.currentItem.node.cloneWith(icon));
+        projectStore.updateProjectCategory(this.currentItem.node.cloneWith(icon));
         break;
     }
     this.currentItem = null;

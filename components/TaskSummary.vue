@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="task" :style="{ width: width }" v-html="title" />
     <ProjectSummary v-if="task.entryProject" :project="task.entryProject" />
   </div>

@@ -5,6 +5,7 @@ import CloudUserModule from '~/store/CloudUser';
 import SlackModule from '~/store/Slack';
 import TimerModule from '~/store/Timer';
 import TaskModule from '~/store/Task';
+import ProjectModule from '~/store/Project';
 
 // eslint-disable-next-line import/no-mutable-exports
 let authenticationStore: AuthenticationModule;
@@ -16,6 +17,8 @@ let notificationStore: SlackModule;
 let timerStore: TimerModule;
 // eslint-disable-next-line import/no-mutable-exports
 let taskStore: TaskModule;
+// eslint-disable-next-line import/no-mutable-exports
+let projectStore: ProjectModule;
 
 function initialiseStores(store: Store<any>): void {
   authenticationStore = getModule(AuthenticationModule, store);
@@ -23,6 +26,7 @@ function initialiseStores(store: Store<any>): void {
   notificationStore = getModule(SlackModule, store);
   timerStore = getModule(TimerModule, store);
   taskStore = getModule(TaskModule, store);
+  projectStore = getModule(ProjectModule, store);
 }
 
-export { initialiseStores, authenticationStore, userStore, notificationStore, timerStore, taskStore };
+export { initialiseStores, authenticationStore, userStore, notificationStore, timerStore, taskStore, projectStore };
