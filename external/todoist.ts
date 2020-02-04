@@ -37,6 +37,7 @@ export namespace SyncApi {
     full_sync: boolean;
     sync_token: string;
     items?: Task[];
+    projects?: Project[];
     day_orders?: Dictionary<number>;
   }
 

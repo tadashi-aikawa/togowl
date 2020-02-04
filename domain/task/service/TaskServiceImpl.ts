@@ -10,12 +10,18 @@ import dayjs from '~/node_modules/dayjs';
 import { TaskId } from '~/domain/task/vo/TaskId';
 import { ProjectId } from '~/domain/task/vo/ProjectId';
 import { Priority } from '~/domain/task/vo/Priority';
+import { Project } from '~/domain/task/entity/Project';
+import { ProjectName } from '~/domain/task/vo/ProjectlName';
 
 export class TaskServiceImpl implements TaskService {
   private restClient: todoist.RestApi.RestClient;
   private syncClient: todoist.SyncApi.SyncClient;
-  private syncToken: string = '*';
+
+  private itemSyncToken: string = '*';
   private taskById: Dictionary<todoist.SyncApi.Task>;
+
+  private projectSyncToken: string = '*';
+  private projectById: Dictionary<todoist.SyncApi.Project>;
 
   constructor(todoistToken: string) {
     logger.put('TaskSI.constructor');
@@ -38,10 +44,14 @@ export class TaskServiceImpl implements TaskService {
     );
   }
 
+  private toProject(project: todoist.SyncApi.Project): Project {
+    return new Project(ProjectId.create(project.id), ProjectName.create(project.name));
+  }
+
   async fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
     try {
-      const res = (await this.syncClient.sync(['items', 'day_orders'], this.syncToken)).data;
-      this.syncToken = res.sync_token;
+      const res = (await this.syncClient.sync(['items', 'day_orders'], this.itemSyncToken)).data;
+      this.itemSyncToken = res.sync_token;
 
       if (res.full_sync) {
         this.taskById = _.keyBy(res.items, x => x.id);
@@ -68,6 +78,29 @@ export class TaskServiceImpl implements TaskService {
       );
     } catch (err) {
       return left(TogowlError.create('FETCH_DAILY_TASKS', "Can't fetch daily tasks from Todoist", err.message));
+    }
+  }
+
+  async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
+    try {
+      const res = (await this.syncClient.sync(['projects'], this.projectSyncToken)).data;
+      this.projectSyncToken = res.sync_token;
+
+      if (res.full_sync) {
+        this.projectById = _.keyBy(res.projects, x => x.id);
+      } else {
+        this.projectById = { ...this.projectById, ..._.keyBy(res.projects, x => x.id) };
+      }
+
+      return right(
+        _(this.projectById)
+          .values()
+          .reject(x => x.is_deleted === 1)
+          .map(x => this.toProject(x))
+          .value(),
+      );
+    } catch (err) {
+      return left(TogowlError.create('FETCH_PROJECTS', "Can't fetch projects from Todoist", err.message));
     }
   }
 

@@ -12,6 +12,7 @@ import { fold } from '~/node_modules/fp-ts/lib/Either';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { cloudRepository, projectStore } from '~/store/index';
 import { createAction } from '~/utils/firestore-facade';
+import { Project } from '~/domain/task/entity/Project';
 
 let service: TaskService | null;
 
@@ -40,6 +41,10 @@ class TaskModule extends VuexModule {
       .value();
   }
 
+  get projects(): Project[] {
+    return Object.values(this._projectById);
+  }
+
   private _taskById: { [taskId: number]: Task } = {};
   @Mutation
   setTaskById(taskById: { [taskId: number]: Task }) {
@@ -56,6 +61,24 @@ class TaskModule extends VuexModule {
   @Mutation
   setError(error: TogowlError | null) {
     this.error = error;
+  }
+
+  private _projectById: { [projectId: number]: Project } = {};
+  @Mutation
+  setProjectById(projectById: { [projectId: number]: Project }) {
+    this._projectById = projectById;
+  }
+
+  projectStatus: ActionStatus = 'init';
+  @Mutation
+  setProjectStatus(status: ActionStatus) {
+    this.projectStatus = status;
+  }
+
+  projectError: TogowlError | null = null;
+  @Mutation
+  setProjectError(error: TogowlError | null) {
+    this.projectError = error;
   }
 
   configStatus: ActionStatus = 'init';
@@ -100,6 +123,25 @@ class TaskModule extends VuexModule {
           this.setTaskById(_.keyBy(tasks, x => x.id.asNumber));
           this.setError(null);
           this.setStatus('success');
+        },
+      ),
+    );
+  }
+
+  @Action
+  async fetchProjects(): Promise<void> {
+    this.setProjectStatus('in_progress');
+    pipe(
+      await service!.fetchProjects(),
+      fold(
+        err => {
+          this.setProjectError(err);
+          this.setProjectStatus('error');
+        },
+        projects => {
+          this.setProjectById(_.keyBy(projects, x => x.id.asNumber));
+          this.setProjectError(null);
+          this.setProjectStatus('success');
         },
       ),
     );

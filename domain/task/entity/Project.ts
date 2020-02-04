@@ -10,6 +10,10 @@ export class Project implements Entity {
     return this.id.equals(entity?.id);
   }
 
+  get hash(): string {
+    return `${this.id.value}${this.name.value}`;
+  }
+
   get nameWithoutBracket(): string {
     return trimBracketContents(this.name.value);
   }

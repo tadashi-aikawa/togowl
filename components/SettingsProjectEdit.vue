@@ -16,6 +16,29 @@
             clearable
           />
           <v-text-field v-model="iconEmoji" :rules="iconEmojiRules" label="Icon Emoji" placeholder="smile" clearable />
+
+          <v-autocomplete
+            v-model="selectedTaskProjects"
+            :items="candidatedTaskProjects"
+            :menu-props="{ maxHeight: 220 }"
+            item-text="hash"
+            label="Task projects"
+            chips
+            clearable
+            multiple
+            return-object
+          >
+            <template #selection="data">
+              <v-chip>
+                {{ data.item.name.value }}
+              </v-chip>
+            </template>
+            <template #item="data">
+              <v-chip>
+                {{ data.item.name.value }}
+              </v-chip>
+            </template>
+          </v-autocomplete>
         </v-col>
       </v-row>
     </v-form>
@@ -32,6 +55,9 @@
 import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
 import { Icon } from '~/domain/common/Icon';
 import { Url } from '~/domain/common/Url';
+import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
+import { taskStore } from '~/utils/store-accessor';
+import { Project as TaskProject } from '~/domain/task/entity/Project';
 
 @Component({})
 class SettingsProjectEdit extends Vue {
@@ -41,13 +67,22 @@ class SettingsProjectEdit extends Vue {
   @Prop()
   icon?: Icon;
 
+  @Prop()
+  taskProjectIds?: TaskProjectId[];
+
   iconUrl: string = '';
   iconUrlRules = [(v: string) => !v || Url.isValid(v) || 'Invalid URL'];
 
   iconEmoji: string = '';
   iconEmojiRules = [(v: string) => !v || !v.includes(':') || 'Do not contain colon'];
 
+  selectedTaskProjects: TaskProject[] = [];
+
   isValid = false;
+
+  get candidatedTaskProjects(): TaskProject[] {
+    return taskStore.projects;
+  }
 
   @Watch('icon', { immediate: true })
   updateFormValues() {
@@ -55,8 +90,15 @@ class SettingsProjectEdit extends Vue {
     this.iconEmoji = this.icon?.emoji ?? '';
   }
 
+  @Watch('taskProjectIds', { immediate: true })
+  onUpdateTaskProjectIds() {
+    this.selectedTaskProjects = this.candidatedTaskProjects.filter(
+      x => this.taskProjectIds?.some(id => x.id.equals(id)) ?? false,
+    );
+  }
+
   save() {
-    this.$emit('on-save', Icon.create({ url: this.iconUrl, emoji: this.iconEmoji }));
+    this.$emit('on-save', Icon.create({ url: this.iconUrl, emoji: this.iconEmoji }), this.selectedTaskProjects);
   }
 }
 export default SettingsProjectEdit;

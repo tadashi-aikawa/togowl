@@ -83,7 +83,9 @@ class ProjectModule extends VuexModule {
   @Action({ rawError: true })
   async updateProject(project: Project) {
     // TODO: status
-    const err = await cloudRepository.saveProjectConfig(this.projectConfig!.cloneWith(project.id, project.icon));
+    const err = await cloudRepository.saveProjectConfig(
+      this.projectConfig!.cloneWith(project.id, project.icon, project.taskProjectIds),
+    );
     if (err) {
       // TODO: Show on UI
       console.error('Failure to updateProject');

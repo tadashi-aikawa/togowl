@@ -13,7 +13,12 @@
       </template>
     </v-treeview>
     <v-bottom-sheet v-if="currentItem" v-model="bottomSheet">
-      <SettingsProjectEdit :name="currentItem.node.name.value" :icon="currentItem.node.icon" @on-save="saveItem" />
+      <SettingsProjectEdit
+        :name="currentItem.node.name.value"
+        :icon="currentItem.node.icon"
+        :task-project-ids="currentItem.node.taskProjectIds"
+        @on-save="saveItem"
+      />
     </v-bottom-sheet>
   </div>
 </template>
@@ -21,8 +26,9 @@
 <script lang="ts">
 import _ from 'lodash';
 import { Component, Vue } from '~/node_modules/nuxt-property-decorator';
-import { projectStore } from '~/utils/store-accessor';
+import { projectStore, taskStore } from '~/utils/store-accessor';
 import { Project } from '~/domain/timer/entity/Project';
+import { Project as TaskProject } from '~/domain/task/entity/Project';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 import SettingsProjectEdit from '~/components/SettingsProjectEdit.vue';
 import { Icon } from '~/domain/common/Icon';
@@ -49,6 +55,7 @@ class SettingsProject extends Vue {
 
   async mounted() {
     await projectStore.fetchProjects();
+    await taskStore.fetchProjects();
   }
 
   get projectCategories(): ProjectCategoryItem[] {
@@ -72,10 +79,16 @@ class SettingsProject extends Vue {
     this.bottomSheet = true;
   }
 
-  saveItem(icon: Icon) {
+  saveItem(icon: Icon, taskProjects: TaskProject[]) {
     switch (this.currentItem?.type) {
       case 'project':
-        projectStore.updateProject(this.currentItem.node.cloneWith(icon, this.currentItem.node.category));
+        projectStore.updateProject(
+          this.currentItem.node.cloneWith(
+            icon,
+            this.currentItem.node.category,
+            taskProjects.map(x => x.id),
+          ),
+        );
         break;
       case 'project_category':
         projectStore.updateProjectCategory(this.currentItem.node.cloneWith(icon));
