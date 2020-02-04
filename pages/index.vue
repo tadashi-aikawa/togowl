@@ -71,11 +71,11 @@
       <v-tabs-slider></v-tabs-slider>
 
       <v-tab href="#tabs-1" class="primary--text">
-        <v-icon>mdi-history</v-icon>
+        <v-icon>mdi-format-list-checkbox</v-icon>
       </v-tab>
 
       <v-tab href="#tabs-2" class="primary--text">
-        <v-icon>mdi-format-list-checkbox</v-icon>
+        <v-icon>mdi-history</v-icon>
       </v-tab>
 
       <v-tab href="#tabs-3" class="primary--text">
@@ -84,24 +84,24 @@
 
       <v-tab-item value="tabs-1">
         <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TimeEntries :entries="entries" :loading="isEntriesLoading" @on-click-start="start" />
-        </v-sheet>
-        <v-row v-if="entriesError" align="center" justify="center">
-          <div style="padding: 15px;">
-            <v-alert type="error">
-              {{ entriesError.message }}
-            </v-alert>
-          </div>
-        </v-row>
-      </v-tab-item>
-      <v-tab-item value="tabs-2">
-        <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
           <TaskEntries :tasks="tasks" :loading="isTasksLoading" @on-click-start="startFromTask" />
         </v-sheet>
         <v-row v-if="tasksError" align="center" justify="center">
           <div style="padding: 15px;">
             <v-alert type="error">
               {{ tasksError.message }}
+            </v-alert>
+          </div>
+        </v-row>
+      </v-tab-item>
+      <v-tab-item value="tabs-2">
+        <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
+          <TimeEntries :entries="entries" :loading="isEntriesLoading" @on-click-start="start" />
+        </v-sheet>
+        <v-row v-if="entriesError" align="center" justify="center">
+          <div style="padding: 15px;">
+            <v-alert type="error">
+              {{ entriesError.message }}
             </v-alert>
           </div>
         </v-row>
