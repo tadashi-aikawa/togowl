@@ -1,6 +1,17 @@
 <template>
   <v-slide-y-transition group tag="v-list">
-    <TimeEntry v-for="entry in entries" :key="entry.id.value" :entry="entry" @on-click-start="handleClickPlayButton" />
+    <template v-for="entry in entries">
+      <v-lazy
+        :key="entry.id.value"
+        transition="fade-transition"
+        :options="{
+          threshold: 0.5,
+        }"
+        min-height="80"
+      >
+        <TimeEntry :entry="entry" @on-click-start="handleClickPlayButton" />
+      </v-lazy>
+    </template>
     <v-overlay key="loading" absolute :value="loading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>

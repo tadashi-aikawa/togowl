@@ -1,6 +1,17 @@
 <template>
   <v-slide-y-transition group tag="v-list">
-    <TaskEntry v-for="task in tasks" :key="task.id.value" :task="task" @on-click-start="handleClickPlayButton" />
+    <template v-for="task in tasks">
+      <v-lazy
+        :key="task.id.value"
+        transition="fade-transition"
+        :options="{
+          threshold: 0.5,
+        }"
+        min-height="80"
+      >
+        <TaskEntry :task="task" @on-click-start="handleClickPlayButton" />
+      </v-lazy>
+    </template>
     <v-overlay key="loading" absolute :value="loading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
