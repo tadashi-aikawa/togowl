@@ -129,6 +129,13 @@ class TaskModule extends VuexModule {
   }
 
   @Action
+  async completeTask(task: Task): Promise<void> {
+    // TODO: Illegal case
+    this.setTaskById(_.omit(this._taskById, [task.id.asNumber]));
+    service?.completeTask(task);
+  }
+
+  @Action
   async fetchProjects(): Promise<void> {
     this.setProjectStatus('in_progress');
     pipe(

@@ -81,6 +81,15 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
+  async completeTask(task: Task): Promise<TogowlError | null> {
+    try {
+      await this.restClient.closeTask(task.id.asNumber);
+      return null;
+    } catch (err) {
+      return TogowlError.create('COMPLETE_TASK', "Can't complete task on Todoist", err.message);
+    }
+  }
+
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
     try {
       const res = (await this.syncClient.sync(['projects'], this.projectSyncToken)).data;

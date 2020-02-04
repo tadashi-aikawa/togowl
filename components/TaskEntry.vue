@@ -5,6 +5,7 @@
         class="check-button"
         @mouseenter="checkIcon = 'mdi-check-circle-outline'"
         @mouseleave="checkIcon = 'mdi-checkbox-blank-circle-outline'"
+        @click="handleCheckButton"
         v-text="checkIcon"
       />
     </v-list-item-avatar>
@@ -14,7 +15,7 @@
       </v-list-item-title>
     </v-list-item-content>
     <v-list-item-action>
-      <v-btn icon @click="handleClickPlayButton(task)">
+      <v-btn icon @click="handleClickPlayButton()">
         <v-icon large>mdi-play-circle-outline</v-icon>
       </v-btn>
     </v-list-item-action>
@@ -25,6 +26,7 @@
 import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
 import TaskSummary from '~/components/TaskSummary.vue';
 import { Task } from '~/domain/task/entity/Task';
+import { taskStore } from '~/utils/store-accessor';
 
 @Component({
   components: { TaskSummary },
@@ -35,8 +37,12 @@ class TaskEntry extends Vue {
 
   checkIcon = 'mdi-checkbox-blank-circle-outline';
 
-  handleClickPlayButton(task: Task) {
-    this.$emit('on-click-start', task);
+  handleClickPlayButton() {
+    this.$emit('on-click-start', this.task);
+  }
+
+  handleCheckButton() {
+    taskStore.completeTask(this.task);
   }
 }
 export default TaskEntry;

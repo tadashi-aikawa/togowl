@@ -5,5 +5,6 @@ import { Project } from '~/domain/task/entity/Project';
 
 export interface TaskService {
   fetchDailyTasks(): Promise<Either<TogowlError, Task[]>>;
-  fetchProjects(): Promise<Either<TogowlError, Project[]>>
+  completeTask(task: Task): Promise<TogowlError | null>;
+  fetchProjects(): Promise<Either<TogowlError, Project[]>>;
 }
