@@ -20,9 +20,11 @@
     "@slack/webhook": "^5.0.2",
     "@types/lodash": "^4.14.149",
     "dayjs": "^1.8.18",
+    "emoji-toolkit": "^5.0.5",
     "firebase": "^7.6.1",
     "fp-ts": "^2.3.1",
     "nuxt": "^2.0.0",
+    "query-string": "^6.10.1",
     "shallow-equal-object": "^1.1.1",
     "vuexfire": "^3.2.1"
   },

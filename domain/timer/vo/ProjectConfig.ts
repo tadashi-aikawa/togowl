@@ -1,15 +1,18 @@
 import { ValueObject } from '~/utils/vo';
 import { Icon } from '~/domain/common/Icon';
 import { ProjectId } from '~/domain/timer/vo/ProjectId';
+import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
 
 interface Args {
   [projectId: string]: {
     icon?: Icon;
+    taskProjectIds: TaskProjectId[];
   };
 }
 
 interface Meta {
   icon?: Icon;
+  taskProjectIds: TaskProjectId[];
 }
 
 interface Props {
@@ -29,7 +32,14 @@ export class ProjectConfig extends ValueObject<Props> {
     return this._value?.[projectId.value]?.icon;
   }
 
-  cloneWith(projectId: ProjectId, icon?: Icon): ProjectConfig {
-    return ProjectConfig.create({ ...this.value, [projectId.value]: { icon } });
+  getTaskProjectIds(projectId: ProjectId): TaskProjectId[] {
+    return this._value?.[projectId.value]?.taskProjectIds ?? [];
+  }
+
+  cloneWith(projectId: ProjectId, icon?: Icon, taskProjectIds?: TaskProjectId[]): ProjectConfig {
+    return ProjectConfig.create({
+      ...this.value,
+      [projectId.value]: { icon, taskProjectIds: taskProjectIds ?? this.value[projectId.value].taskProjectIds },
+    });
   }
 }

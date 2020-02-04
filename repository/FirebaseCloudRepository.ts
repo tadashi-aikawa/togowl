@@ -13,11 +13,17 @@ import { Icon } from '~/domain/common/Icon';
 import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 import { store } from '~/utils/firestore-facade';
+import { TaskConfig } from '~/domain/task/vo/TaskConfig';
+import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
 
 export interface FirestoreSlack {
   notifyTo?: string;
   incomingWebHookUrl?: string;
   proxy?: string;
+}
+
+export interface FirestoreTask {
+  token?: string;
 }
 
 export interface FirestoreTimer {
@@ -32,6 +38,7 @@ export interface FirestoreProject {
       url?: string;
       emoji?: string;
     };
+    taskProjectIds?: string[];
   };
 }
 
@@ -42,6 +49,10 @@ export interface FirestoreProjectCategory {
       emoji?: string;
     };
   };
+}
+
+export function toTaskConfig(data: FirestoreTask): TaskConfig {
+  return TaskConfig.create(data.token);
 }
 
 export function toTimerConfig(data: FirestoreTimer): TimerConfig {
@@ -56,6 +67,7 @@ export function toProjectConfig(data: FirestoreProject): ProjectConfig {
   return ProjectConfig.create(
     _.mapValues(data, meta => ({
       icon: meta.icon ? Icon.create(meta.icon) : undefined,
+      taskProjectIds: meta.taskProjectIds ? meta.taskProjectIds.map(TaskProjectId.create) : [],
     })),
   );
 }
@@ -66,6 +78,7 @@ export function fromProjectConfig(config: ProjectConfig): FirestoreProject {
       url: meta.icon?.url ?? '',
       emoji: meta.icon?.emoji ?? '',
     },
+    taskProjectIds: meta.taskProjectIds.map(x => x.value),
   }));
 }
 
@@ -172,6 +185,34 @@ class FirebaseCloudRepository implements CloudRepository {
           : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
       })
       .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
+  }
+
+  saveTaskConfig(config: TaskConfig): Promise<TogowlError | null> {
+    const document: FirestoreTask = {
+      token: config.token,
+    };
+    return store
+      .collection('task')
+      .doc(this.uid)
+      .set(document)
+      .then(() => {
+        return null;
+      })
+      .catch(err => TogowlError.create('SAVE_TASK_CONFIG_ERROR', 'Fail to save task config.', err));
+  }
+
+  loadTaskConfig(): Promise<Either<TogowlError, TaskConfig>> {
+    return store
+      .collection('task')
+      .doc(this.uid)
+      .get()
+      .then(x => {
+        const data = x.data() as FirestoreTask;
+        return data
+          ? right(toTaskConfig(data))
+          : left(TogowlError.create('GET_TASK_CONFIG_ERROR', 'Empty task config.'));
+      })
+      .catch(err => left(TogowlError.create('GET_TASK_CONFIG_ERROR', 'Fail to get task config.', err)));
   }
 
   saveProjectConfig(config: ProjectConfig): Promise<TogowlError | null> {

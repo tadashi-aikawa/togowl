@@ -75,11 +75,11 @@
       </v-tab>
 
       <v-tab href="#tabs-2" class="primary--text">
-        <v-icon>mdi-calendar</v-icon>
+        <v-icon>mdi-format-list-checkbox</v-icon>
       </v-tab>
 
-      <v-tab disabled href="#tabs-3" class="primary--text">
-        <v-icon>mdi-lock-question</v-icon>
+      <v-tab href="#tabs-3" class="primary--text">
+        <v-icon>mdi-calendar</v-icon>
       </v-tab>
 
       <v-tab-item value="tabs-1">
@@ -95,6 +95,18 @@
         </v-row>
       </v-tab-item>
       <v-tab-item value="tabs-2">
+        <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
+          <TaskEntries :tasks="tasks" :loading="isTasksLoading" />
+        </v-sheet>
+        <v-row v-if="tasksError" align="center" justify="center">
+          <div style="padding: 15px;">
+            <v-alert type="error">
+              {{ tasksError.message }}
+            </v-alert>
+          </div>
+        </v-row>
+      </v-tab-item>
+      <v-tab-item value="tabs-3">
         <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
 
         <v-bottom-sheet v-if="currentCalendarEntry" v-model="calendarBottomSheet">
@@ -103,7 +115,6 @@
           </v-list>
         </v-bottom-sheet>
       </v-tab-item>
-      <v-tab-item value="tabs-3">???</v-tab-item>
     </v-tabs>
 
     <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top>
@@ -121,7 +132,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator';
-import { notificationStore, timerStore } from '~/utils/store-accessor';
+import { notificationStore, taskStore, timerStore } from '~/utils/store-accessor';
 import { Entry } from '~/domain/timer/entity/Entry';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
@@ -132,9 +143,11 @@ import TimeEntry from '~/components/TimeEntry.vue';
 import EntryCalendar from '~/components/EntryCalendar.vue';
 import EntrySummary from '~/components/EntrySummary.vue';
 import TimeEntries from '~/components/TimeEntries.vue';
+import { Task } from '~/domain/task/entity/Task';
+import TaskEntries from '~/components/TaskEntries.vue';
 
 @Component({
-  components: { CurrentTimeEntry, TimeEntry, TimeEntries, EntryCalendar, EntrySummary },
+  components: { CurrentTimeEntry, TimeEntry, TimeEntries, TaskEntries, EntryCalendar, EntrySummary },
 })
 class Root extends Vue {
   snackbar = false;
@@ -266,6 +279,18 @@ class Root extends Vue {
     return timerStore.entryByIdError;
   }
 
+  get tasks(): Task[] {
+    return taskStore.tasksOrderAsDay;
+  }
+
+  get tasksStatus(): ActionStatus {
+    return taskStore.status;
+  }
+
+  get tasksError(): TogowlError | null {
+    return taskStore.error;
+  }
+
   get isRealtimeEnabled(): boolean {
     return timerStore.realtime;
   }
@@ -284,6 +309,10 @@ class Root extends Vue {
 
   get isEntriesLoading(): boolean {
     return this.entriesStatus === 'in_progress' && this.entries.length === 0;
+  }
+
+  get isTasksLoading(): boolean {
+    return this.tasksStatus === 'in_progress' && this.tasks.length === 0;
   }
 
   customFilter(item: Entry, queryText: string): boolean {

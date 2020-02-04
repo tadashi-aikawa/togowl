@@ -14,6 +14,9 @@ service cloud.firestore {
     match /timer/{userId}/{documents=**} {
       allow read, write: if request.auth.uid == userId
     }
+    match /task/{userId}/{documents=**} {
+      allow read, write: if request.auth.uid == userId
+    }
     match /users/{userId}/{documents=**} {
       allow read, write: if request.auth.uid == userId
     }

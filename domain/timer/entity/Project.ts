@@ -4,9 +4,16 @@ import { Entity } from '~/utils/entity';
 import { trimBracketContents } from '~/utils/string';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
 import { Icon } from '~/domain/common/Icon';
+import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
 
 export class Project implements Entity {
-  constructor(public id: ProjectId, public name: ProjectName, public icon?: Icon, public category?: ProjectCategory) {}
+  constructor(
+    public id: ProjectId,
+    public name: ProjectName,
+    public icon?: Icon,
+    public category?: ProjectCategory,
+    public taskProjectIds?: TaskProjectId[],
+  ) {}
 
   equals(entity?: Project): boolean {
     return this.id.equals(entity?.id);
@@ -16,7 +23,7 @@ export class Project implements Entity {
     return trimBracketContents(this.name.value);
   }
 
-  cloneWith(icon?: Icon, category?: ProjectCategory): Project {
-    return new Project(this.id, this.name, icon, category);
+  cloneWith(icon?: Icon, category?: ProjectCategory, taskProjectIds?: TaskProjectId[]): Project {
+    return new Project(this.id, this.name, icon, category, taskProjectIds);
   }
 }

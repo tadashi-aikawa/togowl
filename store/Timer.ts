@@ -25,6 +25,7 @@ import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 import { Project } from '~/domain/timer/entity/Project';
 import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
+import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
 
 let service: TimerService | null;
 
@@ -45,6 +46,7 @@ function addMetaToProject(
   return project.cloneWith(
     projectConfig?.getIcon(project.id),
     project.category ? addMetaToProjectCategory(project.category, projectCategoryConfig) : undefined,
+    projectConfig?.getTaskProjectIds(project.id),
   );
 }
 
@@ -113,6 +115,14 @@ class TimerModule extends VuexModule {
     return _(this.projects)
       .reject(p => !p.category)
       .groupBy(p => p.category?.id.value)
+      .value();
+  }
+
+  // FIXME: extract
+  get projectByTaskProjectId(): { [taskProjectId: number]: Project } {
+    return _(this.projects)
+      .flatMap(pj => pj.taskProjectIds?.map(tpid => [tpid.value, pj]) ?? [])
+      .fromPairs()
       .value();
   }
 

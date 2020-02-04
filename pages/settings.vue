@@ -15,6 +15,11 @@
       </v-card>
 
       <v-card class="card-area">
+        <v-img src="https://cdn.svgporn.com/logos/todoist-icon.svg" max-width="30" />
+        <SettingsTodoist />
+      </v-card>
+
+      <v-card class="card-area">
         <SettingsProject />
       </v-card>
     </v-container>
@@ -26,8 +31,9 @@ import { Component, Vue } from 'nuxt-property-decorator';
 import SettingsSlack from '~/components/SettingsSlack.vue';
 import SettingsToggl from '~/components/SettingsToggl.vue';
 import SettingsProject from '~/components/SettingsProject.vue';
+import SettingsTodoist from '~/components/SettingsTodoist.vue';
 
-@Component({ components: { SettingsSlack, SettingsToggl, SettingsProject } })
+@Component({ components: { SettingsSlack, SettingsToggl, SettingsTodoist, SettingsProject } })
 class Settings extends Vue {}
 
 export default Settings;

@@ -6,6 +6,7 @@ import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
 import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
+import { TaskConfig } from '~/domain/task/vo/TaskConfig';
 
 interface CloudRepository {
   login(payload?: LoginPayload): Promise<Either<TogowlError, User>>;
@@ -16,6 +17,9 @@ interface CloudRepository {
 
   saveTimerConfig(config: TimerConfig): Promise<TogowlError | null>;
   loadTimerConfig(): Promise<Either<TogowlError, TimerConfig>>;
+
+  saveTaskConfig(config: TaskConfig): Promise<TogowlError | null>;
+  loadTaskConfig(): Promise<Either<TogowlError, TaskConfig>>;
 
   saveProjectConfig(config: ProjectConfig): Promise<TogowlError | null>;
   loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>>;

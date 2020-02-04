@@ -19,70 +19,70 @@ export class TimerServiceImpl implements TimerService {
   private readonly workspaceId: number;
 
   constructor(togglToken: string, listener: TimerEventListener, workspaceId: number, proxy?: string) {
-    logger.put('TSI.constructor');
+    logger.put('TimerCI.constructor');
 
     this.restClient = new toggl.RestApi.ApiClient(togglToken, proxy);
     this.workspaceId = workspaceId;
 
     this.socketClient = toggl.SocketApi.ApiClient.use(togglToken, {
       onOpen: () => {
-        logger.put('TSI.onOpen');
+        logger.put('TimerCI.onOpen');
         listener.onStartSubscribe?.();
       },
       onClose: event => {
-        logger.put('TSI.onClose');
+        logger.put('TimerCI.onClose');
         logger.put(`[Code] ${event.code}`);
         logger.put(`[Reason] ${event.reason}`);
         listener.onEndSubscribe?.();
       },
       onError: event => {
-        logger.put('TSI.onError');
+        logger.put('TimerCI.onError');
         listener.onError?.(TogowlError.create('SUBSCRIBE_TIMER_ERROR', 'Fail to subscribe timer event', event.reason));
       },
       onInsertEntry: entry => {
-        logger.put('TSI.onInsertEntry');
+        logger.put('TimerCI.onInsertEntry');
         listener.onInsertEntry?.(this.transformEntry(entry));
       },
       onUpdateEntry: entry => {
-        logger.put('TSI.onUpdateEntry');
+        logger.put('TimerCI.onUpdateEntry');
         listener.onUpdateEntry?.(this.transformEntry(entry));
       },
       onDeleteEntry: entry => {
-        logger.put('TSI.onDeleteEntry');
+        logger.put('TimerCI.onDeleteEntry');
         listener.onDeleteEntry?.(this.transformEntry(entry));
       },
       onUpdateProject: _project => {
-        logger.put('TSI.onUpdateProject');
+        logger.put('TimerCI.onUpdateProject');
         listener.onUpdateProject?.();
       },
       onDeleteProject: _project => {
-        logger.put('TSI.onDeleteProject');
+        logger.put('TimerCI.onDeleteProject');
         listener.onUpdateProject?.();
       },
       onUpdateClient: _client => {
-        logger.put('TSI.onUpdateClient');
+        logger.put('TimerCI.onUpdateClient');
         listener.onUpdateProject?.();
       },
       onDeleteClient: _client => {
-        logger.put('TSI.onDeleteClient');
+        logger.put('TimerCI.onDeleteClient');
         listener.onUpdateProject?.();
       },
-      onResponsePing: () => logger.put('TSI.onResponsePing'),
+      onResponsePing: () => logger.put('TimerCI.onResponsePing'),
     });
   }
 
   terminate() {
-    logger.put('TSI.terminate');
+    logger.put('TimerCI.terminate');
     this.socketClient.terminate();
   }
 
   private async _fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     try {
       const entry = (await this.restClient.timeEntryCurrent()).data;
-      logger.put('TSI.fetchCurrentEntry.success');
+      logger.put('TimerCI.fetchCurrentEntry.success');
       return right(entry ? this.transformEntry(entry) : null);
     } catch (err) {
-      logger.put('TSI.fetchCurrentEntry.err');
+      logger.put('TimerCI.fetchCurrentEntry.err');
       logger.put(err.message);
       return left(TogowlError.create('FETCH_CURRENT_ENTRY', "Can't fetch current entry from Toggl", err.message));
     }
@@ -96,10 +96,10 @@ export class TimerServiceImpl implements TimerService {
   async startEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
       const startedEntry = (await this.restClient.timeEntryStart(entry.description, entry.project?.id.asNumber)).data;
-      logger.put('TSI.startEntry.success');
+      logger.put('TimerCI.startEntry.success');
       return right(this.transformEntry(startedEntry));
     } catch (err) {
-      logger.put('TSI.startEntry.err');
+      logger.put('TimerCI.startEntry.err');
       logger.put(err.message);
       return left(TogowlError.create('START_ENTRY', "Can't start entry from Toggl", err.message));
     }
@@ -110,10 +110,10 @@ export class TimerServiceImpl implements TimerService {
       const updatedEntry = (
         await this.restClient.timeEntryUpdate(entry.id.asNumber, this.transformPartialTimeEntry(value))
       ).data;
-      logger.put('TSI.updateEntry.success');
+      logger.put('TimerCI.updateEntry.success');
       return right(this.transformEntry(updatedEntry));
     } catch (err) {
-      logger.put('TSI.updateEntry.err');
+      logger.put('TimerCI.updateEntry.err');
       logger.put(err.message);
       return left(TogowlError.create('UPDATE_ENTRY', "Can't update entry from Toggl", err.message));
     }
@@ -122,10 +122,10 @@ export class TimerServiceImpl implements TimerService {
   async stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
       const afterEntry = (await this.restClient.timeEntryStop(entry.id.asNumber)).data;
-      logger.put('TSI.stopEntry.success');
+      logger.put('TimerCI.stopEntry.success');
       return right(this.transformEntry(afterEntry));
     } catch (err) {
-      logger.put('TSI.stopEntry.err');
+      logger.put('TimerCI.stopEntry.err');
       logger.put(err.message);
       return left(TogowlError.create('STOP_CURRENT_ENTRY', "Can't stop entry from Toggl", err.message));
     }
@@ -134,10 +134,10 @@ export class TimerServiceImpl implements TimerService {
   async deleteEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
       await this.restClient.timeEntryDelete(entry.id.asNumber);
-      logger.put('TSI.deleteEntry.success');
+      logger.put('TimerCI.deleteEntry.success');
       return right(entry);
     } catch (err) {
-      logger.put('TSI.deleteEntry.err');
+      logger.put('TimerCI.deleteEntry.err');
       logger.put(err.message);
       return left(TogowlError.create('DELETE_CURRENT_ENTRY', "Can't delete entry from Toggl", err.message));
     }
@@ -146,10 +146,10 @@ export class TimerServiceImpl implements TimerService {
   async _fetchEntries(since: DateTime): Promise<Either<TogowlError, Entry[]>> {
     try {
       const entries = await this.restClient.entries(since.rfc3339);
-      logger.put('TSI.fetchEntries.success');
+      logger.put('TimerCI.fetchEntries.success');
       return right(entries.map(e => this.transformEntry(e)));
     } catch (err) {
-      logger.put('TSI.fetchEntries.err');
+      logger.put('TimerCI.fetchEntries.err');
       logger.put(err.message);
       return left(TogowlError.create('FETCH_ENTRIES', "Can't fetch entries from Toggl", err.message));
     }
@@ -167,7 +167,7 @@ export class TimerServiceImpl implements TimerService {
         this.restClient.projects(this.workspaceId),
         this.restClient.clients(this.workspaceId),
       ]);
-      logger.put('TSI.fetchProjects.success');
+      logger.put('TimerCI.fetchProjects.success');
       return right(
         projects.map((x: toggl.Project) =>
           this.transformProject(
@@ -180,7 +180,7 @@ export class TimerServiceImpl implements TimerService {
         ),
       );
     } catch (err) {
-      logger.put('TSI.fetchProjects.err');
+      logger.put('TimerCI.fetchProjects.err');
       logger.put(err.message);
       return left(TogowlError.create('FETCH_PROJECTS', "Can't fetch projects from Toggl", err.message));
     }
