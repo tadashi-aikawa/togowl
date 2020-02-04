@@ -96,7 +96,7 @@
       </v-tab-item>
       <v-tab-item value="tabs-2">
         <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TaskEntries :tasks="tasks" :loading="isTasksLoading" />
+          <TaskEntries :tasks="tasks" :loading="isTasksLoading" @on-click-start="startFromTask" />
         </v-sheet>
         <v-row v-if="tasksError" align="center" justify="center">
           <div style="padding: 15px;">
@@ -180,6 +180,25 @@ class Root extends Vue {
       fold(
         _err => {},
         async _entry => {
+          const err = await notificationStore.notifyStartEvent(entry);
+          if (err) {
+            this.showSnackBar(err.message, true);
+          }
+        },
+      ),
+    );
+
+    this.waitForBlockedAction = false;
+  }
+
+  async startFromTask(task: Task) {
+    this.waitForBlockedAction = true;
+
+    pipe(
+      await timerStore.startEntryByTask(task),
+      fold(
+        _err => {},
+        async entry => {
           const err = await notificationStore.notifyStartEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);

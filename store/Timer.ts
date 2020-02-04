@@ -14,6 +14,7 @@ import { ActionStatus } from '~/domain/common/ActionStatus';
 import { DateTime } from '~/domain/common/DateTime';
 import { createAction } from '~/utils/firestore-facade';
 import { addMetaToEntry } from '~/domain/timer/service/TimerMetaService';
+import { Task } from '~/domain/task/entity/Task';
 
 let service: TimerService | null;
 
@@ -161,7 +162,27 @@ class TimerModule extends VuexModule {
       return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
     }
     return pipe(
-      await service!.startEntry(entry),
+      await service!.startEntry(entry.description, entry.project),
+      fold(
+        err => {
+          this.setCurrentEntry(null);
+          return left(err);
+        },
+        entry => {
+          this.setCurrentEntry(entry);
+          return right(addMetaToEntry(entry, projectStore.projectById));
+        },
+      ),
+    );
+  }
+
+  @Action
+  async startEntryByTask(task: Task): Promise<Either<TogowlError, Entry>> {
+    if (!this.timerConfig?.token) {
+      return left(TogowlError.create('TIMER_TOKEN_IS_EMPTY', 'Token for timer is required! It is empty!'));
+    }
+    return pipe(
+      await service!.startEntry(task.titleWithoutDecorated, task.entryProject),
       fold(
         err => {
           this.setCurrentEntry(null);

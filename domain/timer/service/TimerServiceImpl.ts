@@ -93,9 +93,9 @@ export class TimerServiceImpl implements TimerService {
     return this.throttleFetchCurrentEntry();
   }
 
-  async startEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
+  async startEntry(description: string, project?: Project): Promise<Either<TogowlError, Entry>> {
     try {
-      const startedEntry = (await this.restClient.timeEntryStart(entry.description, entry.project?.id.asNumber)).data;
+      const startedEntry = (await this.restClient.timeEntryStart(description, project?.id.asNumber)).data;
       logger.put('TimerCI.startEntry.success');
       return right(this.transformEntry(startedEntry));
     } catch (err) {

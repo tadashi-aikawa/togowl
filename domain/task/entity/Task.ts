@@ -3,6 +3,7 @@ import { TaskId } from '~/domain/task/vo/TaskId';
 import { ProjectId } from '~/domain/task/vo/ProjectId';
 import { Project } from '~/domain/timer/entity/Project';
 import { Priority } from '~/domain/task/vo/Priority';
+import { trimBracketContents, trimPrefixEmoji } from '~/utils/string';
 
 // FIXME: assign entryProject
 export class Task implements Entity {
@@ -17,6 +18,10 @@ export class Task implements Entity {
 
   equals(task?: Task): boolean {
     return this.id.equals(task?.id);
+  }
+
+  get titleWithoutDecorated(): string {
+    return trimPrefixEmoji(trimBracketContents(this.title));
   }
 
   cloneWith(entryProject?: Project): Task {
