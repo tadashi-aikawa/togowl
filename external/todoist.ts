@@ -83,3 +83,57 @@ export namespace RestApi {
     }
   }
 }
+
+export namespace SocketApi {
+  interface EventListener {
+    onOpen?: () => void;
+    onSyncNeeded?: () => void;
+    onClose?: (event: CloseEvent) => void;
+    onError?: (err: any) => void;
+  }
+
+  interface SyncNeededEvent {
+    type: 'sync_needed';
+  }
+  interface AgendaUpdatedEvent {
+    type: 'agenda_updated';
+  }
+  type EventMessage = SyncNeededEvent | AgendaUpdatedEvent;
+
+  export class ApiClient {
+    private constructor(private socket: WebSocket, private onCloseListener: any) {}
+
+    terminate() {
+      this.socket.removeEventListener('close', this.onCloseListener);
+      this.socket.close(1000, 'Terminate client.');
+    }
+
+    static use(token: string, listener: EventListener): ApiClient {
+      const socket = new WebSocket(`wss://ws.todoist.com/ws?token=${token}`);
+
+      const onOpenListener = (ev: WebSocketEventMap['open']) => listener.onOpen?.();
+      const onCloseListener = (ev: WebSocketEventMap['close']) => listener.onClose?.(ev);
+      const onErrorListener = (ev: WebSocketEventMap['error']) => listener.onError?.(ev);
+      const onMessageListener = (ev: WebSocketEventMap['message']) => {
+        const data: EventMessage = JSON.parse(ev.data);
+        switch (data.type) {
+          case 'sync_needed':
+            listener.onSyncNeeded?.();
+            break;
+          case 'agenda_updated':
+            // DO NOTHING
+            break;
+          default:
+          // DO NOTHING
+        }
+      };
+
+      socket.addEventListener('open', onOpenListener);
+      socket.addEventListener('close', onCloseListener);
+      socket.addEventListener('error', onErrorListener);
+      socket.addEventListener('message', onMessageListener);
+
+      return new ApiClient(socket, onCloseListener);
+    }
+  }
+}

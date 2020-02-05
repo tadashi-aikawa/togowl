@@ -93,7 +93,13 @@ class TaskModule extends VuexModule {
     this.configError = error;
   }
 
-  @Action
+  realtime: boolean = false;
+  @Mutation
+  setRealtime(realtime: boolean) {
+    this.realtime = realtime;
+  }
+
+  @Action({ rawError: true })
   async updateTaskConfig(config: TaskConfig) {
     this.setConfigError(null);
     this.setConfigStatus('in_progress');
@@ -109,7 +115,7 @@ class TaskModule extends VuexModule {
     }
   }
 
-  @Action
+  @Action({ rawError: true })
   async fetchTasks(): Promise<void> {
     this.setStatus('in_progress');
     pipe(
@@ -128,14 +134,14 @@ class TaskModule extends VuexModule {
     );
   }
 
-  @Action
+  @Action({ rawError: true })
   async completeTask(task: Task): Promise<void> {
     // TODO: Illegal case
     this.setTaskById(_.omit(this._taskById, [task.id.asNumber]));
     service?.completeTask(task);
   }
 
-  @Action
+  @Action({ rawError: true })
   async fetchProjects(): Promise<void> {
     this.setProjectStatus('in_progress');
     pipe(
@@ -157,13 +163,23 @@ class TaskModule extends VuexModule {
   @Action({ rawError: true })
   private async updateService(): Promise<void> {
     if (service) {
-      // TODO:
-      //  service.terminate();
+      service.terminate();
     }
 
-    service = await createTaskService();
-    await this.fetchTasks();
-    // TODO: set listener
+    service = await createTaskService({
+      onStartSubscribe: () => {
+        this.setRealtime(true);
+        this.fetchTasks();
+      },
+      onEndSubscribe: async () => {
+        this.setRealtime(false);
+        await this.updateService();
+      },
+      onError: (err: TogowlError) => this.setError,
+      onSyncNeeded: () => {
+        this.fetchTasks();
+      },
+    });
   }
 
   @Action({ rawError: true })

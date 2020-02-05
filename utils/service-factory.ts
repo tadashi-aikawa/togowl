@@ -6,7 +6,7 @@ import { TimerServiceImpl } from '~/domain/timer/service/TimerServiceImpl';
 import { NotificationService } from '~/domain/notification/service/NotificationService';
 import { NotificationServiceImpl } from '~/domain/notification/service/NotificationServiceImpl';
 import { TogowlError } from '~/domain/common/TogowlError';
-import { TaskService } from '~/domain/task/service/TaskService';
+import { TaskEventListener, TaskService } from '~/domain/task/service/TaskService';
 import { TaskServiceImpl } from '~/domain/task/service/TaskServiceImpl';
 
 export async function createTimerService(listener: TimerEventListener): Promise<TimerService | null> {
@@ -20,12 +20,12 @@ export async function createTimerService(listener: TimerEventListener): Promise<
   );
 }
 
-export async function createTaskService(): Promise<TaskService | null> {
+export async function createTaskService(listener: TaskEventListener): Promise<TaskService | null> {
   return pipe(
     await cloudRepository.loadTaskConfig(),
     fold(
       _err => null,
-      config => new TaskServiceImpl(config.token!),
+      config => new TaskServiceImpl(config.token!, config.syncToken!, listener),
     ),
   );
 }

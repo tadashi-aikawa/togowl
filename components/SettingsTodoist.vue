@@ -8,6 +8,12 @@
           placeholder="Show https://todoist.com/prefs/integrations"
           clearable
         />
+        <v-text-field
+          v-model="todoistWebSocketToken"
+          label="Todoist Websocket Token"
+          placeholder="Show your chrome DevTools :)"
+          clearable
+        />
       </v-col>
     </v-row>
 
@@ -36,9 +42,11 @@ class SettingsTodoist extends Vue {
   isValid = true;
 
   todoistApiToken = '';
+  todoistWebSocketToken = '';
 
   mounted() {
     this.todoistApiToken = taskStore.taskConfig?.token ?? '';
+    this.todoistWebSocketToken = taskStore.taskConfig?.syncToken ?? '';
   }
 
   get isTaskConfigUpdating(): boolean {
@@ -50,7 +58,7 @@ class SettingsTodoist extends Vue {
   }
 
   saveTaskConfig() {
-    taskStore.updateTaskConfig(TaskConfig.create(this.todoistApiToken));
+    taskStore.updateTaskConfig(TaskConfig.create(this.todoistApiToken, this.todoistWebSocketToken));
   }
 }
 export default SettingsTodoist;

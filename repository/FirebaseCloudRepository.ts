@@ -24,6 +24,7 @@ export interface FirestoreSlack {
 
 export interface FirestoreTask {
   token?: string;
+  syncToken?: string;
 }
 
 export interface FirestoreTimer {
@@ -52,7 +53,14 @@ export interface FirestoreProjectCategory {
 }
 
 export function toTaskConfig(data: FirestoreTask): TaskConfig {
-  return TaskConfig.create(data.token);
+  return TaskConfig.create(data.token, data.syncToken);
+}
+
+export function fromTaskConfig(config: TaskConfig): FirestoreTask {
+  return {
+    token: config.token ?? '',
+    syncToken: config.syncToken ?? '',
+  };
 }
 
 export function toTimerConfig(data: FirestoreTimer): TimerConfig {
@@ -188,13 +196,10 @@ class FirebaseCloudRepository implements CloudRepository {
   }
 
   saveTaskConfig(config: TaskConfig): Promise<TogowlError | null> {
-    const document: FirestoreTask = {
-      token: config.token,
-    };
     return store
       .collection('task')
       .doc(this.uid)
-      .set(document)
+      .set(fromTaskConfig(config))
       .then(() => {
         return null;
       })

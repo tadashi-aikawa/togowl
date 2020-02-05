@@ -5,7 +5,7 @@ import * as todoist from '~/external/todoist';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { Either, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { Task } from '~/domain/task/entity/Task';
-import { TaskService } from '~/domain/task/service/TaskService';
+import { TaskEventListener, TaskService } from '~/domain/task/service/TaskService';
 import dayjs from '~/node_modules/dayjs';
 import { TaskId } from '~/domain/task/vo/TaskId';
 import { ProjectId } from '~/domain/task/vo/ProjectId';
@@ -16,6 +16,7 @@ import { ProjectName } from '~/domain/task/vo/ProjectlName';
 export class TaskServiceImpl implements TaskService {
   private restClient: todoist.RestApi.RestClient;
   private syncClient: todoist.SyncApi.SyncClient;
+  private socketClient: todoist.SocketApi.ApiClient;
 
   private itemSyncToken: string = '*';
   private taskById: Dictionary<todoist.SyncApi.Task>;
@@ -23,15 +24,36 @@ export class TaskServiceImpl implements TaskService {
   private projectSyncToken: string = '*';
   private projectById: Dictionary<todoist.SyncApi.Project>;
 
-  constructor(todoistToken: string) {
+  constructor(todoistToken: string, todoistWebSocketToken: string, listener: TaskEventListener) {
     logger.put('TaskSI.constructor');
     this.restClient = new todoist.RestApi.RestClient(todoistToken);
     this.syncClient = new todoist.SyncApi.SyncClient(todoistToken);
+
+    this.socketClient = todoist.SocketApi.ApiClient.use(todoistWebSocketToken, {
+      onOpen: () => {
+        logger.put('TaskCI.onOpen');
+        listener.onStartSubscribe?.();
+      },
+      onClose: event => {
+        logger.put('TaskCI.onClose');
+        logger.put(`[Code] ${event.code}`);
+        logger.put(`[Reason] ${event.reason}`);
+        listener.onEndSubscribe?.();
+      },
+      onError: event => {
+        logger.put('TaskCI.onError');
+        listener.onError?.(TogowlError.create('SUBSCRIBE_TASK_ERROR', 'Fail to subscribe task event', event.reason));
+      },
+      onSyncNeeded: () => {
+        logger.put('TaskCI.onSyncNeeded');
+        listener.onSyncNeeded?.();
+      },
+    });
   }
 
   terminate() {
     logger.put('TaskSI.terminate');
-    // TODO stop streaming
+    this.socketClient.terminate();
   }
 
   private toTask(task: todoist.SyncApi.Task): Task {
@@ -48,7 +70,7 @@ export class TaskServiceImpl implements TaskService {
     return new Project(ProjectId.create(project.id), ProjectName.create(project.name));
   }
 
-  async fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
+  async _fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
     try {
       const res = (await this.syncClient.sync(['items', 'day_orders'], this.itemSyncToken)).data;
       this.itemSyncToken = res.sync_token;
@@ -79,6 +101,11 @@ export class TaskServiceImpl implements TaskService {
     } catch (err) {
       return left(TogowlError.create('FETCH_DAILY_TASKS', "Can't fetch daily tasks from Todoist", err.message));
     }
+  }
+
+  private throttleFetchDailyTasks = _.throttle(this._fetchDailyTasks, 1000, { trailing: false });
+  fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
+    return this.throttleFetchDailyTasks();
   }
 
   async completeTask(task: Task): Promise<TogowlError | null> {
