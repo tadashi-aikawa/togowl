@@ -351,10 +351,12 @@ export default Root;
 
 <style scoped>
 .tab-content-tracking-on {
+  padding: 5px 0;
   height: calc(100vh - 325px);
   overflow-y: scroll;
 }
 .tab-content-tracking-off {
+  padding: 5px;
   height: calc(100vh - 245px);
   overflow-y: scroll;
 }
