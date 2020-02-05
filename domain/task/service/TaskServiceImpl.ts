@@ -12,6 +12,7 @@ import { ProjectId } from '~/domain/task/vo/ProjectId';
 import { Priority } from '~/domain/task/vo/Priority';
 import { Project } from '~/domain/task/entity/Project';
 import { ProjectName } from '~/domain/task/vo/ProjectlName';
+import { DateTime } from '~/domain/common/DateTime';
 
 export class TaskServiceImpl implements TaskService {
   private restClient: todoist.RestApi.RestClient;
@@ -63,6 +64,8 @@ export class TaskServiceImpl implements TaskService {
       task.day_order,
       Priority.create(task.priority),
       task.project_id ? ProjectId.create(task.project_id) : undefined,
+      undefined,
+      task.due ? DateTime.create(task.due.date) : undefined,
     );
   }
 
@@ -88,11 +91,13 @@ export class TaskServiceImpl implements TaskService {
       }
 
       const today = dayjs().format('YYYY-MM-DD');
-      // TODO: startsWith使わずに、dayjsオブジェクト作ってちゃんと書く
+      const yesterday = dayjs()
+        .subtract(1, 'day')
+        .format('YYYY-MM-DD');
       return right(
         _(this.taskById)
           .values()
-          .filter(x => x.due?.date.startsWith(today) ?? false)
+          .filter(x => (x.due?.date.startsWith(today) || x.due?.date.startsWith(yesterday)) ?? false)
           .reject(x => x.is_deleted === 1)
           .reject(x => x.checked === 1)
           .map(x => this.toTask(x))

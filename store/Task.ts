@@ -38,6 +38,7 @@ class TaskModule extends VuexModule {
     return _(this.tasks)
       .orderBy(x => x.dayOrder)
       .orderBy(x => x.priority.value, 'desc')
+      .orderBy(x => x.dueDate?.unix, 'asc')
       .value();
   }
 
@@ -180,6 +181,8 @@ class TaskModule extends VuexModule {
         this.fetchTasks();
       },
     });
+    // Show quickly as well as we can
+    this.fetchTasks();
   }
 
   @Action({ rawError: true })

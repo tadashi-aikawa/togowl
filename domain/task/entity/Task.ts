@@ -4,6 +4,7 @@ import { ProjectId } from '~/domain/task/vo/ProjectId';
 import { Project } from '~/domain/timer/entity/Project';
 import { Priority } from '~/domain/task/vo/Priority';
 import { trimBracketContents, trimPrefixEmoji } from '~/utils/string';
+import { DateTime } from '~/domain/common/DateTime';
 
 // FIXME: assign entryProject
 export class Task implements Entity {
@@ -14,6 +15,7 @@ export class Task implements Entity {
     public priority: Priority,
     public projectId?: ProjectId,
     public entryProject?: Project,
+    public dueDate?: DateTime,
   ) {}
 
   equals(task?: Task): boolean {
@@ -25,6 +27,6 @@ export class Task implements Entity {
   }
 
   cloneWith(entryProject?: Project): Task {
-    return new Task(this.id, this.title, this.dayOrder, this.priority, this.projectId, entryProject);
+    return new Task(this.id, this.title, this.dayOrder, this.priority, this.projectId, entryProject, this.dueDate);
   }
 }
