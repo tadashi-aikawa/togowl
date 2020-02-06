@@ -113,9 +113,9 @@ export class TaskServiceImpl implements TaskService {
     return this.throttleFetchDailyTasks();
   }
 
-  async completeTask(task: Task): Promise<TogowlError | null> {
+  async completeTask(taskId: TaskId): Promise<TogowlError | null> {
     try {
-      await this.restClient.closeTask(task.id.asNumber);
+      await this.restClient.closeTask(taskId.asNumber);
       return null;
     } catch (err) {
       return TogowlError.create('COMPLETE_TASK', "Can't complete task on Todoist", err.message);

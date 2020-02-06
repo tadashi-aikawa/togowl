@@ -15,6 +15,14 @@ import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 import { store } from '~/utils/firestore-facade';
 import { TaskConfig } from '~/domain/task/vo/TaskConfig';
 import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
+import { TaskId } from '~/domain/task/vo/TaskId';
+import { RecentTask } from '~/domain/common/RecentTask';
+import { EntryId } from '~/domain/timer/vo/EntryId';
+
+export interface FirestoreRecentTask {
+  taskId?: string;
+  entryId?: string;
+}
 
 export interface FirestoreSlack {
   notifyTo?: string;
@@ -49,6 +57,20 @@ export interface FirestoreProjectCategory {
       url?: string;
       emoji?: string;
     };
+  };
+}
+
+export function toRecentTask(data: FirestoreRecentTask): RecentTask {
+  return RecentTask.create(
+    data.taskId ? TaskId.create(data.taskId) : undefined,
+    data.entryId ? EntryId.create(data.entryId) : undefined,
+  );
+}
+
+export function fromRecentTask(recentTask: RecentTask): FirestoreRecentTask {
+  return {
+    taskId: recentTask.taskId?.value ?? '',
+    entryId: recentTask.entryId?.value ?? '',
   };
 }
 
@@ -163,6 +185,17 @@ class FirebaseCloudRepository implements CloudRepository {
           : left(TogowlError.create('GET_SLACK_CONFIG_ERROR', 'Empty slack config.'));
       })
       .catch(err => left(TogowlError.create('GET_SLACK_CONFIG_ERROR', 'Fail to get slack config.', err)));
+  }
+
+  saveRecentTask(recentTask: RecentTask): Promise<TogowlError | null> {
+    return store
+      .collection('recentTask')
+      .doc(this.uid)
+      .set(fromRecentTask(recentTask))
+      .then(() => {
+        return null;
+      })
+      .catch(err => TogowlError.create('SAVE_RECENT_TASK_ERROR', 'Fail to save recent task.', err));
   }
 
   saveTimerConfig(config: TimerConfig): Promise<TogowlError | null> {

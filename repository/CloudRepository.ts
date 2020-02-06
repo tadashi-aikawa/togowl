@@ -7,10 +7,13 @@ import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
 import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 import { TaskConfig } from '~/domain/task/vo/TaskConfig';
+import { RecentTask } from '~/domain/common/RecentTask';
 
 interface CloudRepository {
   login(payload?: LoginPayload): Promise<Either<TogowlError, User>>;
   logout(): void;
+
+  saveRecentTask(recentTask: RecentTask): Promise<TogowlError | null>;
 
   saveSlackConfig(config: SlackConfig): Promise<TogowlError | null>;
   loadSlackConfig(): Promise<Either<TogowlError, SlackConfig>>;

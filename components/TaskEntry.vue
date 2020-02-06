@@ -42,7 +42,7 @@ class TaskEntry extends Vue {
   }
 
   handleCheckButton() {
-    taskStore.completeTask(this.task);
+    taskStore.completeTask(this.task.id);
   }
 }
 export default TaskEntry;

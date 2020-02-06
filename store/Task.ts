@@ -13,6 +13,7 @@ import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { cloudRepository, projectStore } from '~/store/index';
 import { createAction } from '~/utils/firestore-facade';
 import { Project } from '~/domain/task/entity/Project';
+import { TaskId } from '~/domain/task/vo/TaskId';
 
 let service: TaskService | null;
 
@@ -136,10 +137,10 @@ class TaskModule extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async completeTask(task: Task): Promise<void> {
+  async completeTask(taskId: TaskId): Promise<void> {
     // TODO: Illegal case
-    this.setTaskById(_.omit(this._taskById, [task.id.asNumber]));
-    service?.completeTask(task);
+    this.setTaskById(_.omit(this._taskById, [taskId.asNumber]));
+    service?.completeTask(taskId);
   }
 
   @Action({ rawError: true })

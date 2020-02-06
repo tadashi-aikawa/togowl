@@ -17,6 +17,9 @@ service cloud.firestore {
     match /task/{userId}/{documents=**} {
       allow read, write: if request.auth.uid == userId
     }
+    match /recentTask/{userId}/{documents=**} {
+      allow read, write: if request.auth.uid == userId
+    }
     match /users/{userId}/{documents=**} {
       allow read, write: if request.auth.uid == userId
     }

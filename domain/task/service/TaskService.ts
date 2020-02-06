@@ -2,6 +2,7 @@ import { TogowlError } from '~/domain/common/TogowlError';
 import { Either } from '~/node_modules/fp-ts/lib/Either';
 import { Task } from '~/domain/task/entity/Task';
 import { Project } from '~/domain/task/entity/Project';
+import { TaskId } from '~/domain/task/vo/TaskId';
 
 export interface TaskEventListener {
   onStartSubscribe?(): void;
@@ -12,7 +13,7 @@ export interface TaskEventListener {
 
 export interface TaskService {
   fetchDailyTasks(): Promise<Either<TogowlError, Task[]>>;
-  completeTask(task: Task): Promise<TogowlError | null>;
+  completeTask(taskId: TaskId): Promise<TogowlError | null>;
   fetchProjects(): Promise<Either<TogowlError, Project[]>>;
   terminate(): void;
 }

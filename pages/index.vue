@@ -231,7 +231,7 @@ class Root extends Vue {
   async pause() {
     this.waitForBlockedAction = true;
     pipe(
-      await timerStore.completeCurrentEntry(),
+      await timerStore.pauseCurrentEntry(),
       fold(
         _err => {},
         async entry => {

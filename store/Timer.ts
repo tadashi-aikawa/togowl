@@ -8,13 +8,14 @@ import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
 import { Either, fold, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { Entry } from '~/domain/timer/entity/Entry';
 import { createTimerService } from '~/utils/service-factory';
-import { FirestoreTimer, toTimerConfig } from '~/repository/FirebaseCloudRepository';
-import { cloudRepository, projectStore } from '~/store/index';
+import { FirestoreRecentTask, FirestoreTimer, toRecentTask, toTimerConfig } from '~/repository/FirebaseCloudRepository';
+import { cloudRepository, projectStore, taskStore } from '~/store/index';
 import { ActionStatus } from '~/domain/common/ActionStatus';
 import { DateTime } from '~/domain/common/DateTime';
 import { createAction } from '~/utils/firestore-facade';
 import { addMetaToEntry } from '~/domain/timer/service/TimerMetaService';
 import { Task } from '~/domain/task/entity/Task';
+import { RecentTask } from '~/domain/common/RecentTask';
 
 let service: TimerService | null;
 
@@ -26,9 +27,14 @@ const MAX_HISTORY_DAYS = 10;
 @Module({ name: 'Timer', namespaced: true, stateFactory: true })
 class TimerModule extends VuexModule {
   private _timer: FirestoreTimer | null = null;
+  private _recentTask: FirestoreRecentTask | null = null;
 
   get timerConfig(): TimerConfig | null {
     return this._timer ? toTimerConfig(this._timer) : null;
+  }
+
+  get recentTask(): RecentTask | null {
+    return this._recentTask ? toRecentTask(this._recentTask) : null;
   }
 
   get currentEntry(): Entry | null {
@@ -190,6 +196,8 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(entry);
+          // TODO: Move to service
+          cloudRepository.saveRecentTask(RecentTask.create(task.id, entry.id));
           return right(addMetaToEntry(entry, projectStore.projectById));
         },
       ),
@@ -216,6 +224,9 @@ class TimerModule extends VuexModule {
         },
         entry => {
           this.setCurrentEntry(null);
+          if (this.recentTask?.taskId && this.recentTask?.entryId?.equals(entry.id)) {
+            taskStore.completeTask(this.recentTask?.taskId);
+          }
           return right(addMetaToEntry(entry, projectStore.projectById));
         },
       ),
@@ -223,7 +234,7 @@ class TimerModule extends VuexModule {
   }
 
   @Action
-  async pauseCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+  async pauseCurrentEntry(): Promise<Either<TogowlError, Entry>> {
     // XXX: This action is similar to completeCurrentEntry but not same
     const config = this.timerConfig;
     if (!config?.token) {
@@ -372,6 +383,7 @@ class TimerModule extends VuexModule {
   @Action({ rawError: true })
   async init(uid: UId) {
     createAction(uid.value, '_timer', 'timer')(this.context);
+    createAction(uid.value, '_recentTask', 'recentTask')(this.context);
     await this.updateService();
   }
 }
