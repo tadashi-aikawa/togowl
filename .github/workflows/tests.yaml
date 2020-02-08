@@ -26,6 +26,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - run: npm install
+      - run: cp .firebase.config.sample.json .firebase.config.json
       - run: npm run build
       - run: npm test
 

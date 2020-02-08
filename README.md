@@ -32,19 +32,7 @@ Create togowl app on firebase as different name (ex: yourtogowl)
 
 ### Create `.firebase.config.json`
 
-For example.
-
-```json
-{
-  "apiKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-  "authDomain": "yourtogowl.firebaseapp.com",
-  "databaseURL": "https://yourtogowl.firebaseio.com",
-  "projectId": "yourtogowl",
-  "storageBucket": "yourtogowl.appspot.com",
-  "messagingSenderId": "777777777777",
-  "appId": "1:666666666666:web:aaaaaaaaaaaaaaaaaaaaaa"
-}
-```
+Please copy `.firebase.config.sample.json` and edit it.
 
 You can see in `Project Overview > Settings`
 
