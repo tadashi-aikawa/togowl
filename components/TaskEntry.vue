@@ -3,7 +3,7 @@
     <v-list-item-avatar style="margin-right: 5px;">
       <v-icon class="drag-and-drop-handler" style="cursor: move; color: grey;">mdi-drag-vertical</v-icon>
       <v-icon
-        class="check-button drag-and-drop-handler"
+        class="check-button"
         style="padding-left: 0;"
         @mouseenter="checkIcon = 'mdi-check-circle-outline'"
         @mouseleave="checkIcon = 'mdi-checkbox-blank-circle-outline'"
