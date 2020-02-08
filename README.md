@@ -54,6 +54,12 @@ You can see in `Project Overview > Settings`
 $ npm run dev
 ```
 
+### Tests
+
+```
+$ npm test
+```
+
 ### Build for production and launch server
 
 ```
