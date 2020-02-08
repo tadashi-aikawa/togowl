@@ -1,8 +1,10 @@
 <template>
   <v-list-item :key="task.id.value" two-line>
     <v-list-item-avatar style="margin-right: 5px;">
+      <v-icon class="drag-and-drop-handler" style="cursor: move; color: grey;">mdi-drag-vertical</v-icon>
       <v-icon
-        class="check-button"
+        class="check-button drag-and-drop-handler"
+        style="padding-left: 0;"
         @mouseenter="checkIcon = 'mdi-check-circle-outline'"
         @mouseleave="checkIcon = 'mdi-checkbox-blank-circle-outline'"
         @click="handleCheckButton"
