@@ -144,6 +144,17 @@ class TaskModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  async updateTasksOrder(tasks: Task[]): Promise<void> {
+    const orderedTasks = _(tasks)
+      .map((v, idx) => v.cloneWithDayOrder(idx + 1))
+      .keyBy(x => x.id.asNumber)
+      .value();
+    this.setTaskById(orderedTasks);
+    // TODO: Illegal case
+    service!.updateTasksOrder(orderedTasks);
+  }
+
+  @Action({ rawError: true })
   async fetchProjects(): Promise<void> {
     this.setProjectStatus('in_progress');
     pipe(

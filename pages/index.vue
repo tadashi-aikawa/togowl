@@ -84,7 +84,12 @@
 
       <v-tab-item value="tabs-1">
         <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TaskEntries :tasks="tasks" :loading="isTasksLoading" @on-click-start="startFromTask" />
+          <TaskEntries
+            :tasks="tasks"
+            :loading="isTasksLoading"
+            @on-click-start="startFromTask"
+            @on-change-order="updateTasksOrder"
+          />
         </v-sheet>
         <v-row v-if="tasksError" align="center" justify="center">
           <div style="padding: 15px;">
@@ -268,6 +273,10 @@ class Root extends Vue {
       ),
     );
     this.waitForBlockedAction = false;
+  }
+
+  async updateTasksOrder(tasks: Task[]) {
+    await taskStore.updateTasksOrder(tasks);
   }
 
   get fetchingStatus(): ActionStatus {

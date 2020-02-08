@@ -1,7 +1,8 @@
 <template>
-  <v-slide-y-transition group tag="v-list">
-    <template v-for="task in tasks">
+  <div>
+    <draggable :list="_tasks" :animation="150" @sort="onMove">
       <v-lazy
+        v-for="task in tasks"
         :key="task.id.value"
         transition="fade-transition"
         :options="{
@@ -11,19 +12,21 @@
       >
         <TaskEntry :task="task" @on-click-start="handleClickPlayButton" />
       </v-lazy>
-    </template>
+    </draggable>
     <v-overlay key="loading" absolute :value="loading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
-  </v-slide-y-transition>
+  </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
+// @ts-ignore
+import draggable from 'vuedraggable';
+import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
 import { Task } from '~/domain/task/entity/Task';
 import TaskEntry from '~/components/TaskEntry.vue';
 
 @Component({
-  components: { TaskEntry },
+  components: { TaskEntry, draggable },
 })
 class TaskEntries extends Vue {
   @Prop()
@@ -32,8 +35,19 @@ class TaskEntries extends Vue {
   @Prop({ default: false })
   loading: boolean;
 
+  _tasks: Task[] = [];
+
+  @Watch('tasks', { immediate: true })
+  updateTasks() {
+    this._tasks = this.tasks;
+  }
+
   handleClickPlayButton(task: Task) {
     this.$emit('on-click-start', task);
+  }
+
+  onMove() {
+    this.$emit('on-change-order', this._tasks);
   }
 }
 export default TaskEntries;

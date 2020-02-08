@@ -27,6 +27,12 @@ export class Task implements Entity {
   }
 
   cloneWith(entryProject?: Project): Task {
+    // TODO: refactoring..
     return new Task(this.id, this.title, this.dayOrder, this.priority, this.projectId, entryProject, this.dueDate);
+  }
+
+  cloneWithDayOrder(dayOrder: number): Task {
+    // TODO: refactoring..
+    return new Task(this.id, this.title, dayOrder, this.priority, this.projectId, this.entryProject, this.dueDate);
   }
 }

@@ -122,6 +122,16 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
+  async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+    try {
+      const res = (await this.syncClient.syncItemUpdateDayOrders(_.mapValues(taskById, x => x.dayOrder))).data;
+      this.itemSyncToken = res.sync_token;
+      return null;
+    } catch (err) {
+      return TogowlError.create('UPDATE_TASKS_ORDER', "Can't update tasks order on Todoist", err.message);
+    }
+  }
+
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
     try {
       const res = (await this.syncClient.sync(['projects'], this.projectSyncToken)).data;
@@ -144,9 +154,4 @@ export class TaskServiceImpl implements TaskService {
       return left(TogowlError.create('FETCH_PROJECTS', "Can't fetch projects from Todoist", err.message));
     }
   }
-
-  // async closeTask(taskId: number): Promise<void> {
-  //   const client = new RestApi.Client(this.token);
-  // return client.closeTask(taskId).then();
-  // }
 }

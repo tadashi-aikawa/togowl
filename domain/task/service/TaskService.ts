@@ -15,5 +15,6 @@ export interface TaskService {
   fetchDailyTasks(): Promise<Either<TogowlError, Task[]>>;
   completeTask(taskId: TaskId): Promise<TogowlError | null>;
   fetchProjects(): Promise<Either<TogowlError, Project[]>>;
+  updateTasksOrder(taskById: { [taskId: string]: Task }): Promise<TogowlError | null>;
   terminate(): void;
 }

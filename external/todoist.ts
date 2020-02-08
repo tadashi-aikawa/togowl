@@ -2,6 +2,7 @@
 import Axios, { AxiosPromise } from 'axios';
 import { stringify } from 'query-string';
 import { Dictionary } from 'lodash';
+const uuidv4 = require('uuid/v4');
 
 export namespace SyncApi {
   export interface Project {
@@ -58,7 +59,26 @@ export namespace SyncApi {
           sync_token: syncToken,
           resource_types: JSON.stringify(resourceTypes),
         }),
-        { baseURL: this.baseUrl, headers: { Origin: '*' } },
+        { baseURL: this.baseUrl },
+      );
+    }
+
+    syncItemUpdateDayOrders(orderByTaskId: { [taskId: number]: number }): AxiosPromise<any> {
+      return Axios.post(
+        '/sync',
+        stringify({
+          token: this.token,
+          commands: JSON.stringify([
+            {
+              type: 'item_update_day_orders',
+              uuid: uuidv4(),
+              args: {
+                ids_to_orders: orderByTaskId,
+              },
+            },
+          ]),
+        }),
+        { baseURL: this.baseUrl },
       );
     }
   }
