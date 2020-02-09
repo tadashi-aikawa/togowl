@@ -65,62 +65,23 @@
           </div>
         </v-fade-transition>
       </v-row>
+      <v-row v-if="tasksError" align="center" justify="center">
+        <div style="padding: 15px;">
+          <v-alert type="error">
+            {{ tasksError.message }}
+          </v-alert>
+        </div>
+      </v-row>
     </v-flex>
 
-    <v-tabs v-model="tabs" fixed-tabs>
-      <v-tabs-slider></v-tabs-slider>
-
-      <v-tab href="#tabs-1" class="primary--text">
-        <v-icon>mdi-format-list-checkbox</v-icon>
-      </v-tab>
-
-      <v-tab href="#tabs-2" class="primary--text">
-        <v-icon>mdi-history</v-icon>
-      </v-tab>
-
-      <v-tab href="#tabs-3" class="primary--text">
-        <v-icon>mdi-calendar</v-icon>
-      </v-tab>
-
-      <v-tab-item value="tabs-1">
-        <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TaskEntries
-            :tasks="tasks"
-            :loading="isTasksLoading"
-            @on-click-start="startFromTask"
-            @on-change-order="updateTasksOrder"
-          />
-        </v-sheet>
-        <v-row v-if="tasksError" align="center" justify="center">
-          <div style="padding: 15px;">
-            <v-alert type="error">
-              {{ tasksError.message }}
-            </v-alert>
-          </div>
-        </v-row>
-      </v-tab-item>
-      <v-tab-item value="tabs-2">
-        <v-sheet :class="currentEntry ? 'tab-content-tracking-on' : 'tab-content-tracking-off'">
-          <TimeEntries :entries="entries" :loading="isEntriesLoading" @on-click-start="start" />
-        </v-sheet>
-        <v-row v-if="entriesError" align="center" justify="center">
-          <div style="padding: 15px;">
-            <v-alert type="error">
-              {{ entriesError.message }}
-            </v-alert>
-          </div>
-        </v-row>
-      </v-tab-item>
-      <v-tab-item value="tabs-3">
-        <EntryCalendar :entries="entries" @on-click-event="handleClickCalendarEntry" />
-
-        <v-bottom-sheet v-if="currentCalendarEntry" v-model="calendarBottomSheet">
-          <v-list>
-            <TimeEntry :entry="currentCalendarEntry" @on-click-start="start" />
-          </v-list>
-        </v-bottom-sheet>
-      </v-tab-item>
-    </v-tabs>
+    <v-sheet tile :class="currentEntry ? 'task-area-tracking-on' : 'task-area-tracking-off'">
+      <TaskEntries
+        :tasks="tasks"
+        :loading="isTasksLoading"
+        @on-click-start="startFromTask"
+        @on-change-order="updateTasksOrder"
+      />
+    </v-sheet>
 
     <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top>
       {{ snackMessage }}
@@ -159,17 +120,8 @@ class Root extends Vue {
   snackbarColor: string | null = null;
   snackMessage = '';
   waitForBlockedAction = false;
-  tabs = null;
-
-  calendarBottomSheet = false;
-  currentCalendarEntry: Entry | null = null;
 
   selectedEntry: Entry | null = null;
-
-  handleClickCalendarEntry(entry: Entry) {
-    this.currentCalendarEntry = entry;
-    this.calendarBottomSheet = true;
-  }
 
   showSnackBar(message: string, error: boolean) {
     this.snackMessage = message;
@@ -359,14 +311,16 @@ export default Root;
 </script>
 
 <style scoped>
-.tab-content-tracking-on {
+.task-area-tracking-on {
   padding: 5px 0;
-  height: calc(100vh - 325px);
+  width: 100%;
+  height: calc(100vh - 300px);
   overflow-y: scroll;
 }
-.tab-content-tracking-off {
+.task-area-tracking-off {
   padding: 5px;
-  height: calc(100vh - 245px);
+  width: 100%;
+  height: calc(100vh - 200px);
   overflow-y: scroll;
 }
 </style>

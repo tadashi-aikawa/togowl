@@ -15,7 +15,7 @@
     </v-row>
   </v-app>
   <v-app v-else-if="hasLogin" dark>
-    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app>
+    <v-navigation-drawer v-model="drawer" :clipped="clipped" fixed app>
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
           <v-list-item-action>
@@ -29,9 +29,6 @@
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-tooltip bottom>
@@ -99,7 +96,6 @@ export default class extends Vue {
   clipped = false;
   drawer = false;
   fixed = false;
-  miniVariant = false;
   right = true;
   rightDrawer = false;
   logoutConfirmDialog = false;
