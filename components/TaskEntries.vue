@@ -19,9 +19,9 @@
           :options="{
             threshold: 0.5,
           }"
-          min-height="80"
+          min-height="60"
         >
-          <TaskEntry :task="task" @on-click-start="handleClickPlayButton" />
+          <TaskSwiperEntry :task="task" @on-click-start-button="handleClickStartButton" />
         </v-lazy>
       </transition-group>
     </draggable>
@@ -35,10 +35,11 @@
 import draggable from 'vuedraggable';
 import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
 import { Task } from '~/domain/task/entity/Task';
-import TaskEntry from '~/components/TaskEntry.vue';
+import { taskStore } from '~/utils/store-accessor';
+import TaskSwiperEntry from '~/components/TaskSwiperEntry.vue';
 
 @Component({
-  components: { TaskEntry, draggable },
+  components: { TaskSwiperEntry, draggable },
 })
 class TaskEntries extends Vue {
   @Prop()
@@ -55,8 +56,12 @@ class TaskEntries extends Vue {
     this._tasks = this.tasks;
   }
 
-  handleClickPlayButton(task: Task) {
+  handleClickStartButton(task: Task) {
     this.$emit('on-click-start', task);
+  }
+
+  completeTask(task: Task) {
+    taskStore.completeTask(task.id);
   }
 
   onMove() {
