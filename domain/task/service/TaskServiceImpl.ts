@@ -109,6 +109,7 @@ export class TaskServiceImpl implements TaskService {
           .value(),
       );
     } catch (err) {
+      console.error(err);
       return left(TogowlError.create('FETCH_DAILY_TASKS', "Can't fetch daily tasks from Todoist", err.message));
     }
   }
@@ -123,6 +124,7 @@ export class TaskServiceImpl implements TaskService {
       await this.restClient.closeTask(taskId.asNumber);
       return null;
     } catch (err) {
+      console.error(err);
       return TogowlError.create('COMPLETE_TASK', "Can't complete task on Todoist", err.message);
     }
   }
@@ -131,8 +133,13 @@ export class TaskServiceImpl implements TaskService {
     try {
       const res = (await this.syncClient.syncItemUpdateDayOrders(_.mapValues(taskById, x => x.dayOrder))).data;
       this.itemSyncToken = res.sync_token;
+      this.taskById = _.mapValues(this.taskById, task =>
+        // XXX: `: task` is right? should day_order to be -1??
+        taskById[task.id] ? { ...task, day_order: taskById[task.id].dayOrder } : task,
+      );
       return null;
     } catch (err) {
+      console.error(err);
       return TogowlError.create('UPDATE_TASKS_ORDER', "Can't update tasks order on Todoist", err.message);
     }
   }
@@ -156,6 +163,7 @@ export class TaskServiceImpl implements TaskService {
           .value(),
       );
     } catch (err) {
+      console.error(err);
       return left(TogowlError.create('FETCH_PROJECTS', "Can't fetch projects from Todoist", err.message));
     }
   }
