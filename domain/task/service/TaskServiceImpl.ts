@@ -30,6 +30,11 @@ export class TaskServiceImpl implements TaskService {
     this.restClient = new todoist.RestApi.RestClient(todoistToken);
     this.syncClient = new todoist.SyncApi.SyncClient(todoistToken);
 
+    const debounceOnSyncNeeded = _.debounce(() => {
+      logger.put('TaskCI.onSyncNeeded');
+      listener.onSyncNeeded?.();
+    }, 3000);
+
     this.socketClient = todoist.SocketApi.ApiClient.use(todoistWebSocketToken, {
       onOpen: () => {
         logger.put('TaskCI.onOpen');
@@ -46,8 +51,8 @@ export class TaskServiceImpl implements TaskService {
         listener.onError?.(TogowlError.create('SUBSCRIBE_TASK_ERROR', 'Fail to subscribe task event', event.reason));
       },
       onSyncNeeded: () => {
-        logger.put('TaskCI.onSyncNeeded');
-        listener.onSyncNeeded?.();
+        logger.put('TaskCI.onSyncNeeded (Before debounce)');
+        debounceOnSyncNeeded();
       },
     });
   }
