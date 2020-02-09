@@ -113,7 +113,7 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  private throttleFetchDailyTasks = _.throttle(this._fetchDailyTasks, 1000, { trailing: false });
+  private throttleFetchDailyTasks = _.throttle(this._fetchDailyTasks, 2000, { trailing: false });
   fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
     return this.throttleFetchDailyTasks();
   }
