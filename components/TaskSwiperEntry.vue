@@ -43,16 +43,23 @@ class TaskSwiperEntry extends Vue {
   @Prop()
   task: Task;
 
-  swiperOption = {
-    initialSlide: 1,
-    loop: false,
-    noSwipingClass: 'no-swiping-class',
-    on: {
-      reachBeginning: () => {
-        this.completeTask();
+  swiperOption = {};
+
+  created() {
+    const self = this;
+    this.swiperOption = {
+      initialSlide: 1,
+      loop: false,
+      noSwipingClass: 'no-swiping-class',
+      on: {
+        transitionEnd(this: { activeIndex: number }) {
+          if (this.activeIndex === 0) {
+            self.completeTask();
+          }
+        },
       },
-    },
-  };
+    };
+  }
 
   completeTask() {
     taskStore.completeTask(this.task.id);

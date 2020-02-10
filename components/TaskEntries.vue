@@ -97,6 +97,10 @@ export default TaskEntries;
   transition: transform 0.5s;
 }
 
+.flip-list-enter .flip-list-leave-to {
+  opacity: 0;
+}
+
 .flip-list-leave-active {
   position: absolute;
 }
