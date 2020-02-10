@@ -129,7 +129,7 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+  async _updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
     try {
       const res = (await this.syncClient.syncItemUpdateDayOrders(_.mapValues(taskById, x => x.dayOrder))).data;
       this.itemSyncToken = res.sync_token;
@@ -142,6 +142,10 @@ export class TaskServiceImpl implements TaskService {
       console.error(err);
       return TogowlError.create('UPDATE_TASKS_ORDER', "Can't update tasks order on Todoist", err.message);
     }
+  }
+  private debounceUpdateTasksOrder = _.debounce(this._updateTasksOrder, 5000);
+  async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+    return this.debounceUpdateTasksOrder(taskById);
   }
 
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
