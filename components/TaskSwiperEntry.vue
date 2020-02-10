@@ -46,7 +46,7 @@ class TaskSwiperEntry extends Vue {
   swiperOption = {
     initialSlide: 1,
     loop: false,
-    noSwipingClass: 'drag-and-drop-handler',
+    noSwipingClass: 'no-swiping-class',
     on: {
       reachBeginning: () => {
         this.completeTask();

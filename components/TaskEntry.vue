@@ -1,13 +1,13 @@
 <template>
   <v-list-item :key="task.id.value" two-line style="padding: 0 5px;">
-    <v-icon class="drag-and-drop-handler" style="cursor: move; color: grey;">mdi-drag-vertical</v-icon>
+    <v-icon class="drag-and-drop-handler no-swiping-class" style="cursor: move; color: grey;">mdi-drag-vertical</v-icon>
     <v-list-item-content>
       <v-list-item-title>
         <TaskSummary :task="task" style="padding-bottom: 5px;" />
       </v-list-item-title>
     </v-list-item-content>
     <v-list-item-action style="margin-left: 5px;">
-      <v-btn icon @click="handleClickStartButton()">
+      <v-btn icon class="no-swiping-class" @click="handleClickStartButton()">
         <v-icon large>mdi-play-circle-outline</v-icon>
       </v-btn>
     </v-list-item-action>
