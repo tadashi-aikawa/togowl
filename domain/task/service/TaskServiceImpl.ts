@@ -95,10 +95,8 @@ export class TaskServiceImpl implements TaskService {
         );
       }
 
-      const today = dayjs().format('YYYY-MM-DD');
-      const yesterday = dayjs()
-        .subtract(1, 'day')
-        .format('YYYY-MM-DD');
+      const today = DateTime.now().displayDate;
+      const yesterday = DateTime.now().minusDays(1).displayDate;
       return right(
         _(this.taskById)
           .values()

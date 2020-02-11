@@ -50,6 +50,10 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return this._value!.format('HH:mm');
   }
 
+  get displayDate(): string {
+    return this._value!.format('YYYY-MM-DD');
+  }
+
   get displayDateTime(): string {
     return this._value!.format('YYYY-MM-DD HH:mm:ss');
   }
