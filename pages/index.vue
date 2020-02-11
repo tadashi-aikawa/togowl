@@ -2,7 +2,7 @@
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
       <v-fade-transition hide-on-leave>
-        <div v-if="currentEntry">
+        <div v-if="currentEntry" style="height: 200px">
           <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
           <v-row align="center" justify="center" style="margin-bottom: 20px;">
             <v-btn class="mx-2" fab small dark color="purple darken-1" :disabled="!canAction" @click="cancel">
@@ -21,7 +21,7 @@
         </div>
       </v-fade-transition>
       <v-fade-transition hide-on-leave>
-        <div v-if="!currentEntry">
+        <div v-if="!currentEntry" style="height: 200px">
           <v-row align="center" justify="center">
             <v-col cols="9">
               <v-autocomplete
@@ -53,6 +53,14 @@
               </v-btn>
             </v-col>
           </v-row>
+          <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
+          <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
+          <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="80" style="padding: 5px;" />
+          <img
+            src="https://illust-stock.com/wp-content/uploads/fukurou.png"
+            height="80"
+            style="padding: 5px 5px 5px 20px;"
+          />
         </div>
       </v-fade-transition>
 
@@ -74,7 +82,7 @@
       </v-row>
     </v-flex>
 
-    <v-sheet tile :class="currentEntry ? 'task-area-tracking-on' : 'task-area-tracking-off'">
+    <v-sheet tile class="task-area">
       <TaskEntries
         :tasks="tasks"
         :loading="isTasksLoading"
@@ -311,16 +319,10 @@ export default Root;
 </script>
 
 <style scoped>
-.task-area-tracking-on {
-  padding: 5px 0;
-  width: 100%;
-  height: calc(100vh - 300px);
-  overflow-y: scroll;
-}
-.task-area-tracking-off {
+.task-area {
   padding: 5px;
   width: 100%;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 280px);
   overflow-y: scroll;
 }
 </style>

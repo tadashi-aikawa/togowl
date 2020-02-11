@@ -1,5 +1,5 @@
 <template>
-  <v-list-item :key="task.id.value" two-line style="padding: 0 5px;">
+  <v-list-item :key="task.id.value" two-line style="padding: 0 5px 0 0">
     <v-icon class="drag-and-drop-handler no-swiping-class" style="cursor: move; color: grey;">mdi-drag-vertical</v-icon>
     <v-list-item-content>
       <v-list-item-title>
