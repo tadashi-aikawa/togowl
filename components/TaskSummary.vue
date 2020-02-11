@@ -28,11 +28,12 @@ export default TaskSummary;
 
 <style scoped>
 .task {
-  font-size: 100% !important;
+  font-size: 95% !important;
   color: white;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   padding-bottom: 3px;
+  white-space: initial;
+}
+>>> .joypixels {
+  width: 18px;
 }
 </style>
