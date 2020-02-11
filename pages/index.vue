@@ -2,7 +2,7 @@
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
       <v-fade-transition hide-on-leave>
-        <div v-if="currentEntry" style="height: 200px">
+        <div v-if="currentEntry" style="height: 220px">
           <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
           <v-row align="center" justify="center" style="margin-bottom: 20px;">
             <v-btn class="mx-2" fab small dark color="purple darken-1" :disabled="!canAction" @click="cancel">
@@ -21,7 +21,7 @@
         </div>
       </v-fade-transition>
       <v-fade-transition hide-on-leave>
-        <div v-if="!currentEntry" style="height: 200px">
+        <div v-if="!currentEntry" style="height: 220px">
           <v-row align="center" justify="center">
             <v-col cols="9">
               <v-autocomplete
@@ -322,7 +322,7 @@ export default Root;
 .task-area {
   padding: 5px;
   width: 100%;
-  height: calc(100vh - 280px);
+  height: calc(100vh - 300px);
   overflow-y: scroll;
 }
 </style>
