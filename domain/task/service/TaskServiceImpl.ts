@@ -1,12 +1,10 @@
-import _ from 'lodash';
-import { Dictionary } from 'lodash';
+import _, { Dictionary } from 'lodash';
 import logger from '~/utils/global-logger';
 import * as todoist from '~/external/todoist';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { Either, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { Task } from '~/domain/task/entity/Task';
 import { TaskEventListener, TaskService } from '~/domain/task/service/TaskService';
-import dayjs from '~/node_modules/dayjs';
 import { TaskId } from '~/domain/task/vo/TaskId';
 import { ProjectId } from '~/domain/task/vo/ProjectId';
 import { Priority } from '~/domain/task/vo/Priority';
@@ -26,39 +24,37 @@ export class TaskServiceImpl implements TaskService {
   private projectById: Dictionary<todoist.SyncApi.Project>;
 
   constructor(todoistToken: string, todoistWebSocketToken: string, listener: TaskEventListener) {
-    logger.put('TaskSI.constructor');
+    logger.put('new TaskService');
     this.restClient = new todoist.RestApi.RestClient(todoistToken);
     this.syncClient = new todoist.SyncApi.SyncClient(todoistToken);
 
     const debounceOnSyncNeeded = _.debounce(() => {
-      logger.put('TaskCI.onSyncNeeded');
+      logger.put('TaskService.onSyncNeeded');
       listener.onSyncNeeded?.();
     }, 3000);
 
     this.socketClient = todoist.SocketApi.ApiClient.use(todoistWebSocketToken, {
       onOpen: () => {
-        logger.put('TaskCI.onOpen');
+        logger.put('TaskService.onOpen');
         listener.onStartSubscribe?.();
       },
       onClose: event => {
-        logger.put('TaskCI.onClose');
-        logger.put(`[Code] ${event.code}`);
-        logger.put(`[Reason] ${event.reason}`);
+        logger.put(`TaskService.onClose: ${event.code}`);
         listener.onEndSubscribe?.();
       },
       onError: event => {
-        logger.put('TaskCI.onError');
+        logger.put('TaskService.onError');
         listener.onError?.(TogowlError.create('SUBSCRIBE_TASK_ERROR', 'Fail to subscribe task event', event.reason));
       },
       onSyncNeeded: () => {
-        logger.put('TaskCI.onSyncNeeded (Before debounce)');
+        logger.put('TaskService.onSyncNeeded (Before debounce)');
         debounceOnSyncNeeded();
       },
     });
   }
 
   terminate() {
-    logger.put('TaskSI.terminate');
+    logger.put('TaskService.terminate');
     this.socketClient.terminate();
   }
 
@@ -79,6 +75,7 @@ export class TaskServiceImpl implements TaskService {
   }
 
   async _fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
+    logger.put(`TaskService.fetchDailyTasks: ${this.itemSyncToken}`);
     try {
       const res = (await this.syncClient.sync(['items', 'day_orders'], this.itemSyncToken)).data;
       this.itemSyncToken = res.sync_token;
@@ -114,10 +111,12 @@ export class TaskServiceImpl implements TaskService {
 
   private throttleFetchDailyTasks = _.throttle(this._fetchDailyTasks, 2000, { trailing: false });
   fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
+    logger.put('TaskService.fetchDailyTasks (Before throttle 2s)');
     return this.throttleFetchDailyTasks();
   }
 
   async completeTask(taskId: TaskId): Promise<TogowlError | null> {
+    logger.put(`TaskService.completeTask: ${this.itemSyncToken}`);
     try {
       await this.restClient.closeTask(taskId.asNumber);
       return null;
@@ -128,6 +127,7 @@ export class TaskServiceImpl implements TaskService {
   }
 
   async _updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+    logger.put(`TaskService.updateTaskOrder: ${this.itemSyncToken}`);
     try {
       const res = (await this.syncClient.syncItemUpdateDayOrders(_.mapValues(taskById, x => x.dayOrder))).data;
       this.itemSyncToken = res.sync_token;
@@ -143,10 +143,12 @@ export class TaskServiceImpl implements TaskService {
   }
   private debounceUpdateTasksOrder = _.debounce(this._updateTasksOrder, 5000);
   async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+    logger.put(`TaskService.updateTaskOrder (Before debounce 5s)`);
     return this.debounceUpdateTasksOrder(taskById);
   }
 
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
+    logger.put(`TaskService.fetchProjects: ${this.itemSyncToken}`);
     try {
       const res = (await this.syncClient.sync(['projects'], this.projectSyncToken)).data;
       this.projectSyncToken = res.sync_token;
