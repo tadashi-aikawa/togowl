@@ -4,7 +4,7 @@
     <v-container fluid>
       <v-btn @click="refreshLog">Show logs</v-btn>
       <v-btn @click="clear">Clear logs</v-btn>
-      <div style="padding: 15px 0;">
+      <div style="padding: 15px 0; overflow-x: scroll;">
         <template v-for="(log, i) in logs">
           <span :key="i" :class="getClass(log)" v-text="log" />
         </template>

@@ -130,7 +130,6 @@ export class TaskServiceImpl implements TaskService {
     logger.put(`TaskService.updateTaskOrder: ${this.itemSyncToken}`);
     try {
       const res = (await this.syncClient.syncItemUpdateDayOrders(_.mapValues(taskById, x => x.dayOrder))).data;
-      this.itemSyncToken = res.sync_token;
       this.taskById = _.mapValues(this.taskById, task =>
         // XXX: `: task` is right? should day_order to be -1??
         taskById[task.id] ? { ...task, day_order: taskById[task.id].dayOrder } : task,
