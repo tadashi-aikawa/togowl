@@ -23,7 +23,7 @@
       <v-fade-transition hide-on-leave>
         <div v-if="!currentEntry" style="height: 220px">
           <v-row align="center" justify="center">
-            <v-col cols="9">
+            <v-col cols="12">
               <v-autocomplete
                 v-model="selectedEntry"
                 :items="candidatedEntries"
@@ -32,8 +32,8 @@
                 item-text="hashAsTask"
                 placeholder="Search entries past"
                 full-width
-                clearable
                 return-object
+                @change="start(selectedEntry)"
               >
                 <template #selection="data">
                   <div style="padding: 5px;">
@@ -46,11 +46,6 @@
                   </div>
                 </template>
               </v-autocomplete>
-            </v-col>
-            <v-col cols="2">
-              <v-btn class="mx-2" fab small dark color="green" :disabled="!selectedEntry" @click="start(selectedEntry)">
-                <v-icon dark large>mdi-play</v-icon>
-              </v-btn>
             </v-col>
           </v-row>
           <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
