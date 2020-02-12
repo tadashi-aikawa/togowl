@@ -21,7 +21,7 @@
         </div>
       </v-fade-transition>
       <v-fade-transition hide-on-leave>
-        <div v-if="!currentEntry" style="height: 220px">
+        <div v-if="!currentEntry" style="height: 220px; width: 95vw;">
           <v-row align="center" justify="center">
             <v-col cols="12">
               <v-autocomplete
@@ -49,19 +49,19 @@
             </v-col>
           </v-row>
 
-          <swiper ref="mySwiper" :options="subActionSwiperOption">
-            <swiper-slide>
+          <swiper :options="subActionSwiperOption">
+            <swiper-slide align="center">
               <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
               <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
               <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="70" style="padding: 5px;" />
               <img
                 src="https://illust-stock.com/wp-content/uploads/fukurou.png"
                 height="70"
-                style="padding: 5px 5px 5px 20px;"
+                style="padding: 5px 5px 5px 15px;"
               />
             </swiper-slide>
-            <swiper-slide>
-              <TimeEntry v-if="firstEntry" :entry="firstEntry" @on-click-start="start" />
+            <swiper-slide v-if="firstEntry">
+              <TimeEntry :entry="firstEntry" @on-click-start="start" />
             </swiper-slide>
           </swiper>
         </div>
@@ -136,7 +136,6 @@ class Root extends Vue {
   selectedEntry: Entry | null = null;
 
   subActionSwiperOption = {
-    loop: true,
     effect: 'flip',
   };
 
