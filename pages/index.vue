@@ -48,14 +48,22 @@
               </v-autocomplete>
             </v-col>
           </v-row>
-          <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
-          <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
-          <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="80" style="padding: 5px;" />
-          <img
-            src="https://illust-stock.com/wp-content/uploads/fukurou.png"
-            height="80"
-            style="padding: 5px 5px 5px 20px;"
-          />
+
+          <swiper :options="subActionSwiperOption" ref="mySwiper">
+            <swiper-slide>
+              <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
+              <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
+              <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="70" style="padding: 5px;" />
+              <img
+                src="https://illust-stock.com/wp-content/uploads/fukurou.png"
+                height="70"
+                style="padding: 5px 5px 5px 20px;"
+              />
+            </swiper-slide>
+            <swiper-slide>
+              <TimeEntry v-if="firstEntry" :entry="firstEntry" @on-click-start="start" />
+            </swiper-slide>
+          </swiper>
         </div>
       </v-fade-transition>
 
@@ -126,6 +134,16 @@ class Root extends Vue {
   waitForBlockedAction = false;
 
   selectedEntry: Entry | null = null;
+
+  subActionSwiperOption = {};
+
+  created() {
+    const self = this;
+    this.subActionSwiperOption = {
+      loop: true,
+      effect: 'flip',
+    };
+  }
 
   showSnackBar(message: string, error: boolean) {
     this.snackMessage = message;
@@ -249,6 +267,10 @@ class Root extends Vue {
 
   get entries(): Entry[] {
     return timerStore.entriesWithinDay;
+  }
+
+  get firstEntry(): Entry | undefined {
+    return this.entries?.[0] ?? undefined;
   }
 
   get candidatedEntries(): Entry[] {
