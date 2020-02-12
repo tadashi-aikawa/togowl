@@ -21,7 +21,11 @@
           }"
           min-height="60"
         >
-          <TaskSwiperEntry :task="task" @on-click-start-button="handleClickStartButton" />
+          <TaskSwiperEntry
+            :task="task"
+            :disabled-start="disabledStart"
+            @on-click-start-button="handleClickStartButton"
+          />
         </v-lazy>
       </transition-group>
     </draggable>
@@ -47,6 +51,9 @@ class TaskEntries extends Vue {
 
   @Prop({ default: false })
   loading: boolean;
+
+  @Prop({ default: false })
+  disabledStart: boolean;
 
   drag = false;
   _tasks: Task[] = [];

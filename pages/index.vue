@@ -86,6 +86,7 @@
       <TaskEntries
         :tasks="tasks"
         :loading="isTasksLoading"
+        :disabled-start="currentEntry"
         @on-click-start="startFromTask"
         @on-change-order="updateTasksOrder"
       />

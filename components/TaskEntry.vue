@@ -7,7 +7,7 @@
       </v-list-item-title>
     </v-list-item-content>
     <v-list-item-action style="margin-left: 5px;">
-      <v-btn icon class="no-swiping-class" @click="handleClickStartButton()">
+      <v-btn icon class="no-swiping-class" :disabled="disabled" @click="handleClickStartButton()">
         <v-icon large>mdi-play-circle-outline</v-icon>
       </v-btn>
     </v-list-item-action>
@@ -25,6 +25,9 @@ import { Task } from '~/domain/task/entity/Task';
 class TaskEntry extends Vue {
   @Prop()
   task: Task;
+
+  @Prop({ default: false })
+  disabled: boolean;
 
   handleClickStartButton() {
     this.$emit('on-click-start-button', this.task);

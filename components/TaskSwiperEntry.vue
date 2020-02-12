@@ -9,6 +9,7 @@
     <swiper-slide>
       <TaskEntry
         :task="task"
+        :disabled="disabledStart"
         @on-click-start-button="handleClickStartButton"
         @on-click-complete-button="completeTask"
       />
@@ -42,6 +43,9 @@ import { taskStore } from '~/utils/store-accessor';
 class TaskSwiperEntry extends Vue {
   @Prop()
   task: Task;
+
+  @Prop({ default: false })
+  disabledStart: boolean;
 
   swiperOption = {};
 
