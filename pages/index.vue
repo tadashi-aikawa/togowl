@@ -49,7 +49,7 @@
             </v-col>
           </v-row>
 
-          <swiper :options="subActionSwiperOption" ref="mySwiper">
+          <swiper ref="mySwiper" :options="subActionSwiperOption">
             <swiper-slide>
               <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
               <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
@@ -135,15 +135,10 @@ class Root extends Vue {
 
   selectedEntry: Entry | null = null;
 
-  subActionSwiperOption = {};
-
-  created() {
-    const self = this;
-    this.subActionSwiperOption = {
-      loop: true,
-      effect: 'flip',
-    };
-  }
+  subActionSwiperOption = {
+    loop: true,
+    effect: 'flip',
+  };
 
   showSnackBar(message: string, error: boolean) {
     this.snackMessage = message;
