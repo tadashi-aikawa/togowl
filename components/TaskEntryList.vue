@@ -45,7 +45,7 @@ import TaskSwiperEntry from '~/components/TaskSwiperEntry.vue';
 @Component({
   components: { TaskSwiperEntry, draggable },
 })
-class TaskEntries extends Vue {
+class TaskEntryList extends Vue {
   @Prop()
   tasks: Task[];
 
@@ -85,7 +85,7 @@ class TaskEntries extends Vue {
     }, 500);
   }
 }
-export default TaskEntries;
+export default TaskEntryList;
 </script>
 
 <style scoped>

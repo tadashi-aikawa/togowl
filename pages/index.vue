@@ -83,10 +83,10 @@
     </v-flex>
 
     <v-sheet tile class="task-area">
-      <TaskEntries
+      <TaskEntryList
         :tasks="tasks"
         :loading="isTasksLoading"
-        :disabled-start="currentEntry"
+        :disabled-start="disabledStart"
         @on-click-start="startFromTask"
         @on-change-order="updateTasksOrder"
       />
@@ -119,10 +119,10 @@ import EntryCalendar from '~/components/EntryCalendar.vue';
 import EntrySummary from '~/components/EntrySummary.vue';
 import TimeEntries from '~/components/TimeEntries.vue';
 import { Task } from '~/domain/task/entity/Task';
-import TaskEntries from '~/components/TaskEntries.vue';
+import TaskEntryList from '~/components/TaskEntryList.vue';
 
 @Component({
-  components: { CurrentTimeEntry, TimeEntry, TimeEntries, TaskEntries, EntryCalendar, EntrySummary },
+  components: { CurrentTimeEntry, TimeEntry, TimeEntries, TaskEntryList, EntryCalendar, EntrySummary },
 })
 class Root extends Vue {
   snackbar = false;
@@ -302,6 +302,10 @@ class Root extends Vue {
 
   get isTasksLoading(): boolean {
     return this.tasksStatus === 'in_progress' && this.tasks.length === 0;
+  }
+
+  get disabledStart(): boolean {
+    return !!this.currentEntry;
   }
 
   customFilter(item: Entry, queryText: string): boolean {
