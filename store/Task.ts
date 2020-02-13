@@ -14,6 +14,7 @@ import { cloudRepository, projectStore } from '~/store/index';
 import { createAction } from '~/utils/firestore-facade';
 import { Project } from '~/domain/task/entity/Project';
 import { TaskId } from '~/domain/task/vo/TaskId';
+import { DateTime } from '~/domain/common/DateTime';
 
 let service: TaskService | null;
 
@@ -141,6 +142,17 @@ class TaskModule extends VuexModule {
     // TODO: Illegal case
     this.setTaskById(_.omit(this._taskById, [taskId.asNumber]));
     service?.completeTask(taskId);
+  }
+
+  @Action({ rawError: true })
+  async updateDueDate(payload: {taskId: TaskId, dueDate: DateTime}): Promise<void> {
+    const {taskId, dueDate} = payload
+    // TODO: Illegal case
+    this.setTaskById({
+      ...this._taskById,
+      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWithDueDate(dueDate),
+    });
+    service?.updateDueDate(taskId, dueDate);
   }
 
   @Action({ rawError: true })

@@ -14,6 +14,14 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return new DateTime(dayjs());
   }
 
+  static tomorrow(): DateTime {
+    return DateTime.now().plusDays(1);
+  }
+
+  plusDays(days: number): DateTime {
+    return new DateTime(this._value!.add(days, 'day'));
+  }
+
   plusSeconds(seconds: number): DateTime {
     return new DateTime(this._value!.add(seconds, 'second'));
   }

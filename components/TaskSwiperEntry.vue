@@ -15,19 +15,22 @@
       />
     </swiper-slide>
     <swiper-slide class="swiper-extra-menu-area">
-      <v-container>
-        <v-row align="center" justify="center">
-          <v-btn disabled outlined class="mx-2" fab small dark>
-            <v-icon>mdi-calendar-arrow-right</v-icon>
-          </v-btn>
-          <v-btn disabled outlined class="mx-2" fab small dark>
-            <v-icon>mdi-arrow-down-bold</v-icon>
-          </v-btn>
-          <v-btn disabled outlined class="mx-2" fab small dark>
-            <v-icon>mdi-arrow-up-bold</v-icon>
-          </v-btn>
-        </v-row>
-      </v-container>
+      <v-list-item>
+        <v-container>
+          <v-row align="center" justify="center">
+            <div align="center">
+              <v-btn outlined class="mx-2" fab small dark @click="updateToToday">
+                <v-icon>mdi-calendar-today</v-icon>
+              </v-btn>
+            </div>
+            <div align="center">
+              <v-btn outlined class="mx-2" fab small dark @click="updateToTomorrow">
+                <v-icon>mdi-calendar-arrow-right</v-icon>
+              </v-btn>
+            </div>
+          </v-row>
+        </v-container>
+      </v-list-item>
     </swiper-slide>
   </swiper>
 </template>
@@ -36,6 +39,7 @@ import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
 import { Task } from '~/domain/task/entity/Task';
 import TaskEntry from '~/components/TaskEntry.vue';
 import { taskStore } from '~/utils/store-accessor';
+import { DateTime } from '~/domain/common/DateTime';
 
 @Component({
   components: { TaskEntry },
@@ -67,6 +71,14 @@ class TaskSwiperEntry extends Vue {
 
   completeTask() {
     taskStore.completeTask(this.task.id);
+  }
+
+  updateToToday() {
+    taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
+  }
+
+  updateToTomorrow() {
+    taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
   }
 
   handleClickStartButton() {

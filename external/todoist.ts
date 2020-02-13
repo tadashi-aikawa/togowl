@@ -17,6 +17,7 @@ export namespace SyncApi {
     is_recurring: boolean;
     lang: string;
     string: string;
+    timezone: string | null;
   }
 
   export interface Task {
@@ -58,6 +59,28 @@ export namespace SyncApi {
           token: this.token,
           sync_token: syncToken,
           resource_types: JSON.stringify(resourceTypes),
+        }),
+        { baseURL: this.baseUrl },
+      );
+    }
+
+    syncItemUpdate(taskId: number, due: Partial<Due>, syncToken = '*'): AxiosPromise<Root> {
+      return Axios.post(
+        '/sync',
+        stringify({
+          token: this.token,
+          sync_token: syncToken,
+          resource_types: JSON.stringify(['items']),
+          commands: JSON.stringify([
+            {
+              type: 'item_update',
+              uuid: uuidv4(),
+              args: {
+                id: taskId,
+                due: due,
+              },
+            },
+          ]),
         }),
         { baseURL: this.baseUrl },
       );

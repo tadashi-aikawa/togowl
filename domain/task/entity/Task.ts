@@ -35,4 +35,9 @@ export class Task implements Entity {
     // TODO: refactoring..
     return new Task(this.id, this.title, dayOrder, this.priority, this.projectId, this.entryProject, this.dueDate);
   }
+
+  cloneWithDueDate(dueDate: DateTime): Task {
+    // TODO: refactoring..
+    return new Task(this.id, this.title, this.dayOrder, this.priority, this.projectId, this.entryProject, dueDate);
+  }
 }

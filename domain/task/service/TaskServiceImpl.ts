@@ -126,6 +126,24 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
+  async updateDueDate(taskId: TaskId, date: DateTime): Promise<TogowlError | null> {
+    logger.put(`TaskService.updateDueDate: ${this.itemSyncToken}`);
+    const task = this.taskById[taskId.value]!;
+    const due = { ...task.due, date: date.displayDate };
+    try {
+      const res = (await this.syncClient.syncItemUpdate(taskId.asNumber, due)).data;
+      if (res.full_sync) {
+        this.taskById = _.keyBy(res.items, x => x.id);
+      } else {
+        this.taskById = { ...this.taskById, ..._.keyBy(res.items, x => x.id) };
+      }
+      return null;
+    } catch (err) {
+      console.error(err);
+      return TogowlError.create('UPDATE_DUE_DATE', "Can't update due date on Todoist", err.message);
+    }
+  }
+
   async _updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
     logger.put(`TaskService.updateTaskOrder: ${this.itemSyncToken}`);
     try {
