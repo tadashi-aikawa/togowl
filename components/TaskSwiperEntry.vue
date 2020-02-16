@@ -1,5 +1,5 @@
 <template>
-  <swiper :options="swiperOption">
+  <swiper ref="mySwiper" :options="swiperOption">
     <swiper-slide class="swiper-close-area">
       <v-row align="center" justify="center" style="height: 100%;">
         <v-icon color="white">mdi-checkbox-marked-circle-outline</v-icon>
@@ -69,16 +69,22 @@ class TaskSwiperEntry extends Vue {
     };
   }
 
+  get swiper(): any {
+    return (this.$refs.mySwiper as any).swiper;
+  }
+
   completeTask() {
     taskStore.completeTask(this.task.id);
   }
 
-  updateToToday() {
-    taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
+  async updateToToday() {
+    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
+    this.swiper.slideTo(1);
   }
 
-  updateToTomorrow() {
-    taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
+  async updateToTomorrow() {
+    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
+    this.swiper.slideTo(1);
   }
 
   handleClickStartButton() {
