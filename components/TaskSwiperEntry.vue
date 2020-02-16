@@ -73,18 +73,23 @@ class TaskSwiperEntry extends Vue {
     return (this.$refs.mySwiper as any).swiper;
   }
 
-  completeTask() {
-    taskStore.completeTask(this.task.id);
+  revertSwiperStateAsDefault() {
+    this.swiper.slideTo(1);
+  }
+
+  async completeTask() {
+    this.revertSwiperStateAsDefault();
+    await taskStore.completeTask(this.task.id);
   }
 
   async updateToToday() {
     await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
-    this.swiper.slideTo(1);
+    this.revertSwiperStateAsDefault();
   }
 
   async updateToTomorrow() {
     await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
-    this.swiper.slideTo(1);
+    this.revertSwiperStateAsDefault();
   }
 
   handleClickStartButton() {
