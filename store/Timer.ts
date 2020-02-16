@@ -45,7 +45,7 @@ class TimerModule extends VuexModule {
     return Object.values(this._entryById).map(e => addMetaToEntry(e, projectStore.projectById)) ?? [];
   }
 
-  get entriesWithinDay(): Entry[] {
+  get entriesWithDayOrders(): Entry[] {
     return _(this.entries)
       .filter(e => e.stop?.within(24 * 60 * 60) ?? false)
       .orderBy(e => e.start.unix, 'desc')
@@ -53,7 +53,7 @@ class TimerModule extends VuexModule {
   }
 
   get previousEntry(): Entry | undefined {
-    return this.entriesWithinDay?.[0];
+    return this.entriesWithDayOrders?.[0];
   }
 
   get candidatedEntries(): Entry[] {

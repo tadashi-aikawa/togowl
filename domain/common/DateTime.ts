@@ -14,6 +14,10 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return new DateTime(dayjs());
   }
 
+  static yesterday(): DateTime {
+    return DateTime.now().minusDays(1);
+  }
+
   static tomorrow(): DateTime {
     return DateTime.now().plusDays(1);
   }

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-sheet height="600">
+    <v-sheet :height="height">
       <v-calendar
         ref="calendar"
         type="day"
         dark
-        hide-header
+        :start="start"
         :events="events"
         event-color="rgba(0, 255, 0, 0.5)"
         :event-overlap-threshold="10"
@@ -16,7 +16,7 @@
         :interval-format="d => d.time"
       >
         <template #event="{ event }">
-          <div style="height: 100%; padding: 2px;" @click="handleClickEntry(event.entry)">
+          <div style="height: 100%; padding: 2px;">
             <v-avatar v-if="event.entry.project" tile size="14px">
               <ProjectIcon :project="event.entry.project" :project-category-as-default="true" />
             </v-avatar>
@@ -24,11 +24,17 @@
           </div>
         </template>
       </v-calendar>
-    </v-sheet>
 
-    <v-btn fixed dark small bottom right outlined fab @click="handleClickMoveToNow">
-      <v-icon>mdi-send-clock</v-icon>
-    </v-btn>
+      <v-btn fixed dark small bottom right fab @click="handleClickPrevious" style="margin: 0 112px 48px 0;">
+        <v-icon>mdi-chevron-left</v-icon>
+      </v-btn>
+      <v-btn fixed dark small bottom right fab @click="handleClickNext" style="margin: 0 56px 48px 0;">
+        <v-icon>mdi-chevron-right</v-icon>
+      </v-btn>
+      <v-btn fixed dark small bottom right fab @click="handleClickMoveToNow" style="margin: 0 0 48px 0;">
+        <v-icon>mdi-send-clock</v-icon>
+      </v-btn>
+    </v-sheet>
   </div>
 </template>
 <script lang="ts">
@@ -42,9 +48,13 @@ class EntryCalendar extends Vue {
   @Prop()
   entries: Entry[];
 
+  @Prop()
+  height: string;
+
+  currentDate = DateTime.now();
+
   mounted() {
-    const calendarRef: any = this.$refs.calendar;
-    calendarRef.scrollToTime(DateTime.now().minusMinutes(60).displayTimeWithoutSeconds);
+    this.moveToNow();
   }
 
   get events(): any[] {
@@ -58,13 +68,25 @@ class EntryCalendar extends Vue {
       : [];
   }
 
-  handleClickEntry(entry: Entry) {
-    this.$emit('on-click-event', entry);
+  get start(): string {
+    return this.currentDate.displayDateTimeWithoutSeconds;
+  }
+
+  moveToNow() {
+    const calendarRef: any = this.$refs.calendar;
+    calendarRef.scrollToTime(DateTime.now().minusMinutes(240).displayTimeWithoutSeconds);
   }
 
   handleClickMoveToNow() {
-    const calendarRef: any = this.$refs.calendar;
-    calendarRef.scrollToTime(DateTime.now().minusMinutes(60).displayTimeWithoutSeconds);
+    this.moveToNow();
+  }
+
+  handleClickPrevious() {
+    this.currentDate = this.currentDate.minusDays(1);
+  }
+
+  handleClickNext() {
+    this.currentDate = this.currentDate.plusDays(1);
   }
 }
 export default EntryCalendar;

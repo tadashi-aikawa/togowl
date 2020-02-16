@@ -1,112 +1,131 @@
 <template>
   <v-layout column justify-center align-center>
-    <v-flex xs12 sm8 md6>
-      <v-fade-transition hide-on-leave>
-        <div v-if="currentEntry" style="height: 220px">
-          <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
-          <v-row align="center" justify="center" style="margin-bottom: 20px;">
-            <v-btn class="mx-2" fab small dark color="purple darken-1" :disabled="!canAction" @click="cancel">
-              <v-icon dark>mdi-delete</v-icon>
-            </v-btn>
-            <v-btn class="mx-2" fab small dark color="grey darken-1" :disabled="!canAction" @click="pause">
-              <v-icon dark>mdi-pause</v-icon>
-            </v-btn>
-            <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
-              <v-icon dark>mdi-check-bold</v-icon>
-            </v-btn>
-            <v-btn class="mx-2" fab small dark color="brown darken-1" :disabled="!canAction" @click="connectPrevious">
-              <v-icon dark>mdi-transit-connection-variant</v-icon>
-            </v-btn>
-          </v-row>
-        </div>
-      </v-fade-transition>
-      <v-fade-transition hide-on-leave>
-        <div v-if="!currentEntry" style="height: 220px;">
-          <v-row align="center" justify="center">
-            <v-col cols="12">
-              <v-autocomplete
-                v-model="selectedEntry"
-                :items="candidatedEntries"
-                :filter="customFilter"
-                :menu-props="{ maxHeight: 220 }"
-                item-text="hashAsTask"
-                placeholder="Search entries past"
-                full-width
-                return-object
-                @change="start(selectedEntry)"
-              >
-                <template #selection="data">
-                  <div style="padding: 5px;">
-                    <EntrySummary :entry="data.item" width="70vw" />
-                  </div>
-                </template>
-                <template #item="data">
-                  <div style="padding: 5px;">
-                    <EntrySummary :entry="data.item" />
-                  </div>
-                </template>
-              </v-autocomplete>
-            </v-col>
-          </v-row>
-
-          <swiper :options="subActionSwiperOption">
-            <swiper-slide>
-              <div align="center" style="width: 95vw;">
-                <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
-                <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
-                <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="70" style="padding: 5px;" />
-                <img
-                  src="https://illust-stock.com/wp-content/uploads/fukurou.png"
-                  height="70"
-                  style="padding: 5px 5px 5px 15px;"
-                />
-              </div>
-            </swiper-slide>
-            <swiper-slide v-if="firstEntry">
-              <TimeEntry :entry="firstEntry" @on-click-start="start" />
-            </swiper-slide>
-          </swiper>
-        </div>
-      </v-fade-transition>
-
-      <v-row v-if="fetchingError" align="center" justify="center">
-        <v-fade-transition>
-          <div style="padding: 15px;">
-            <v-alert type="error">
-              {{ fetchingError.message }}
-            </v-alert>
+    <template v-if="activeViewIndex === 0">
+      <v-flex xs12 sm8 md6>
+        <v-fade-transition hide-on-leave>
+          <div v-if="currentEntry" style="height: 220px">
+            <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
+            <v-row align="center" justify="center" style="margin-bottom: 20px;">
+              <v-btn class="mx-2" fab small dark color="purple darken-1" :disabled="!canAction" @click="cancel">
+                <v-icon dark>mdi-delete</v-icon>
+              </v-btn>
+              <v-btn class="mx-2" fab small dark color="grey darken-1" :disabled="!canAction" @click="pause">
+                <v-icon dark>mdi-pause</v-icon>
+              </v-btn>
+              <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
+                <v-icon dark>mdi-check-bold</v-icon>
+              </v-btn>
+              <v-btn class="mx-2" fab small dark color="brown darken-1" :disabled="!canAction" @click="connectPrevious">
+                <v-icon dark>mdi-transit-connection-variant</v-icon>
+              </v-btn>
+            </v-row>
           </div>
         </v-fade-transition>
-      </v-row>
-      <v-row v-if="tasksError" align="center" justify="center">
-        <div style="padding: 15px;">
-          <v-alert type="error">
-            {{ tasksError.message }}
-          </v-alert>
-        </div>
-      </v-row>
-    </v-flex>
+        <v-fade-transition hide-on-leave>
+          <div v-if="!currentEntry" style="height: 220px;">
+            <v-row align="center" justify="center">
+              <v-col cols="12">
+                <v-autocomplete
+                  v-model="selectedEntry"
+                  :items="candidatedEntries"
+                  :filter="customFilter"
+                  :menu-props="{ maxHeight: 220 }"
+                  item-text="hashAsTask"
+                  placeholder="Search entries past"
+                  full-width
+                  return-object
+                  @change="start(selectedEntry)"
+                >
+                  <template #selection="data">
+                    <div style="padding: 5px;">
+                      <EntrySummary :entry="data.item" width="70vw" />
+                    </div>
+                  </template>
+                  <template #item="data">
+                    <div style="padding: 5px;">
+                      <EntrySummary :entry="data.item" />
+                    </div>
+                  </template>
+                </v-autocomplete>
+              </v-col>
+            </v-row>
 
-    <v-sheet tile class="task-area">
-      <TaskEntryList
-        :tasks="tasks"
-        :loading="isTasksLoading"
-        :disabled-start="disabledStart"
-        @on-click-start="startFromTask"
-        @on-change-order="updateTasksOrder"
-      />
-    </v-sheet>
+            <swiper :options="subActionSwiperOption">
+              <swiper-slide>
+                <div align="center" style="width: 95vw;">
+                  <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
+                  <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
+                  <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="70" style="padding: 5px;" />
+                  <img
+                    src="https://illust-stock.com/wp-content/uploads/fukurou.png"
+                    height="70"
+                    style="padding: 5px 5px 5px 15px;"
+                  />
+                </div>
+              </swiper-slide>
+              <swiper-slide v-if="firstEntry">
+                <TimeEntry :entry="firstEntry" @on-click-start="start" />
+              </swiper-slide>
+            </swiper>
+          </div>
+        </v-fade-transition>
 
-    <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top>
-      {{ snackMessage }}
-      <v-btn color="blue" text @click="snackbar = false">
-        Close
+        <v-row v-if="fetchingError" align="center" justify="center">
+          <v-fade-transition>
+            <div style="padding: 15px;">
+              <v-alert type="error">
+                {{ fetchingError.message }}
+              </v-alert>
+            </div>
+          </v-fade-transition>
+        </v-row>
+        <v-row v-if="tasksError" align="center" justify="center">
+          <div style="padding: 15px;">
+            <v-alert type="error">
+              {{ tasksError.message }}
+            </v-alert>
+          </div>
+        </v-row>
+      </v-flex>
+
+      <v-sheet tile class="task-area">
+        <TaskEntryList
+          :tasks="tasks"
+          :loading="isTasksLoading"
+          :disabled-start="disabledStart"
+          @on-click-start="startFromTask"
+          @on-change-order="updateTasksOrder"
+        />
+      </v-sheet>
+
+      <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="3000" top>
+        {{ snackMessage }}
+        <v-btn color="blue" text @click="snackbar = false">
+          Close
+        </v-btn>
+      </v-snackbar>
+
+      <v-overlay :value="waitForBlockedAction">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+    </template>
+
+    <template v-else-if="activeViewIndex === 1">
+      <div class="calendar-area">
+        <EntryCalendar :entries="entries" :height="calendarHeight" />
+      </div>
+    </template>
+
+    <v-bottom-navigation v-model="activeViewIndex" grow color="teal" dark shift fixed>
+      <v-btn>
+        <span>Timer</span>
+        <v-icon>mdi-clock</v-icon>
       </v-btn>
-    </v-snackbar>
-
-    <v-overlay :value="waitForBlockedAction">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
-    </v-overlay>
+      <v-btn>
+        <span>Calendar</span>
+        <v-icon>mdi-calendar</v-icon>
+      </v-btn>
+    </v-bottom-navigation>
   </v-layout>
 </template>
 
@@ -130,6 +149,8 @@ import TaskEntryList from '~/components/TaskEntryList.vue';
   components: { CurrentTimeEntry, TimeEntry, TimeEntries, TaskEntryList, EntryCalendar, EntrySummary },
 })
 class Root extends Vue {
+  activeViewIndex = 0;
+
   snackbar = false;
   snackbarColor: string | null = null;
   snackMessage = '';
@@ -262,11 +283,11 @@ class Root extends Vue {
   }
 
   get entries(): Entry[] {
-    return timerStore.entriesWithinDay;
+    return timerStore.entries;
   }
 
   get firstEntry(): Entry | undefined {
-    return this.entries?.[0] ?? undefined;
+    return timerStore.entriesWithDayOrders?.[0] ?? undefined;
   }
 
   get candidatedEntries(): Entry[] {
@@ -321,6 +342,10 @@ class Root extends Vue {
     return !!this.currentEntry;
   }
 
+  get calendarHeight(): string {
+    return 'calc(100vh - 80px - 56px)';
+  }
+
   customFilter(item: Entry, queryText: string): boolean {
     const description = item.description.toLowerCase();
     const projectName = item.project?.name.value.toLowerCase();
@@ -340,7 +365,11 @@ export default Root;
 .task-area {
   padding: 5px;
   width: 100%;
-  height: calc(100vh - 300px);
+  height: calc(100vh - 80px - 220px - 56px);
   overflow-y: scroll;
+}
+.calendar-area {
+  padding: 5px;
+  width: 100%;
 }
 </style>
