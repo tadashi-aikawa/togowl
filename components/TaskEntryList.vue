@@ -39,7 +39,6 @@
 import draggable from 'vuedraggable';
 import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
 import { Task } from '~/domain/task/entity/Task';
-import { taskStore } from '~/utils/store-accessor';
 import TaskSwiperEntry from '~/components/TaskSwiperEntry.vue';
 
 @Component({
@@ -65,10 +64,6 @@ class TaskEntryList extends Vue {
 
   handleClickStartButton(task: Task) {
     this.$emit('on-click-start', task);
-  }
-
-  completeTask(task: Task) {
-    taskStore.completeTask(task.id);
   }
 
   onMove() {

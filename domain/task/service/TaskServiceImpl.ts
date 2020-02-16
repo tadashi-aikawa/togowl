@@ -1,6 +1,7 @@
 import _, { Dictionary } from 'lodash';
 import logger from '~/utils/global-logger';
 import * as todoist from '~/external/todoist';
+import { SyncApi } from '~/external/todoist';
 import { TogowlError } from '~/domain/common/TogowlError';
 import { Either, left, right } from '~/node_modules/fp-ts/lib/Either';
 import { Task } from '~/domain/task/entity/Task';
@@ -13,19 +14,15 @@ import { ProjectName } from '~/domain/task/vo/ProjectlName';
 import { DateTime } from '~/domain/common/DateTime';
 
 export class TaskServiceImpl implements TaskService {
-  private restClient: todoist.RestApi.RestClient;
   private syncClient: todoist.SyncApi.SyncClient;
   private socketClient: todoist.SocketApi.ApiClient;
 
-  private itemSyncToken: string = '*';
+  private todoistSyncToken: string = '*';
   private taskById: Dictionary<todoist.SyncApi.Task>;
-
-  private projectSyncToken: string = '*';
   private projectById: Dictionary<todoist.SyncApi.Project>;
 
   constructor(todoistToken: string, todoistWebSocketToken: string, listener: TaskEventListener) {
     logger.put('new TaskService');
-    this.restClient = new todoist.RestApi.RestClient(todoistToken);
     this.syncClient = new todoist.SyncApi.SyncClient(todoistToken);
 
     const debounceOnSyncNeeded = _.debounce(() => {
@@ -58,7 +55,7 @@ export class TaskServiceImpl implements TaskService {
     this.socketClient.terminate();
   }
 
-  private toTask(task: todoist.SyncApi.Task): Task {
+  private static toTask(task: todoist.SyncApi.Task): Task {
     return new Task(
       TaskId.create(task.id),
       task.content,
@@ -70,27 +67,37 @@ export class TaskServiceImpl implements TaskService {
     );
   }
 
-  private toProject(project: todoist.SyncApi.Project): Project {
+  private static toProject(project: todoist.SyncApi.Project): Project {
     return new Project(ProjectId.create(project.id), ProjectName.create(project.name));
   }
 
-  async _fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
-    logger.put(`TaskService.fetchDailyTasks: ${this.itemSyncToken}`);
+  private syncCloudToInstance(res: SyncApi.Root) {
+    this.todoistSyncToken = res.sync_token;
+
+    if (res.full_sync) {
+      this.taskById = _.keyBy(res.items, x => x.id);
+    } else {
+      this.taskById = { ...this.taskById, ..._.keyBy(res.items, x => x.id) };
+    }
+
+    if (res.full_sync) {
+      this.projectById = _.keyBy(res.projects, x => x.id);
+    } else {
+      this.projectById = { ...this.projectById, ..._.keyBy(res.projects, x => x.id) };
+    }
+
+    if (!_.isEmpty(res.day_orders)) {
+      this.taskById = _.mapValues(this.taskById, task =>
+        res.day_orders![task.id] ? { ...task, day_order: res.day_orders![task.id] } : task,
+      );
+    }
+  }
+
+  private async _fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
+    logger.put(`TaskService.fetchDailyTasks: ${this.todoistSyncToken}`);
     try {
-      const res = (await this.syncClient.sync(['items', 'day_orders'], this.itemSyncToken)).data;
-      this.itemSyncToken = res.sync_token;
-
-      if (res.full_sync) {
-        this.taskById = _.keyBy(res.items, x => x.id);
-      } else {
-        this.taskById = { ...this.taskById, ..._.keyBy(res.items, x => x.id) };
-      }
-
-      if (!_.isEmpty(res.day_orders)) {
-        this.taskById = _.mapValues(this.taskById, task =>
-          res.day_orders![task.id] ? { ...task, day_order: res.day_orders![task.id] } : task,
-        );
-      }
+      const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
+      this.syncCloudToInstance(res);
 
       const today = DateTime.now().displayDate;
       const yesterday = DateTime.now().minusDays(1).displayDate;
@@ -100,7 +107,7 @@ export class TaskServiceImpl implements TaskService {
           .filter(x => (x.due?.date.startsWith(today) || x.due?.date.startsWith(yesterday)) ?? false)
           .reject(x => x.is_deleted === 1)
           .reject(x => x.checked === 1)
-          .map(x => this.toTask(x))
+          .map(x => TaskServiceImpl.toTask(x))
           .value(),
       );
     } catch (err) {
@@ -116,9 +123,10 @@ export class TaskServiceImpl implements TaskService {
   }
 
   async completeTask(taskId: TaskId): Promise<TogowlError | null> {
-    logger.put(`TaskService.completeTask: ${this.itemSyncToken}`);
+    logger.put(`TaskService.completeTask: ${this.todoistSyncToken}`);
     try {
-      await this.restClient.closeTask(taskId.asNumber);
+      const res = (await this.syncClient.syncItemClose(taskId.asNumber, this.todoistSyncToken)).data;
+      this.syncCloudToInstance(res);
       return null;
     } catch (err) {
       console.error(err);
@@ -127,16 +135,12 @@ export class TaskServiceImpl implements TaskService {
   }
 
   async updateDueDate(taskId: TaskId, date: DateTime): Promise<TogowlError | null> {
-    logger.put(`TaskService.updateDueDate: ${this.itemSyncToken}`);
+    logger.put(`TaskService.updateDueDate: ${this.todoistSyncToken}`);
     const task = this.taskById[taskId.value]!;
     const due = { ...task.due, date: date.displayDate };
     try {
-      const res = (await this.syncClient.syncItemUpdate(taskId.asNumber, due)).data;
-      if (res.full_sync) {
-        this.taskById = _.keyBy(res.items, x => x.id);
-      } else {
-        this.taskById = { ...this.taskById, ..._.keyBy(res.items, x => x.id) };
-      }
+      const res = (await this.syncClient.syncItemUpdate(taskId.asNumber, due, this.todoistSyncToken)).data;
+      this.syncCloudToInstance(res);
       return null;
     } catch (err) {
       console.error(err);
@@ -144,14 +148,16 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  async _updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
-    logger.put(`TaskService.updateTaskOrder: ${this.itemSyncToken}`);
+  private async _updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+    logger.put(`TaskService.updateTaskOrder: ${this.todoistSyncToken}`);
     try {
-      const res = (await this.syncClient.syncItemUpdateDayOrders(_.mapValues(taskById, x => x.dayOrder))).data;
-      this.taskById = _.mapValues(this.taskById, task =>
-        // XXX: `: task` is right? should day_order to be -1??
-        taskById[task.id] ? { ...task, day_order: taskById[task.id].dayOrder } : task,
-      );
+      const res = (
+        await this.syncClient.syncItemUpdateDayOrders(
+          _.mapValues(taskById, x => x.dayOrder),
+          this.todoistSyncToken,
+        )
+      ).data;
+      this.syncCloudToInstance(res);
       return null;
     } catch (err) {
       console.error(err);
@@ -165,22 +171,16 @@ export class TaskServiceImpl implements TaskService {
   }
 
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
-    logger.put(`TaskService.fetchProjects: ${this.itemSyncToken}`);
+    logger.put(`TaskService.fetchProjects: ${this.todoistSyncToken}`);
     try {
-      const res = (await this.syncClient.sync(['projects'], this.projectSyncToken)).data;
-      this.projectSyncToken = res.sync_token;
-
-      if (res.full_sync) {
-        this.projectById = _.keyBy(res.projects, x => x.id);
-      } else {
-        this.projectById = { ...this.projectById, ..._.keyBy(res.projects, x => x.id) };
-      }
+      const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
+      this.syncCloudToInstance(res);
 
       return right(
         _(this.projectById)
           .values()
           .reject(x => x.is_deleted === 1)
-          .map(x => this.toProject(x))
+          .map(x => TaskServiceImpl.toProject(x))
           .value(),
       );
     } catch (err) {

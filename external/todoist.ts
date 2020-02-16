@@ -2,9 +2,17 @@
 import Axios, { AxiosPromise } from 'axios';
 import { stringify } from 'query-string';
 import { Dictionary } from 'lodash';
+
 const uuidv4 = require('uuid/v4');
 
 export namespace SyncApi {
+  export type ResourceType = 'all' | 'items' | 'day_orders' | 'projects';
+  export interface Command {
+    type: 'item_update' | 'item_update_day_orders' | 'item_close';
+    uuid: string;
+    args: { [key: string]: any };
+  }
+
   export interface Project {
     id: number;
     name: string;
@@ -44,6 +52,8 @@ export namespace SyncApi {
   }
 
   export class SyncClient {
+    private readonly SYNC_RESOURCES: ResourceType[] = ['items', 'day_orders', 'projects'];
+
     private readonly baseUrl: string;
     private readonly token: string;
 
@@ -52,77 +62,58 @@ export namespace SyncApi {
       this.token = token;
     }
 
-    sync(resourceTypes: string[], syncToken: string = '*'): AxiosPromise<Root> {
+    sync(resourceTypes: ResourceType[], syncToken = '*', commands: Command[] = []): AxiosPromise<Root> {
       return Axios.post(
         '/sync',
         stringify({
           token: this.token,
           sync_token: syncToken,
           resource_types: JSON.stringify(resourceTypes),
+          commands: commands.length > 0 ? JSON.stringify(commands) : undefined,
         }),
         { baseURL: this.baseUrl },
       );
+    }
+
+    syncAll(syncToken = '*'): AxiosPromise<Root> {
+      return this.sync(this.SYNC_RESOURCES, syncToken);
     }
 
     syncItemUpdate(taskId: number, due: Partial<Due>, syncToken = '*'): AxiosPromise<Root> {
-      return Axios.post(
-        '/sync',
-        stringify({
-          token: this.token,
-          sync_token: syncToken,
-          resource_types: JSON.stringify(['items']),
-          commands: JSON.stringify([
-            {
-              type: 'item_update',
-              uuid: uuidv4(),
-              args: {
-                id: taskId,
-                due: due,
-              },
-            },
-          ]),
-        }),
-        { baseURL: this.baseUrl },
-      );
-    }
-
-    syncItemUpdateDayOrders(orderByTaskId: { [taskId: number]: number }): AxiosPromise<any> {
-      return Axios.post(
-        '/sync',
-        stringify({
-          token: this.token,
-          commands: JSON.stringify([
-            {
-              type: 'item_update_day_orders',
-              uuid: uuidv4(),
-              args: {
-                ids_to_orders: orderByTaskId,
-              },
-            },
-          ]),
-        }),
-        { baseURL: this.baseUrl },
-      );
-    }
-  }
-}
-
-export namespace RestApi {
-  export class RestClient {
-    private readonly baseUrl: string;
-    private readonly token: string;
-
-    constructor(token: string) {
-      this.baseUrl = 'https://api.todoist.com/rest/v1';
-      this.token = token;
-    }
-
-    closeTask(taskId: number): AxiosPromise<void> {
-      return Axios.post(`${this.baseUrl}/tasks/${taskId}/close`, undefined, {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
+      return this.sync(this.SYNC_RESOURCES, syncToken, [
+        {
+          type: 'item_update',
+          uuid: uuidv4(),
+          args: {
+            id: taskId,
+            due: due,
+          },
         },
-      });
+      ]);
+    }
+
+    syncItemUpdateDayOrders(orderByTaskId: { [taskId: number]: number }, syncToken = '*'): AxiosPromise<Root> {
+      return this.sync(this.SYNC_RESOURCES, syncToken, [
+        {
+          type: 'item_update_day_orders',
+          uuid: uuidv4(),
+          args: {
+            ids_to_orders: orderByTaskId,
+          },
+        },
+      ]);
+    }
+
+    syncItemClose(taskId: number, syncToken = '*'): AxiosPromise<Root> {
+      return this.sync(this.SYNC_RESOURCES, syncToken, [
+        {
+          type: 'item_close',
+          uuid: uuidv4(),
+          args: {
+            id: taskId,
+          },
+        },
+      ]);
     }
   }
 }
