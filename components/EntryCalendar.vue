@@ -25,13 +25,13 @@
         </template>
       </v-calendar>
 
-      <v-btn fixed dark small bottom right fab @click="handleClickPrevious" style="margin: 0 112px 48px 0;">
+      <v-btn fixed dark small bottom right fab style="margin: 0 112px 48px 0;" @click="handleClickPrevious">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <v-btn fixed dark small bottom right fab @click="handleClickNext" style="margin: 0 56px 48px 0;">
+      <v-btn fixed dark small bottom right fab style="margin: 0 56px 48px 0;" @click="handleClickNext">
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
-      <v-btn fixed dark small bottom right fab @click="handleClickMoveToNow" style="margin: 0 0 48px 0;">
+      <v-btn fixed dark small bottom right fab style="margin: 0 0 48px 0;" @click="handleClickMoveToNow">
         <v-icon>mdi-send-clock</v-icon>
       </v-btn>
     </v-sheet>
