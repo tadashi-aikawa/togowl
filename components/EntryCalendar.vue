@@ -10,7 +10,7 @@
         event-color="rgba(0, 255, 0, 0.5)"
         :event-overlap-threshold="10"
         interval-minutes="60"
-        interval-height="96"
+        :interval-height="intervalHeight"
         interval-count="24"
         interval-width="35"
         :interval-format="d => d.time"
@@ -25,6 +25,22 @@
         </template>
       </v-calendar>
 
+      <v-btn
+        v-if="zoomUp"
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin: 0 168px 48px 0;"
+        @click="handleClickZoomDown"
+      >
+        <v-icon>mdi-magnify-minus</v-icon>
+      </v-btn>
+      <v-btn v-else fixed dark small bottom right fab style="margin: 0 168px 48px 0;" @click="handleClickZoomUp">
+        <v-icon>mdi-magnify-plus</v-icon>
+      </v-btn>
       <v-btn fixed dark small bottom right fab style="margin: 0 112px 48px 0;" @click="handleClickPrevious">
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
@@ -52,6 +68,8 @@ class EntryCalendar extends Vue {
   height: string;
 
   currentDate = DateTime.now();
+  zoomUp = false;
+  intervalHeight = 64;
 
   mounted() {
     this.moveToNow();
@@ -87,6 +105,16 @@ class EntryCalendar extends Vue {
 
   handleClickNext() {
     this.currentDate = this.currentDate.plusDays(1);
+  }
+
+  handleClickZoomUp() {
+    this.zoomUp = true;
+    this.intervalHeight = 96;
+  }
+
+  handleClickZoomDown() {
+    this.zoomUp = false;
+    this.intervalHeight = 64;
   }
 }
 export default EntryCalendar;
