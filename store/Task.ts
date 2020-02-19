@@ -37,7 +37,11 @@ class TaskModule extends VuexModule {
   }
 
   get tasksOrderAsDay(): Task[] {
+    const today = DateTime.now();
+    const yesterday = DateTime.now().minusDays(1);
     return _(this.tasks)
+      .reject(x => !x.dueDate)
+      .filter(x => (today.equalsAsDate(x.dueDate!) || yesterday.equalsAsDate(x.dueDate!)) ?? false)
       .orderBy(x => x.dayOrder)
       .orderBy(x => x.priority.value, 'desc')
       .orderBy(x => x.dueDate?.unix, 'asc')
@@ -122,7 +126,7 @@ class TaskModule extends VuexModule {
   async fetchTasks(): Promise<void> {
     this.setStatus('in_progress');
     pipe(
-      await service!.fetchDailyTasks(),
+      await service!.fetchTasks(),
       fold(
         err => {
           this.setError(err);
@@ -145,8 +149,8 @@ class TaskModule extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async updateDueDate(payload: {taskId: TaskId, dueDate: DateTime}): Promise<void> {
-    const {taskId, dueDate} = payload
+  async updateDueDate(payload: { taskId: TaskId; dueDate: DateTime }): Promise<void> {
+    const { taskId, dueDate } = payload;
     // TODO: Illegal case
     this.setTaskById({
       ...this._taskById,

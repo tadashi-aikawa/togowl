@@ -13,7 +13,7 @@ export interface TaskEventListener {
 }
 
 export interface TaskService {
-  fetchDailyTasks(): Promise<Either<TogowlError, Task[]>>;
+  fetchTasks(): Promise<Either<TogowlError, Task[]>>;
   completeTask(taskId: TaskId): Promise<TogowlError | null>;
   fetchProjects(): Promise<Either<TogowlError, Project[]>>;
   updateDueDate(taskId: TaskId, date: DateTime): Promise<TogowlError | null>;

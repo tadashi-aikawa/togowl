@@ -46,6 +46,10 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return dayjs().diff(this._value, 'second') <= seconds;
   }
 
+  equalsAsDate(dateTime: DateTime): boolean {
+    return this._value.isSame(dateTime._value, 'day');
+  }
+
   get unix(): number {
     return this._value.unix();
   }

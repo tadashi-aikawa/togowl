@@ -83,13 +83,13 @@ class TaskSwiperEntry extends Vue {
   }
 
   async updateToToday() {
-    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
     this.revertSwiperStateAsDefault();
+    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
   }
 
   async updateToTomorrow() {
-    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
     this.revertSwiperStateAsDefault();
+    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
   }
 
   handleClickStartButton() {

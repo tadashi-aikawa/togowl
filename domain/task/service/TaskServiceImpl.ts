@@ -93,18 +93,15 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  private async _fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
-    logger.put(`TaskService.fetchDailyTasks: ${this.todoistSyncToken}`);
+  private async _fetchTasks(): Promise<Either<TogowlError, Task[]>> {
+    logger.put(`TaskService.fetchTasks: ${this.todoistSyncToken}`);
     try {
       const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
       this.syncCloudToInstance(res);
 
-      const today = DateTime.now().displayDate;
-      const yesterday = DateTime.now().minusDays(1).displayDate;
       return right(
         _(this.taskById)
           .values()
-          .filter(x => (x.due?.date.startsWith(today) || x.due?.date.startsWith(yesterday)) ?? false)
           .reject(x => x.is_deleted === 1)
           .reject(x => x.checked === 1)
           .map(x => TaskServiceImpl.toTask(x))
@@ -116,10 +113,10 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  private throttleFetchDailyTasks = _.throttle(this._fetchDailyTasks, 2000, { trailing: false });
-  fetchDailyTasks(): Promise<Either<TogowlError, Task[]>> {
-    logger.put('TaskService.fetchDailyTasks (Before throttle 2s)');
-    return this.throttleFetchDailyTasks();
+  private throttleFetchTasks = _.throttle(this._fetchTasks, 2000, { trailing: false });
+  fetchTasks(): Promise<Either<TogowlError, Task[]>> {
+    logger.put('TaskService.fetchTasks (Before throttle 2s)');
+    return this.throttleFetchTasks();
   }
 
   async completeTask(taskId: TaskId): Promise<TogowlError | null> {
