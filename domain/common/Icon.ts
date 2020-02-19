@@ -20,10 +20,10 @@ export class Icon extends ValueObject<Props> {
   }
 
   get url(): string | undefined {
-    return this._value!.url?.value;
+    return this._value.url?.value;
   }
 
   get emoji(): string | undefined {
-    return this._value!.emoji;
+    return this._value.emoji;
   }
 }

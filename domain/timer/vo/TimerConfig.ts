@@ -16,14 +16,14 @@ export class TimerConfig extends ValueObject<Props> {
   }
 
   get token(): string | undefined {
-    return this._value!.token;
+    return this._value.token;
   }
 
   get workspaceId(): number | undefined {
-    return this._value!.workspaceId;
+    return this._value.workspaceId;
   }
 
   get proxy(): string | undefined {
-    return this._value!.proxy;
+    return this._value.proxy;
   }
 }

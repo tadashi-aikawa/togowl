@@ -16,10 +16,10 @@ export class RecentTask extends ValueObject<Props> {
   }
 
   get taskId(): TaskId | undefined {
-    return this._value!.taskId;
+    return this._value.taskId;
   }
 
   get entryId(): EntryId | undefined {
-    return this._value!.entryId;
+    return this._value.entryId;
   }
 }

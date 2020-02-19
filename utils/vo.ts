@@ -23,6 +23,6 @@ export abstract class ValueObject<T extends ValueObjectProps> extends AbstractVa
 
 export abstract class PrimitiveValueObject<T> extends AbstractValueObject<T> {
   get value(): T {
-    return this._value!;
+    return this._value;
   }
 }

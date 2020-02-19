@@ -22,7 +22,7 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
   }
 
   get value(): Props {
-    return this._value!;
+    return this._value;
   }
 
   getIcon(projectCategoryId: ProjectCategoryId): Icon | undefined {

@@ -13,10 +13,10 @@ export class User extends ValueObject<Props> {
   }
 
   get name(): UserName {
-    return this._value!.name;
+    return this._value.name;
   }
 
   get uid(): UId {
-    return this._value!.uid;
+    return this._value.uid;
   }
 }

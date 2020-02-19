@@ -12,15 +12,15 @@ export class TogowlError extends ValueObject<Props> {
   }
 
   get code(): string {
-    return this._value!.code;
+    return this._value.code;
   }
 
   get message(): string {
-    return this._value!.message;
+    return this._value.message;
   }
 
   get detail(): string | undefined {
-    return this._value!.detail;
+    return this._value.detail;
   }
 
   get messageForLog(): string {

@@ -14,10 +14,10 @@ export class TaskConfig extends ValueObject<Props> {
   }
 
   get token(): string | undefined {
-    return this._value!.token;
+    return this._value.token;
   }
 
   get syncToken(): string | undefined {
-    return this._value!.syncToken;
+    return this._value.syncToken;
   }
 }

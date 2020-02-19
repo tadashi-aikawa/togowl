@@ -18,14 +18,14 @@ export class SlackConfig extends ValueObject<Props> {
   }
 
   get incomingWebHookUrl(): Url | undefined {
-    return this._value!.incomingWebHookUrl;
+    return this._value.incomingWebHookUrl;
   }
 
   get notifyTo(): ChannelName | undefined {
-    return this._value!.notifyTo;
+    return this._value.notifyTo;
   }
 
   get proxy(): string | undefined {
-    return this._value!.proxy;
+    return this._value.proxy;
   }
 }

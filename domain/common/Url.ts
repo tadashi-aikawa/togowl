@@ -15,6 +15,6 @@ export class Url extends PrimitiveValueObject<string> {
   }
 
   getProxyAddedValue(proxy?: string): string {
-    return proxy ? this._value!.replace('://', `://${proxy}/`) : this._value!;
+    return proxy ? this._value.replace('://', `://${proxy}/`) : this._value!;
   }
 }

@@ -25,7 +25,7 @@ export class ProjectConfig extends ValueObject<Props> {
   }
 
   get value(): Props {
-    return this._value!;
+    return this._value;
   }
 
   getIcon(projectId: ProjectId): Icon | undefined {
