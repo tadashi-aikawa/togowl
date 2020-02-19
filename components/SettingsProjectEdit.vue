@@ -74,7 +74,7 @@ class SettingsProjectEdit extends Vue {
   iconUrlRules = [(v: string) => !v || Url.isValid(v) || 'Invalid URL'];
 
   iconEmoji: string = '';
-  iconEmojiRules = [(v: string) => !v || !v.includes(':') || 'Do not contain colon'];
+  iconEmojiRules = [(v: string) => !v || !v.includes(':') || 'Can not contain colons'];
 
   selectedTaskProjects: TaskProject[] = [];
 
