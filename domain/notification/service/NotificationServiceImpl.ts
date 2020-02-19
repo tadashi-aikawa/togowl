@@ -27,18 +27,20 @@ export class NotificationServiceImpl implements NotificationService {
 
   start(entry: Entry): Promise<TogowlError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
-    return this.notifyToSlack(`:tio2: \`開始\`  *${entry!.description}*    ${footer}`);
+    return this.notifyToSlack(`:togowl_play: \`開始\`  *${entry!.description}*    ${footer}`);
   }
 
   done(entry: Entry): Promise<TogowlError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
-    return this.notifyToSlack(`:renne: \`完了\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`);
+    return this.notifyToSlack(
+      `:togowl_complete: \`完了\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`,
+    );
   }
 
   pause(entry: Entry): Promise<TogowlError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
-      `:zzz_kirby: \`中断\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`,
+      `:togowl_pause: \`中断\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`,
     );
   }
 
