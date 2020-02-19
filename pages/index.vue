@@ -50,22 +50,12 @@
               </v-col>
             </v-row>
 
-            <swiper :options="subActionSwiperOption">
-              <swiper-slide>
-                <div align="center" style="width: 95vw;">
-                  <img src="https://pbs.twimg.com/media/CpJGP99UsAElyKI.png" height="80" />
-                  <img src="https://pbs.twimg.com/media/CpElbcDUIAAlayV.png" height="80" />
-                  <img src="https://pbs.twimg.com/media/EKNmh1WUUAE8dCR.png" height="70" style="padding: 5px;" />
-                  <img
-                    src="https://illust-stock.com/wp-content/uploads/fukurou.png"
-                    height="70"
-                    style="padding: 5px 5px 5px 15px;"
-                  />
-                </div>
-              </swiper-slide>
-              <swiper-slide v-if="firstEntry">
-                <TimeEntry :entry="firstEntry" @on-click-start="start" />
-              </swiper-slide>
+            <swiper :options="subActionSwiperOption" style="height: 83px;">
+              <template v-for="entry in latest5Entries">
+                <swiper-slide :key="entry.id.value">
+                  <TimeEntry :entry="entry" @on-click-start="start" />
+                </swiper-slide>
+              </template>
             </swiper>
           </div>
         </v-fade-transition>
@@ -159,7 +149,8 @@ class Root extends Vue {
   selectedEntry: Entry | null = null;
 
   subActionSwiperOption = {
-    effect: 'flip',
+    direction: 'vertical',
+    effect: 'cube',
   };
 
   showSnackBar(message: string, error: boolean) {
@@ -286,8 +277,8 @@ class Root extends Vue {
     return timerStore.entries;
   }
 
-  get firstEntry(): Entry | undefined {
-    return timerStore.entriesWithDayOrders?.[0] ?? undefined;
+  get latest5Entries(): Entry[] {
+    return timerStore.entriesWithDayOrders.slice(0, 5);
   }
 
   get candidatedEntries(): Entry[] {
