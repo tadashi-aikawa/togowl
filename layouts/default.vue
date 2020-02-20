@@ -25,39 +25,26 @@
             <v-list-item-title v-text="item.title" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-item @click="logoutConfirmDialog = true">
+          <v-list-item-action>
+            <v-icon>mdi-exit-to-app</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn icon v-on="on" @click="logoutConfirmDialog = true">
-            <v-icon>mdi-exit-to-app</v-icon>
-          </v-btn>
-        </template>
-        <span>Logout</span>
-      </v-tooltip>
     </v-app-bar>
     <v-content>
       <v-container>
         <nuxt />
       </v-container>
     </v-content>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <v-dialog v-model="logoutConfirmDialog" max-width="290">
       <v-card>
         <v-card-title class="headline">Confirm</v-card-title>
@@ -95,9 +82,6 @@ export default class extends Vue {
 
   clipped = false;
   drawer = false;
-  fixed = false;
-  right = true;
-  rightDrawer = false;
   logoutConfirmDialog = false;
 
   items = [
