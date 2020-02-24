@@ -25,11 +25,6 @@ export class TaskServiceImpl implements TaskService {
     logger.put('new TaskService');
     this.syncClient = new todoist.SyncApi.SyncClient(todoistToken);
 
-    const debounceOnSyncNeeded = _.debounce(() => {
-      logger.put('TaskService.onSyncNeeded');
-      listener.onSyncNeeded?.();
-    }, 3000);
-
     this.socketClient = todoist.SocketApi.ApiClient.use(todoistWebSocketToken, {
       onOpen: () => {
         logger.put('TaskService.onOpen');
@@ -44,8 +39,8 @@ export class TaskServiceImpl implements TaskService {
         listener.onError?.(TogowlError.create('SUBSCRIBE_TASK_ERROR', 'Fail to subscribe task event', event.reason));
       },
       onSyncNeeded: () => {
-        logger.put('TaskService.onSyncNeeded (Before debounce)');
-        debounceOnSyncNeeded();
+        logger.put('TaskService.onSyncNeeded');
+        listener.onSyncNeeded?.();
       },
     });
   }
@@ -93,7 +88,7 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  private async _fetchTasks(): Promise<Either<TogowlError, Task[]>> {
+  async fetchTasks(): Promise<Either<TogowlError, Task[]>> {
     logger.put(`TaskService.fetchTasks: ${this.todoistSyncToken}`);
     try {
       const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
@@ -111,12 +106,6 @@ export class TaskServiceImpl implements TaskService {
       console.error(err);
       return left(TogowlError.create('FETCH_DAILY_TASKS', "Can't fetch daily tasks from Todoist", err.message));
     }
-  }
-
-  private throttleFetchTasks = _.throttle(this._fetchTasks, 2000, { trailing: false });
-  fetchTasks(): Promise<Either<TogowlError, Task[]>> {
-    logger.put('TaskService.fetchTasks (Before throttle 2s)');
-    return this.throttleFetchTasks();
   }
 
   async completeTask(taskId: TaskId): Promise<TogowlError | null> {
@@ -145,7 +134,7 @@ export class TaskServiceImpl implements TaskService {
     }
   }
 
-  private async _updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
+  async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
     logger.put(`TaskService.updateTaskOrder: ${this.todoistSyncToken}`);
     try {
       const res = (
@@ -160,11 +149,6 @@ export class TaskServiceImpl implements TaskService {
       console.error(err);
       return TogowlError.create('UPDATE_TASKS_ORDER', "Can't update tasks order on Todoist", err.message);
     }
-  }
-  private debounceUpdateTasksOrder = _.debounce(this._updateTasksOrder, 5000);
-  async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
-    logger.put(`TaskService.updateTaskOrder (Before debounce 5s)`);
-    return this.debounceUpdateTasksOrder(taskById);
   }
 
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
