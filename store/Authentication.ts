@@ -8,6 +8,7 @@ import firebase from '~/plugins/firebase';
 import { UId } from '~/domain/authentication/vo/UId';
 import { AuthenticationStatus } from '~/domain/authentication/vo/AuthenticationStatus';
 import { cloudRepository } from '~/store/index';
+import logger from '~/utils/global-logger';
 
 async function initCloudStores(uid: UId) {
   userStore.init(uid);
@@ -36,19 +37,24 @@ class AuthenticationModule extends VuexModule {
   init() {
     this.setAuthenticationStatus('check');
     firebase.auth().onAuthStateChanged(async user => {
+      logger.put(`AuthenticationStore.onAuthStateChanged: ${user}`);
       if (!user) {
         this.setError(null);
         this.setAuthenticationStatus('logout');
         return;
       }
+
+      logger.put(`AuthenticationStore.tryLogin: ${user}`);
       pipe(
         await cloudRepository.login(),
         fold(
           e => {
+            logger.put(`AuthenticationStore.tryLogin.error: ${user}`);
             this.setError(e);
             this.setAuthenticationStatus('error');
           },
           async user => {
+            logger.put(`AuthenticationStore.tryLogin.success: ${user}`);
             await initCloudStores(user.uid);
             this.setAuthenticationStatus('login');
           },
@@ -62,14 +68,17 @@ class AuthenticationModule extends VuexModule {
     this.setError(null);
     this.setAuthenticationStatus('check');
 
+    logger.put(`AuthenticationStore.login`);
     pipe(
       await cloudRepository.login(payload),
       fold(
         e => {
+          logger.put(`AuthenticationStore.login.error`);
           this.setError(e);
           this.setAuthenticationStatus('error');
         },
         async user => {
+          logger.put(`AuthenticationStore.login.success`);
           await initCloudStores(user.uid);
           this.setAuthenticationStatus('login');
         },

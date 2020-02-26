@@ -89,10 +89,12 @@ export class TaskServiceImpl implements TaskService {
   }
 
   async fetchTasks(): Promise<Either<TogowlError, Task[]>> {
-    logger.put(`TaskService.fetchTasks: ${this.todoistSyncToken}`);
+    logger.put(`TaskService.fetchTasks: ${this.todoistSyncToken.slice(0, 7)}`);
     try {
       const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
+      logger.put(`TaskService.fetchTasks.success: ${this.todoistSyncToken.slice(0, 7)}`);
       this.syncCloudToInstance(res);
+      logger.put(`TaskService.fetchTasks.success (sync to local): ${this.todoistSyncToken.slice(0, 7)}`);
 
       return right(
         _(this.taskById)
@@ -104,38 +106,45 @@ export class TaskServiceImpl implements TaskService {
       );
     } catch (err) {
       console.error(err);
+      logger.put(`TaskService.fetchTasks.error: ${this.todoistSyncToken.slice(0, 7)}`);
       return left(TogowlError.create('FETCH_DAILY_TASKS', "Can't fetch daily tasks from Todoist", err.message));
     }
   }
 
   async completeTask(taskId: TaskId): Promise<TogowlError | null> {
-    logger.put(`TaskService.completeTask: ${this.todoistSyncToken}`);
+    logger.put(`TaskService.completeTask: ${this.todoistSyncToken.slice(0, 7)}`);
     try {
       const res = (await this.syncClient.syncItemClose(taskId.asNumber, this.todoistSyncToken)).data;
+      logger.put(`TaskService.completeTask.success: ${this.todoistSyncToken.slice(0, 7)}`);
       this.syncCloudToInstance(res);
+      logger.put(`TaskService.completeTask.success (sync to local): ${this.todoistSyncToken.slice(0, 7)}`);
       return null;
     } catch (err) {
       console.error(err);
+      logger.put(`TaskService.completeTask.error: ${this.todoistSyncToken.slice(0, 7)}`);
       return TogowlError.create('COMPLETE_TASK', "Can't complete task on Todoist", err.message);
     }
   }
 
   async updateDueDate(taskId: TaskId, date: DateTime): Promise<TogowlError | null> {
-    logger.put(`TaskService.updateDueDate: ${this.todoistSyncToken}`);
+    logger.put(`TaskService.updateDueDate: ${this.todoistSyncToken.slice(0, 7)}`);
     const task = this.taskById[taskId.value]!;
     const due = { ...task.due, date: date.displayDate };
     try {
       const res = (await this.syncClient.syncItemUpdate(taskId.asNumber, due, this.todoistSyncToken)).data;
+      logger.put(`TaskService.updateDueDate.success: ${this.todoistSyncToken.slice(0, 7)}`);
       this.syncCloudToInstance(res);
+      logger.put(`TaskService.updateDueDate.success (sync to local): ${this.todoistSyncToken.slice(0, 7)}`);
       return null;
     } catch (err) {
       console.error(err);
+      logger.put(`TaskService.updateDueDate.error: ${this.todoistSyncToken.slice(0, 7)}`);
       return TogowlError.create('UPDATE_DUE_DATE', "Can't update due date on Todoist", err.message);
     }
   }
 
   async updateTasksOrder(taskById: { [taskId: number]: Task }): Promise<TogowlError | null> {
-    logger.put(`TaskService.updateTaskOrder: ${this.todoistSyncToken}`);
+    logger.put(`TaskService.updateTaskOrder: ${this.todoistSyncToken.slice(0, 7)}`);
     try {
       const res = (
         await this.syncClient.syncItemUpdateDayOrders(
@@ -143,19 +152,24 @@ export class TaskServiceImpl implements TaskService {
           this.todoistSyncToken,
         )
       ).data;
+      logger.put(`TaskService.updateTaskOrder.success: ${this.todoistSyncToken.slice(0, 7)}`);
       this.syncCloudToInstance(res);
+      logger.put(`TaskService.updateTaskOrder.success (sync to local): ${this.todoistSyncToken.slice(0, 7)}`);
       return null;
     } catch (err) {
       console.error(err);
+      logger.put(`TaskService.updateTaskOrder.error: ${this.todoistSyncToken.slice(0, 7)}`);
       return TogowlError.create('UPDATE_TASKS_ORDER', "Can't update tasks order on Todoist", err.message);
     }
   }
 
   async fetchProjects(): Promise<Either<TogowlError, Project[]>> {
-    logger.put(`TaskService.fetchProjects: ${this.todoistSyncToken}`);
+    logger.put(`TaskService.fetchProjects: ${this.todoistSyncToken.slice(0, 7)}`);
     try {
       const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
+      logger.put(`TaskService.fetchProjects.success: ${this.todoistSyncToken.slice(0, 7)}`);
       this.syncCloudToInstance(res);
+      logger.put(`TaskService.fetchProjects.success (sync to local): ${this.todoistSyncToken.slice(0, 7)}`);
 
       return right(
         _(this.projectById)
@@ -166,6 +180,7 @@ export class TaskServiceImpl implements TaskService {
       );
     } catch (err) {
       console.error(err);
+      logger.put(`TaskService.fetchProjects.error: ${this.todoistSyncToken.slice(0, 7)}`);
       return left(TogowlError.create('FETCH_PROJECTS', "Can't fetch projects from Todoist", err.message));
     }
   }

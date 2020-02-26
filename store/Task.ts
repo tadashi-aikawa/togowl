@@ -74,12 +74,13 @@ class CommandExecutor {
 
   async execAll(delaySeconds = 0): Promise<void> {
     return new Promise((resolve, _reject) => {
-      const lastUpdateOrderCommand = _.last(this.commands.filter(x => x instanceof UpdateOrderCommand));
-      _.remove(this.commands, x => x instanceof UpdateOrderCommand && x !== lastUpdateOrderCommand);
-
       if (this.timerId) {
         window.clearTimeout(this.timerId);
       }
+
+      const lastUpdateOrderCommand = _.last(this.commands.filter(x => x instanceof UpdateOrderCommand));
+      _.remove(this.commands, x => x instanceof UpdateOrderCommand && x !== lastUpdateOrderCommand);
+
       this.timerId = window.setTimeout(async () => {
         while (this.commands.length > 0) {
           const task = this.commands.shift()!;
