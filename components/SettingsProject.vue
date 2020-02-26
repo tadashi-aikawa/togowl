@@ -60,7 +60,7 @@ class SettingsProject extends Vue {
   }
 
   get isProject(): boolean {
-    return this.currentItem?.type === "project"
+    return this.currentItem?.type === 'project';
   }
 
   get projectCategories(): ProjectCategoryItem[] {
