@@ -31,12 +31,12 @@ class ProjectModule extends VuexModule {
   private _project: FirestoreProject | null = null;
   private _projectCategory: FirestoreProjectCategory | null = null;
 
-  get projectConfig(): ProjectConfig | null {
-    return this._project ? toProjectConfig(this._project) : null;
+  get projectConfig(): ProjectConfig {
+    return this._project ? toProjectConfig(this._project) : ProjectConfig.empty();
   }
 
-  get projectCategoryConfig(): ProjectCategoryConfig | null {
-    return this._projectCategory ? toProjectCategoryConfig(this._projectCategory) : null;
+  get projectCategoryConfig(): ProjectCategoryConfig {
+    return this._projectCategory ? toProjectCategoryConfig(this._projectCategory) : ProjectCategoryConfig.empty();
   }
 
   get projects(): Project[] {
@@ -84,7 +84,7 @@ class ProjectModule extends VuexModule {
   async updateProject(project: Project) {
     // TODO: status
     const err = await cloudRepository.saveProjectConfig(
-      this.projectConfig!.cloneWith(project.id, project.icon, project.taskProjectIds),
+      this.projectConfig.cloneWith(project.id, project.icon, project.taskProjectIds),
     );
     if (err) {
       // TODO: Show on UI
@@ -96,7 +96,7 @@ class ProjectModule extends VuexModule {
   async updateProjectCategory(projectCategory: ProjectCategory) {
     // TODO: status
     const err = await cloudRepository.saveProjectCategoryConfig(
-      this.projectCategoryConfig!.cloneWith(projectCategory.id, projectCategory.icon),
+      this.projectCategoryConfig.cloneWith(projectCategory.id, projectCategory.icon),
     );
     if (err) {
       // TODO: Show on UI
@@ -104,11 +104,15 @@ class ProjectModule extends VuexModule {
     }
   }
 
-  @Action
+  @Action({ rawError: true })
   async fetchProjects(): Promise<void> {
+    if (!service) {
+      return;
+    }
+
     this.setProjectsStatus('in_progress');
     pipe(
-      await service!.fetchProjects(),
+      await service.fetchProjects(),
       fold(
         err => {
           this.setProjectsError(err);

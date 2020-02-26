@@ -24,6 +24,10 @@ export class ProjectConfig extends ValueObject<Props> {
     return new ProjectConfig(args);
   }
 
+  static empty(): ProjectConfig {
+    return new ProjectConfig({});
+  }
+
   get value(): Props {
     return this._value;
   }

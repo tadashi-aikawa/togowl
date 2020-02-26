@@ -204,10 +204,14 @@ class TaskModule extends VuexModule {
 
   @Action({ rawError: true })
   async fetchTasks(): Promise<void> {
+    if (!service) {
+      return;
+    }
+
     this.setStatus('in_progress');
     await this.commandExecutor.execAll();
     pipe(
-      await service!.fetchTasks(),
+      await service.fetchTasks(),
       fold(
         err => {
           this.setError(err);
@@ -258,10 +262,14 @@ class TaskModule extends VuexModule {
 
   @Action({ rawError: true })
   async fetchProjects(): Promise<void> {
+    if (!service) {
+      return;
+    }
+
     this.setProjectStatus('in_progress');
     await this.commandExecutor.execAll();
     pipe(
-      await service!.fetchProjects(),
+      await service.fetchProjects(),
       fold(
         err => {
           this.setProjectError(err);
@@ -296,6 +304,7 @@ class TaskModule extends VuexModule {
         this.commandExecutor.needSync().execAll(1000);
       },
     });
+
     // Show quickly as well as we can
     this.fetchTasks();
   }

@@ -147,6 +147,7 @@ class FirebaseCloudRepository implements CloudRepository {
         .collection('users')
         .doc(this.uid)
         .get();
+      // Databaseにユーザ登録をしていないと、userDoc.data()はnullになる
       return right(User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name)));
     } catch (e) {
       return left(TogowlError.create(e.code, e.message));

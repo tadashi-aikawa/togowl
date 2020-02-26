@@ -18,6 +18,7 @@
           <v-text-field v-model="iconEmoji" :rules="iconEmojiRules" label="Icon Emoji" placeholder="smile" clearable />
 
           <v-autocomplete
+            v-if="showProjects"
             v-model="selectedTaskProjects"
             :items="candidatedTaskProjects"
             :menu-props="{ maxHeight: 220 }"
@@ -69,6 +70,9 @@ class SettingsProjectEdit extends Vue {
 
   @Prop()
   taskProjectIds?: TaskProjectId[];
+
+  @Prop()
+  showProjects: boolean;
 
   iconUrl: string = '';
   iconUrlRules = [(v: string) => !v || Url.isValid(v) || 'Invalid URL'];

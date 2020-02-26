@@ -21,6 +21,10 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     return new ProjectCategoryConfig(args);
   }
 
+  static empty(): ProjectCategoryConfig {
+    return new ProjectCategoryConfig({});
+  }
+
   get value(): Props {
     return this._value;
   }

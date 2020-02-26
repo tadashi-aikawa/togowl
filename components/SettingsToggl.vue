@@ -79,7 +79,7 @@ class SettingsToggl extends Vue {
 
   mounted() {
     this.togglApiToken = timerStore.timerConfig?.token ?? '';
-    this.togglWorkSpaceId = String(timerStore.timerConfig?.workspaceId) ?? '';
+    this.togglWorkSpaceId = String(timerStore.timerConfig?.workspaceId ?? '');
     this.proxy = timerStore.timerConfig?.proxy ?? '';
   }
 

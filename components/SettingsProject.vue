@@ -17,6 +17,7 @@
         :name="currentItem.node.name.value"
         :icon="currentItem.node.icon"
         :task-project-ids="currentItem.node.taskProjectIds"
+        :show-projects="isProject"
         @on-save="saveItem"
       />
     </v-bottom-sheet>
@@ -56,6 +57,10 @@ class SettingsProject extends Vue {
   async mounted() {
     await projectStore.fetchProjects();
     await taskStore.fetchProjects();
+  }
+
+  get isProject(): boolean {
+    return this.currentItem?.type === "project"
   }
 
   get projectCategories(): ProjectCategoryItem[] {
