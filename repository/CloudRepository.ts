@@ -8,9 +8,11 @@ import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
 import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
 import { TaskConfig } from '~/domain/task/vo/TaskConfig';
 import { RecentTask } from '~/domain/common/RecentTask';
+import { UId } from '~/domain/authentication/vo/UId';
 
 interface CloudRepository {
   login(payload?: LoginPayload): Promise<Either<TogowlError, User>>;
+  loadUser(userId: UId): Promise<Either<TogowlError, User>>;
   logout(): void;
 
   saveRecentTask(recentTask: RecentTask): Promise<TogowlError | null>;

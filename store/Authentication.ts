@@ -35,6 +35,7 @@ class AuthenticationModule extends VuexModule {
 
   @Action
   init() {
+    logger.put(`AuthenticationStore.init`);
     this.setAuthenticationStatus('check');
     firebase.auth().onAuthStateChanged(async user => {
       logger.put(`AuthenticationStore.onAuthStateChanged: ${user}`);
@@ -44,17 +45,17 @@ class AuthenticationModule extends VuexModule {
         return;
       }
 
-      logger.put(`AuthenticationStore.tryLogin: ${user}`);
+      logger.put(`AuthenticationStore.loadUser: ${user}`);
       pipe(
-        await cloudRepository.login(),
+        await cloudRepository.loadUser(UId.create(user.uid)),
         fold(
           e => {
-            logger.put(`AuthenticationStore.tryLogin.error: ${user}`);
+            logger.put(`AuthenticationStore.loadUser.error: ${user}`);
             this.setError(e);
             this.setAuthenticationStatus('error');
           },
           async user => {
-            logger.put(`AuthenticationStore.tryLogin.success: ${user}`);
+            logger.put(`AuthenticationStore.loadUser.success: ${user}`);
             await initCloudStores(user.uid);
             this.setAuthenticationStatus('login');
           },

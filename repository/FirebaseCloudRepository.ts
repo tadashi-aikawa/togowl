@@ -154,6 +154,20 @@ class FirebaseCloudRepository implements CloudRepository {
     }
   }
 
+  async loadUser(userId: UId): Promise<Either<TogowlError, User>> {
+    try {
+      this.uid = userId.value;
+      const userDoc = await store
+        .collection('users')
+        .doc(this.uid)
+        .get();
+      // Databaseにユーザ登録をしていないと、userDoc.data()はnullになる
+      return right(User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name)));
+    } catch (e) {
+      return left(TogowlError.create(e.code, e.message));
+    }
+  }
+
   async logout() {
     await firebase.auth().signOut();
   }

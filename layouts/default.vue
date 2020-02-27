@@ -112,15 +112,11 @@ export default class extends Vue {
   }
 
   get isChecking(): boolean {
-    return authenticationStore.status === 'check';
+    return authenticationStore.status === 'check' && userStore.user == null;
   }
 
   get hasLogin(): boolean {
     return authenticationStore.status === 'login';
-  }
-
-  get verifiedUser(): User | null {
-    return userStore.user;
   }
 }
 </script>
