@@ -71,7 +71,6 @@
 <script lang="ts">
 import { Component, Vue } from '~/node_modules/nuxt-property-decorator';
 import Login from '~/layouts/login.vue';
-import { User } from '~/domain/authentication/vo/User';
 import { authenticationStore, userStore } from '~/utils/store-accessor';
 
 @Component({
@@ -103,7 +102,9 @@ export default class extends Vue {
   ];
 
   mounted() {
-    authenticationStore.init();
+    if (!userStore.user) {
+      authenticationStore.init();
+    }
   }
 
   logout() {
@@ -112,7 +113,7 @@ export default class extends Vue {
   }
 
   get isChecking(): boolean {
-    return authenticationStore.status === 'check' && userStore.user == null;
+    return authenticationStore.status === 'check';
   }
 
   get hasLogin(): boolean {
