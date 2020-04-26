@@ -21,7 +21,7 @@ Clone this repository.
 ### Install dependencies
 
 ```bash
-$ npm run install
+$ npm install
 ```
 
 ### Create your app on firebase
