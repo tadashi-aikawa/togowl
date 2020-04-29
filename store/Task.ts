@@ -21,7 +21,6 @@ let service: TaskService | null;
 interface Command {
   exec(): void;
 }
-type CommandType = 'complete' | 'update_due_date' | 'update_order';
 
 class CompleteCommand implements Command {
   constructor(public execFunction: (taskId: TaskId) => Promise<TogowlError | null>, public taskId: TaskId) {}
@@ -36,6 +35,7 @@ class UpdateDueDateCommand implements Command {
     public taskId: TaskId,
     public date: DateTime,
   ) {}
+
   exec() {
     return this.execFunction(this.taskId, this.date);
   }
@@ -46,6 +46,7 @@ class UpdateOrderCommand implements Command {
     public execFunction: (taskById: { [taskId: number]: Task }) => Promise<TogowlError | null>,
     public taskById: { [taskId: number]: Task },
   ) {}
+
   exec() {
     return this.execFunction(this.taskById);
   }
@@ -72,8 +73,8 @@ class CommandExecutor {
     return this;
   }
 
-  async execAll(delaySeconds = 0): Promise<void> {
-    return new Promise((resolve, _reject) => {
+  execAll(delaySeconds = 0): Promise<void> {
+    return new Promise(resolve => {
       if (this.timerId) {
         window.clearTimeout(this.timerId);
       }
@@ -82,15 +83,19 @@ class CommandExecutor {
       _.remove(this.commands, x => x instanceof UpdateOrderCommand && x !== lastUpdateOrderCommand);
 
       this.timerId = window.setTimeout(async () => {
-        while (this.commands.length > 0) {
-          const task = this.commands.shift()!;
-          await task.exec();
+        if (this.commands.length === 0) {
+          // Avoid conflict
+          if (this.syncNeeded) {
+            this.listener.onSyncNeeded();
+          }
+        } else {
+          while (this.commands.length > 0) {
+            const task = this.commands.shift()!;
+            await task.exec();
+          }
         }
-        // Sync must after executing commands
-        if (this.syncNeeded) {
-          this.listener.onSyncNeeded();
-          this.syncNeeded = false;
-        }
+
+        this.syncNeeded = false;
         resolve();
       }, delaySeconds);
     });
@@ -299,7 +304,7 @@ class TaskModule extends VuexModule {
         this.setRealtime(false);
         await this.updateService();
       },
-      onError: (err: TogowlError) => this.setError,
+      onError: (_err: TogowlError) => this.setError,
       onSyncNeeded: () => {
         this.commandExecutor.needSync().execAll(1000);
       },
