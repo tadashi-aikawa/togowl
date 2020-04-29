@@ -60,11 +60,15 @@ class CommandExecutor {
   commands: Command[] = [];
   syncNeeded = false;
   timerId: number;
+  lastExecutedDateTime: DateTime;
 
   constructor(public listener: SyncNeededListener) {}
 
-  needSync(): CommandExecutor {
-    this.syncNeeded = true;
+  needSync(clientId?: string): CommandExecutor {
+    // `clientId is defined` means sync from Todoist official application and others
+    if (clientId || !this.lastExecutedDateTime || !this.lastExecutedDateTime.within(3)) {
+      this.syncNeeded = true;
+    }
     return this;
   }
 
@@ -83,19 +87,17 @@ class CommandExecutor {
       _.remove(this.commands, x => x instanceof UpdateOrderCommand && x !== lastUpdateOrderCommand);
 
       this.timerId = window.setTimeout(async () => {
-        if (this.commands.length === 0) {
-          // Avoid conflict
-          if (this.syncNeeded) {
-            this.listener.onSyncNeeded();
-          }
-        } else {
-          while (this.commands.length > 0) {
-            const task = this.commands.shift()!;
-            await task.exec();
-          }
+        while (this.commands.length > 0) {
+          const task = this.commands.shift()!;
+          this.lastExecutedDateTime = DateTime.now();
+          await task.exec();
         }
 
-        this.syncNeeded = false;
+        if (this.syncNeeded) {
+          this.listener.onSyncNeeded();
+          this.syncNeeded = false;
+        }
+
         resolve();
       }, delaySeconds);
     });
@@ -305,8 +307,8 @@ class TaskModule extends VuexModule {
         await this.updateService();
       },
       onError: (_err: TogowlError) => this.setError,
-      onSyncNeeded: () => {
-        this.commandExecutor.needSync().execAll(1000);
+      onSyncNeeded: (clientId?: string) => {
+        this.commandExecutor.needSync(clientId).execAll(1000);
       },
     });
 

@@ -38,9 +38,9 @@ export class TaskServiceImpl implements TaskService {
         logger.put('TaskService.onError');
         listener.onError?.(TogowlError.create('SUBSCRIBE_TASK_ERROR', 'Fail to subscribe task event', event.reason));
       },
-      onSyncNeeded: () => {
+      onSyncNeeded: (clientId?: string) => {
         logger.put('TaskService.onSyncNeeded');
-        listener.onSyncNeeded?.();
+        listener.onSyncNeeded?.(clientId);
       },
     });
   }

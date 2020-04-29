@@ -121,13 +121,14 @@ export namespace SyncApi {
 export namespace SocketApi {
   interface EventListener {
     onOpen?: () => void;
-    onSyncNeeded?: () => void;
+    onSyncNeeded?: (clientId?: string) => void;
     onClose?: (event: CloseEvent) => void;
     onError?: (err: any) => void;
   }
 
   interface SyncNeededEvent {
     type: 'sync_needed';
+    client_id?: string;
   }
   interface AgendaUpdatedEvent {
     type: 'agenda_updated';
@@ -152,7 +153,7 @@ export namespace SocketApi {
         const data: EventMessage = JSON.parse(ev.data);
         switch (data.type) {
           case 'sync_needed':
-            listener.onSyncNeeded?.();
+            listener.onSyncNeeded?.(data.client_id);
             break;
           case 'agenda_updated':
             // DO NOTHING

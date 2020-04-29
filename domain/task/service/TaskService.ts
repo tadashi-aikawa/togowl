@@ -9,7 +9,7 @@ export interface TaskEventListener {
   onStartSubscribe?(): void;
   onEndSubscribe?(): void;
   onError?(err: TogowlError): void;
-  onSyncNeeded?(): void;
+  onSyncNeeded?(clientId?: string): void;
 }
 
 export interface TaskService {
