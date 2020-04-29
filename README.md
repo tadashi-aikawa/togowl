@@ -39,28 +39,35 @@ You can see in `Project Overview > Settings`
 ### Serve with hot reload at localhost:3000
 
 ```
-$ npm run dev
+npm run dev
 ```
 
 ### Tests
 
 ```
-$ npm test
+npm test
 ```
 
 ### Build for production and launch server
 
 ```
-$ npm run build
-$ npm run start
+npm run build
+npm run start
 ```
 
 ### Deploy
 
-Before deploy, you need to login with your firebase account. (`firebase login`)
+Before deploy, you need to login with your firebase account.
+
+Ex.
+
+```
+npm install -g firebase-tools
+firebase login
+```
 
 Then
 
 ```
-$ npm run release
+npm run release
 ```
