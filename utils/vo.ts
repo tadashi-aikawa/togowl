@@ -1,4 +1,4 @@
-import { shallowEqual } from '~/utils/compare';
+import { shallowEqual } from "~/utils/compare";
 
 interface ValueObjectProps {
   [index: string]: any;
@@ -19,7 +19,9 @@ export abstract class AbstractValueObject<T> {
   }
 }
 
-export abstract class ValueObject<T extends ValueObjectProps> extends AbstractValueObject<T> {}
+export abstract class ValueObject<
+  T extends ValueObjectProps
+> extends AbstractValueObject<T> {}
 
 export abstract class PrimitiveValueObject<T> extends AbstractValueObject<T> {
   get value(): T {

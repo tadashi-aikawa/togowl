@@ -36,10 +36,15 @@
 </template>
 <script lang="ts">
 // @ts-ignore
-import draggable from 'vuedraggable';
-import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
-import { Task } from '~/domain/task/entity/Task';
-import TaskSwiperEntry from '~/components/TaskSwiperEntry.vue';
+import draggable from "vuedraggable";
+import {
+  Component,
+  Prop,
+  Vue,
+  Watch,
+} from "~/node_modules/nuxt-property-decorator";
+import { Task } from "~/domain/task/entity/Task";
+import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
 
 @Component({
   components: { TaskSwiperEntry, draggable },
@@ -57,17 +62,17 @@ class TaskEntryList extends Vue {
   drag = false;
   _tasks: Task[] = [];
 
-  @Watch('tasks', { immediate: true })
+  @Watch("tasks", { immediate: true })
   updateTasks() {
     this._tasks = this.tasks;
   }
 
   handleClickStartButton(task: Task) {
-    this.$emit('on-click-start', task);
+    this.$emit("on-click-start", task);
   }
 
   onMove() {
-    this.$emit('on-change-order', this._tasks);
+    this.$emit("on-change-order", this._tasks);
   }
 
   onDragStart() {

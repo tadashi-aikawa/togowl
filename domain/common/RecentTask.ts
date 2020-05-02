@@ -1,6 +1,6 @@
-import { ValueObject } from '~/utils/vo';
-import { TaskId } from '~/domain/task/vo/TaskId';
-import { EntryId } from '~/domain/timer/vo/EntryId';
+import { ValueObject } from "~/utils/vo";
+import { TaskId } from "~/domain/task/vo/TaskId";
+import { EntryId } from "~/domain/timer/vo/EntryId";
 
 interface Props {
   taskId?: TaskId;

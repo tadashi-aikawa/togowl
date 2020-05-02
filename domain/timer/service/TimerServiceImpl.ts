@@ -1,68 +1,82 @@
-import _ from 'lodash';
-import { TogowlError } from '~/domain/common/TogowlError';
-import { Entry, PartialEntry } from '~/domain/timer/entity/Entry';
-import { Either, left, right } from '~/node_modules/fp-ts/lib/Either';
-import { TimerEventListener, TimerService } from '~/domain/timer/service/TimerService';
-import * as toggl from '~/external/toggl';
-import logger from '~/utils/global-logger';
-import { Project } from '~/domain/timer/entity/Project';
-import { ProjectId } from '~/domain/timer/vo/ProjectId';
-import { ProjectName } from '~/domain/timer/vo/ProjectlName';
-import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
-import { ProjectCategoryId } from '~/domain/timer/vo/ProjectCategoryId';
-import { ProjectCategoryName } from '~/domain/timer/vo/ProjectCategoryName';
-import { DateTime } from '~/domain/common/DateTime';
+import _ from "lodash";
+import { TogowlError } from "~/domain/common/TogowlError";
+import { Entry, PartialEntry } from "~/domain/timer/entity/Entry";
+import { Either, left, right } from "~/node_modules/fp-ts/lib/Either";
+import {
+  TimerEventListener,
+  TimerService,
+} from "~/domain/timer/service/TimerService";
+import * as toggl from "~/external/toggl";
+import logger from "~/utils/global-logger";
+import { Project } from "~/domain/timer/entity/Project";
+import { ProjectId } from "~/domain/timer/vo/ProjectId";
+import { ProjectName } from "~/domain/timer/vo/ProjectlName";
+import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
+import { ProjectCategoryId } from "~/domain/timer/vo/ProjectCategoryId";
+import { ProjectCategoryName } from "~/domain/timer/vo/ProjectCategoryName";
+import { DateTime } from "~/domain/common/DateTime";
 
 export class TimerServiceImpl implements TimerService {
   private restClient: toggl.RestApi.ApiClient;
   private socketClient: toggl.SocketApi.ApiClient;
   private readonly workspaceId: number;
 
-  constructor(togglToken: string, listener: TimerEventListener, workspaceId: number, proxy?: string) {
-    logger.put('new TimerService');
+  constructor(
+    togglToken: string,
+    listener: TimerEventListener,
+    workspaceId: number,
+    proxy?: string
+  ) {
+    logger.put("new TimerService");
 
     this.restClient = new toggl.RestApi.ApiClient(togglToken, proxy);
     this.workspaceId = workspaceId;
 
     this.socketClient = toggl.SocketApi.ApiClient.use(togglToken, {
       onOpen: () => {
-        logger.put('TimerService.onOpen');
+        logger.put("TimerService.onOpen");
         listener.onStartSubscribe?.();
       },
-      onClose: event => {
+      onClose: (event) => {
         logger.put(`TimerService.onClose: ${event.code}`);
         listener.onEndSubscribe?.();
       },
-      onError: event => {
-        logger.put('TimerService.onError');
-        listener.onError?.(TogowlError.create('SUBSCRIBE_TIMER_ERROR', 'Fail to subscribe timer event', event.reason));
+      onError: (event) => {
+        logger.put("TimerService.onError");
+        listener.onError?.(
+          TogowlError.create(
+            "SUBSCRIBE_TIMER_ERROR",
+            "Fail to subscribe timer event",
+            event.reason
+          )
+        );
       },
-      onInsertEntry: entry => {
-        logger.put('TimerService.onInsertEntry');
+      onInsertEntry: (entry) => {
+        logger.put("TimerService.onInsertEntry");
         listener.onInsertEntry?.(this.transformEntry(entry));
       },
-      onUpdateEntry: entry => {
-        logger.put('TimerService.onUpdateEntry');
+      onUpdateEntry: (entry) => {
+        logger.put("TimerService.onUpdateEntry");
         listener.onUpdateEntry?.(this.transformEntry(entry));
       },
-      onDeleteEntry: entry => {
-        logger.put('TimerService.onDeleteEntry');
+      onDeleteEntry: (entry) => {
+        logger.put("TimerService.onDeleteEntry");
         listener.onDeleteEntry?.(this.transformEntry(entry));
       },
-      onUpdateProject: _project => {
-        logger.put('TimerService.onUpdateProject');
+      onUpdateProject: (_project) => {
+        logger.put("TimerService.onUpdateProject");
         listener.onUpdateProject?.();
       },
-      onDeleteProject: _project => {
-        logger.put('TimerService.onDeleteProject');
+      onDeleteProject: (_project) => {
+        logger.put("TimerService.onDeleteProject");
         listener.onUpdateProject?.();
       },
-      onUpdateClient: _client => {
-        logger.put('TimerService.onUpdateClient');
+      onUpdateClient: (_client) => {
+        logger.put("TimerService.onUpdateClient");
         listener.onUpdateProject?.();
       },
-      onDeleteClient: _client => {
-        logger.put('TimerService.onDeleteClient');
+      onDeleteClient: (_client) => {
+        logger.put("TimerService.onDeleteClient");
         listener.onUpdateProject?.();
       },
       onResponsePing: () => {},
@@ -70,90 +84,148 @@ export class TimerServiceImpl implements TimerService {
   }
 
   terminate() {
-    logger.put('TimerService.terminate');
+    logger.put("TimerService.terminate");
     this.socketClient.terminate();
   }
 
-  private async _fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+  private async _fetchCurrentEntry(): Promise<
+    Either<TogowlError, Entry | null>
+  > {
     try {
       const entry = (await this.restClient.timeEntryCurrent()).data;
-      logger.put('TimerService.fetchCurrentEntry.success');
+      logger.put("TimerService.fetchCurrentEntry.success");
       return right(entry ? this.transformEntry(entry) : null);
     } catch (err) {
-      logger.put('TimerService.fetchCurrentEntry.err');
+      logger.put("TimerService.fetchCurrentEntry.err");
       logger.put(err.message);
-      return left(TogowlError.create('FETCH_CURRENT_ENTRY', "Can't fetch current entry from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "FETCH_CURRENT_ENTRY",
+          "Can't fetch current entry from Toggl",
+          err.message
+        )
+      );
     }
   }
 
-  private throttleFetchCurrentEntry = _.throttle(this._fetchCurrentEntry, 1000, { trailing: false });
+  private throttleFetchCurrentEntry = _.throttle(
+    this._fetchCurrentEntry,
+    1000,
+    { trailing: false }
+  );
+
   fetchCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     return this.throttleFetchCurrentEntry();
   }
 
-  async startEntry(description: string, project?: Project): Promise<Either<TogowlError, Entry>> {
+  async startEntry(
+    description: string,
+    project?: Project
+  ): Promise<Either<TogowlError, Entry>> {
     try {
-      const startedEntry = (await this.restClient.timeEntryStart(description, project?.id.asNumber)).data;
-      logger.put('TimerService.startEntry.success');
+      const startedEntry = (
+        await this.restClient.timeEntryStart(description, project?.id.asNumber)
+      ).data;
+      logger.put("TimerService.startEntry.success");
       return right(this.transformEntry(startedEntry));
     } catch (err) {
-      logger.put('TimerService.startEntry.err');
+      logger.put("TimerService.startEntry.err");
       logger.put(err.message);
-      return left(TogowlError.create('START_ENTRY', "Can't start entry from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "START_ENTRY",
+          "Can't start entry from Toggl",
+          err.message
+        )
+      );
     }
   }
 
-  async updateEntry(entry: Entry, value: PartialEntry): Promise<Either<TogowlError, Entry>> {
+  async updateEntry(
+    entry: Entry,
+    value: PartialEntry
+  ): Promise<Either<TogowlError, Entry>> {
     try {
       const updatedEntry = (
-        await this.restClient.timeEntryUpdate(entry.id.asNumber, this.transformPartialTimeEntry(value))
+        await this.restClient.timeEntryUpdate(
+          entry.id.asNumber,
+          this.transformPartialTimeEntry(value)
+        )
       ).data;
-      logger.put('TimerService.updateEntry.success');
+      logger.put("TimerService.updateEntry.success");
       return right(this.transformEntry(updatedEntry));
     } catch (err) {
-      logger.put('TimerService.updateEntry.err');
+      logger.put("TimerService.updateEntry.err");
       logger.put(err.message);
-      return left(TogowlError.create('UPDATE_ENTRY', "Can't update entry from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "UPDATE_ENTRY",
+          "Can't update entry from Toggl",
+          err.message
+        )
+      );
     }
   }
 
   async stopEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
-      const afterEntry = (await this.restClient.timeEntryStop(entry.id.asNumber)).data;
-      logger.put('TimerService.stopEntry.success');
+      const afterEntry = (
+        await this.restClient.timeEntryStop(entry.id.asNumber)
+      ).data;
+      logger.put("TimerService.stopEntry.success");
       return right(this.transformEntry(afterEntry));
     } catch (err) {
-      logger.put('TimerService.stopEntry.err');
+      logger.put("TimerService.stopEntry.err");
       logger.put(err.message);
-      return left(TogowlError.create('STOP_CURRENT_ENTRY', "Can't stop entry from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "STOP_CURRENT_ENTRY",
+          "Can't stop entry from Toggl",
+          err.message
+        )
+      );
     }
   }
 
   async deleteEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
     try {
       await this.restClient.timeEntryDelete(entry.id.asNumber);
-      logger.put('TimerService.deleteEntry.success');
+      logger.put("TimerService.deleteEntry.success");
       return right(entry);
     } catch (err) {
-      logger.put('TimerService.deleteEntry.err');
+      logger.put("TimerService.deleteEntry.err");
       logger.put(err.message);
-      return left(TogowlError.create('DELETE_CURRENT_ENTRY', "Can't delete entry from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "DELETE_CURRENT_ENTRY",
+          "Can't delete entry from Toggl",
+          err.message
+        )
+      );
     }
   }
 
   async _fetchEntries(since: DateTime): Promise<Either<TogowlError, Entry[]>> {
     try {
       const entries = await this.restClient.entries(since.rfc3339);
-      logger.put('TimerService.fetchEntries.success');
-      return right(entries.map(e => this.transformEntry(e)));
+      logger.put("TimerService.fetchEntries.success");
+      return right(entries.map((e) => this.transformEntry(e)));
     } catch (err) {
-      logger.put('TimerService.fetchEntries.err');
+      logger.put("TimerService.fetchEntries.err");
       logger.put(err.message);
-      return left(TogowlError.create('FETCH_ENTRIES', "Can't fetch entries from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "FETCH_ENTRIES",
+          "Can't fetch entries from Toggl",
+          err.message
+        )
+      );
     }
   }
 
-  private throttleFetchEntries = _.throttle(this._fetchEntries, 1000, { trailing: false });
+  private throttleFetchEntries = _.throttle(this._fetchEntries, 1000, {
+    trailing: false,
+  });
 
   fetchEntries(since: DateTime): Promise<Either<TogowlError, Entry[]>> {
     return this.throttleFetchEntries(since);
@@ -165,22 +237,28 @@ export class TimerServiceImpl implements TimerService {
         this.restClient.projects(this.workspaceId),
         this.restClient.clients(this.workspaceId),
       ]);
-      logger.put('TimerService.fetchProjects.success');
+      logger.put("TimerService.fetchProjects.success");
       return right(
         projects.map((x: toggl.Project) =>
           this.transformProject(
             x,
             _(clients)
               .map(this.transformProjectCategory)
-              .keyBy(x => x.id.value)
-              .value(),
-          ),
-        ),
+              .keyBy((x) => x.id.value)
+              .value()
+          )
+        )
       );
     } catch (err) {
-      logger.put('TimerService.fetchProjects.err');
+      logger.put("TimerService.fetchProjects.err");
       logger.put(err.message);
-      return left(TogowlError.create('FETCH_PROJECTS', "Can't fetch projects from Toggl", err.message));
+      return left(
+        TogowlError.create(
+          "FETCH_PROJECTS",
+          "Can't fetch projects from Toggl",
+          err.message
+        )
+      );
     }
   }
 
@@ -195,7 +273,9 @@ export class TimerServiceImpl implements TimerService {
     });
   }
 
-  private transformPartialTimeEntry(entry: PartialEntry): Partial<toggl.TimeEntry> {
+  private transformPartialTimeEntry(
+    entry: PartialEntry
+  ): Partial<toggl.TimeEntry> {
     return {
       pid: entry.project?.id.asNumber,
       start: entry.start?.rfc3339,
@@ -206,18 +286,21 @@ export class TimerServiceImpl implements TimerService {
   }
 
   private transformProjectCategory(client: toggl.Client): ProjectCategory {
-    return new ProjectCategory(ProjectCategoryId.create(client.id), ProjectCategoryName.create(client.name));
+    return new ProjectCategory(
+      ProjectCategoryId.create(client.id),
+      ProjectCategoryName.create(client.name)
+    );
   }
 
   private transformProject(
     project: toggl.Project,
-    projectCategoryById: { [projectCategoryId: string]: ProjectCategory },
+    projectCategoryById: { [projectCategoryId: string]: ProjectCategory }
   ): Project {
     return new Project(
       ProjectId.create(project.id),
       ProjectName.create(project.name),
       undefined,
-      project.cid ? projectCategoryById[project.cid] : undefined,
+      project.cid ? projectCategoryById[project.cid] : undefined
     );
   }
 }

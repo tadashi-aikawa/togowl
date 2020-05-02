@@ -7,7 +7,11 @@
           <v-icon v-else small color="grey">mdi-help-circle-outline</v-icon>
         </v-avatar>
         <span v-text="item.node.name.value" />
-        <v-btn icon style="margin-left: 5px;" @click="e => onClickEditButton(e, item)">
+        <v-btn
+          icon
+          style="margin-left: 5px;"
+          @click="(e) => onClickEditButton(e, item)"
+        >
           <v-icon small>mdi-pencil</v-icon>
         </v-btn>
       </template>
@@ -25,24 +29,24 @@
 </template>
 
 <script lang="ts">
-import _ from 'lodash';
-import { Component, Vue } from '~/node_modules/nuxt-property-decorator';
-import { projectStore, taskStore } from '~/utils/store-accessor';
-import { Project } from '~/domain/timer/entity/Project';
-import { Project as TaskProject } from '~/domain/task/entity/Project';
-import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
-import SettingsProjectEdit from '~/components/SettingsProjectEdit.vue';
-import { Icon } from '~/domain/common/Icon';
+import _ from "lodash";
+import { Component, Vue } from "~/node_modules/nuxt-property-decorator";
+import { projectStore, taskStore } from "~/utils/store-accessor";
+import { Project } from "~/domain/timer/entity/Project";
+import { Project as TaskProject } from "~/domain/task/entity/Project";
+import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
+import SettingsProjectEdit from "~/components/SettingsProjectEdit.vue";
+import { Icon } from "~/domain/common/Icon";
 
 interface ProjectItem {
   key: string;
-  type: 'project';
+  type: "project";
   node: Project;
 }
 
 interface ProjectCategoryItem {
   key: string;
-  type: 'project_category';
+  type: "project_category";
   node: ProjectCategory;
   children: ProjectItem[];
 }
@@ -60,20 +64,24 @@ class SettingsProject extends Vue {
   }
 
   get isProject(): boolean {
-    return this.currentItem?.type === 'project';
+    return this.currentItem?.type === "project";
   }
 
   get projectCategories(): ProjectCategoryItem[] {
     return _(projectStore.projectsGroupByCategory)
       .values()
       .map(
-        pjs =>
+        (pjs) =>
           ({
             key: pjs[0].category!.id.value,
-            type: 'project_category',
+            type: "project_category",
             node: pjs[0].category!,
-            children: pjs.map(p => ({ key: p.id.value, type: 'project', node: p })),
-          } as ProjectCategoryItem),
+            children: pjs.map((p) => ({
+              key: p.id.value,
+              type: "project",
+              node: p,
+            })),
+          } as ProjectCategoryItem)
       )
       .value();
   }
@@ -86,17 +94,19 @@ class SettingsProject extends Vue {
 
   saveItem(icon: Icon, taskProjects: TaskProject[]) {
     switch (this.currentItem?.type) {
-      case 'project':
+      case "project":
         projectStore.updateProject(
           this.currentItem.node.cloneWith(
             icon,
             this.currentItem.node.category,
-            taskProjects.map(x => x.id),
-          ),
+            taskProjects.map((x) => x.id)
+          )
         );
         break;
-      case 'project_category':
-        projectStore.updateProjectCategory(this.currentItem.node.cloneWith(icon));
+      case "project_category":
+        projectStore.updateProjectCategory(
+          this.currentItem.node.cloneWith(icon)
+        );
         break;
     }
     this.currentItem = null;

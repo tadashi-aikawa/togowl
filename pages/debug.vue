@@ -14,14 +14,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
-import logger from '~/utils/global-logger';
-import { DateTime } from '~/domain/common/DateTime';
+import { Component, Vue } from "nuxt-property-decorator";
+import logger from "~/utils/global-logger";
+import { DateTime } from "~/domain/common/DateTime";
 
 @Component({})
 class Debug extends Vue {
   logs: string[] = [];
-  lastClickTime = '';
+  lastClickTime = "";
 
   refreshLog(): void {
     this.lastClickTime = DateTime.now().displayTime;
@@ -36,10 +36,10 @@ class Debug extends Vue {
   getClass(log: string) {
     return {
       log: true,
-      'log-on': log.includes('.on') && !log.includes('Before'),
-      disabled: log.includes('Before'),
-      'log-success': log.includes('success'),
-      'log-error': log.includes('error'),
+      "log-on": log.includes(".on") && !log.includes("Before"),
+      disabled: log.includes("Before"),
+      "log-success": log.includes("success"),
+      "log-error": log.includes("error"),
     };
   }
 }

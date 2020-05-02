@@ -1,9 +1,9 @@
-import dayjs from 'dayjs';
-import 'dayjs/locale/ja';
-import { ValueObject } from '~/utils/vo';
-import { toHHmmss } from '~/utils/time';
+import dayjs from "dayjs";
+import "dayjs/locale/ja";
+import { ValueObject } from "~/utils/vo";
+import { toHHmmss } from "~/utils/time";
 
-dayjs.locale('ja');
+dayjs.locale("ja");
 
 export class DateTime extends ValueObject<dayjs.Dayjs> {
   static create(value: string): DateTime {
@@ -23,31 +23,31 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
   }
 
   plusDays(days: number): DateTime {
-    return new DateTime(this._value.add(days, 'day'));
+    return new DateTime(this._value.add(days, "day"));
   }
 
   plusSeconds(seconds: number): DateTime {
-    return new DateTime(this._value.add(seconds, 'second'));
+    return new DateTime(this._value.add(seconds, "second"));
   }
 
   minusDays(days: number): DateTime {
-    return new DateTime(this._value.subtract(days, 'day'));
+    return new DateTime(this._value.subtract(days, "day"));
   }
 
   minusMinutes(minutes: number): DateTime {
-    return new DateTime(this._value.subtract(minutes, 'minute'));
+    return new DateTime(this._value.subtract(minutes, "minute"));
   }
 
   displayDiffFromNow(): string {
-    return toHHmmss(dayjs().diff(this._value, 'second'));
+    return toHHmmss(dayjs().diff(this._value, "second"));
   }
 
   within(seconds: number): boolean {
-    return dayjs().diff(this._value, 'second') <= seconds;
+    return dayjs().diff(this._value, "second") <= seconds;
   }
 
   equalsAsDate(dateTime: DateTime): boolean {
-    return this._value.isSame(dateTime._value, 'day');
+    return this._value.isSame(dateTime._value, "day");
   }
 
   get unix(): number {
@@ -55,26 +55,26 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
   }
 
   get rfc3339(): string {
-    return this._value.format('YYYY-MM-DDTHH:mm:ssZ');
+    return this._value.format("YYYY-MM-DDTHH:mm:ssZ");
   }
 
   get displayTime(): string {
-    return this._value.format('HH:mm:ss');
+    return this._value.format("HH:mm:ss");
   }
 
   get displayTimeWithoutSeconds(): string {
-    return this._value.format('HH:mm');
+    return this._value.format("HH:mm");
   }
 
   get displayDate(): string {
-    return this._value.format('YYYY-MM-DD');
+    return this._value.format("YYYY-MM-DD");
   }
 
   get displayDateTime(): string {
-    return this._value.format('YYYY-MM-DD HH:mm:ss');
+    return this._value.format("YYYY-MM-DD HH:mm:ss");
   }
 
   get displayDateTimeWithoutSeconds(): string {
-    return this._value.format('YYYY-MM-DD HH:mm');
+    return this._value.format("YYYY-MM-DD HH:mm");
   }
 }

@@ -14,10 +14,10 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import ProjectIcon from '~/components/ProjectIcon.vue';
-import ProjectCategoryIcon from '~/components/ProjectCategoryIcon.vue';
-import { Project } from '~/domain/timer/entity/Project';
+import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import ProjectIcon from "~/components/ProjectIcon.vue";
+import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";
+import { Project } from "~/domain/timer/entity/Project";
 
 @Component({ components: { ProjectIcon, ProjectCategoryIcon } })
 class ProjectSummary extends Vue {
@@ -28,11 +28,11 @@ class ProjectSummary extends Vue {
   width: string;
 
   get projectName(): string {
-    return this.project.nameWithoutBracket ?? '';
+    return this.project.nameWithoutBracket ?? "";
   }
 
   get projectCategoryName(): string {
-    return this.project.category?.nameWithoutBracket ?? '';
+    return this.project.category?.nameWithoutBracket ?? "";
   }
 }
 export default ProjectSummary;

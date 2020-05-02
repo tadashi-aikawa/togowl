@@ -1,10 +1,10 @@
-import { Entity } from '~/utils/entity';
-import { TaskId } from '~/domain/task/vo/TaskId';
-import { ProjectId } from '~/domain/task/vo/ProjectId';
-import { Project } from '~/domain/timer/entity/Project';
-import { Priority } from '~/domain/task/vo/Priority';
-import { trimBracketContents, trimPrefixEmoji } from '~/utils/string';
-import { DateTime } from '~/domain/common/DateTime';
+import { Entity } from "~/utils/entity";
+import { TaskId } from "~/domain/task/vo/TaskId";
+import { ProjectId } from "~/domain/task/vo/ProjectId";
+import { Project } from "~/domain/timer/entity/Project";
+import { Priority } from "~/domain/task/vo/Priority";
+import { trimBracketContents, trimPrefixEmoji } from "~/utils/string";
+import { DateTime } from "~/domain/common/DateTime";
 
 // FIXME: assign entryProject
 export class Task implements Entity {
@@ -15,7 +15,7 @@ export class Task implements Entity {
     public priority: Priority,
     public projectId?: ProjectId,
     public entryProject?: Project,
-    public dueDate?: DateTime,
+    public dueDate?: DateTime
   ) {}
 
   equals(task?: Task): boolean {
@@ -28,16 +28,40 @@ export class Task implements Entity {
 
   cloneWith(entryProject?: Project): Task {
     // TODO: refactoring..
-    return new Task(this.id, this.title, this.dayOrder, this.priority, this.projectId, entryProject, this.dueDate);
+    return new Task(
+      this.id,
+      this.title,
+      this.dayOrder,
+      this.priority,
+      this.projectId,
+      entryProject,
+      this.dueDate
+    );
   }
 
   cloneWithDayOrder(dayOrder: number): Task {
     // TODO: refactoring..
-    return new Task(this.id, this.title, dayOrder, this.priority, this.projectId, this.entryProject, this.dueDate);
+    return new Task(
+      this.id,
+      this.title,
+      dayOrder,
+      this.priority,
+      this.projectId,
+      this.entryProject,
+      this.dueDate
+    );
   }
 
   cloneWithDueDate(dueDate: DateTime): Task {
     // TODO: refactoring..
-    return new Task(this.id, this.title, this.dayOrder, this.priority, this.projectId, this.entryProject, dueDate);
+    return new Task(
+      this.id,
+      this.title,
+      this.dayOrder,
+      this.priority,
+      this.projectId,
+      this.entryProject,
+      dueDate
+    );
   }
 }

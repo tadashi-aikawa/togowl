@@ -1,4 +1,4 @@
-import { ValueObject } from '~/utils/vo';
+import { ValueObject } from "~/utils/vo";
 
 interface Props {
   token?: string;

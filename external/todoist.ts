@@ -1,14 +1,14 @@
 /* eslint-disable camelcase */
-import Axios, { AxiosPromise } from 'axios';
-import { stringify } from 'query-string';
-import { Dictionary } from 'lodash';
+import Axios, { AxiosPromise } from "axios";
+import { stringify } from "query-string";
+import { Dictionary } from "lodash";
 
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require("uuid/v4");
 
 export namespace SyncApi {
-  export type ResourceType = 'all' | 'items' | 'day_orders' | 'projects';
+  export type ResourceType = "all" | "items" | "day_orders" | "projects";
   export interface Command {
-    type: 'item_update' | 'item_update_day_orders' | 'item_close';
+    type: "item_update" | "item_update_day_orders" | "item_close";
     uuid: string;
     args: { [key: string]: any };
   }
@@ -52,50 +52,65 @@ export namespace SyncApi {
   }
 
   export class SyncClient {
-    private readonly SYNC_RESOURCES: ResourceType[] = ['items', 'day_orders', 'projects'];
+    private readonly SYNC_RESOURCES: ResourceType[] = [
+      "items",
+      "day_orders",
+      "projects",
+    ];
 
     private readonly baseUrl: string;
     private readonly token: string;
 
     constructor(token: string) {
-      this.baseUrl = 'https://api.todoist.com/sync/v8';
+      this.baseUrl = "https://api.todoist.com/sync/v8";
       this.token = token;
     }
 
-    sync(resourceTypes: ResourceType[], syncToken = '*', commands: Command[] = []): AxiosPromise<Root> {
+    sync(
+      resourceTypes: ResourceType[],
+      syncToken = "*",
+      commands: Command[] = []
+    ): AxiosPromise<Root> {
       return Axios.post(
-        '/sync',
+        "/sync",
         stringify({
           token: this.token,
           sync_token: syncToken,
           resource_types: JSON.stringify(resourceTypes),
           commands: commands.length > 0 ? JSON.stringify(commands) : undefined,
         }),
-        { baseURL: this.baseUrl },
+        { baseURL: this.baseUrl }
       );
     }
 
-    syncAll(syncToken = '*'): AxiosPromise<Root> {
+    syncAll(syncToken = "*"): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken);
     }
 
-    syncItemUpdate(taskId: number, due: Partial<Due>, syncToken = '*'): AxiosPromise<Root> {
+    syncItemUpdate(
+      taskId: number,
+      due: Partial<Due>,
+      syncToken = "*"
+    ): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
         {
-          type: 'item_update',
+          type: "item_update",
           uuid: uuidv4(),
           args: {
             id: taskId,
-            due: due,
+            due,
           },
         },
       ]);
     }
 
-    syncItemUpdateDayOrders(orderByTaskId: { [taskId: number]: number }, syncToken = '*'): AxiosPromise<Root> {
+    syncItemUpdateDayOrders(
+      orderByTaskId: { [taskId: number]: number },
+      syncToken = "*"
+    ): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
         {
-          type: 'item_update_day_orders',
+          type: "item_update_day_orders",
           uuid: uuidv4(),
           args: {
             ids_to_orders: orderByTaskId,
@@ -104,10 +119,10 @@ export namespace SyncApi {
       ]);
     }
 
-    syncItemClose(taskId: number, syncToken = '*'): AxiosPromise<Root> {
+    syncItemClose(taskId: number, syncToken = "*"): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
         {
-          type: 'item_close',
+          type: "item_close",
           uuid: uuidv4(),
           args: {
             id: taskId,
@@ -127,35 +142,41 @@ export namespace SocketApi {
   }
 
   interface SyncNeededEvent {
-    type: 'sync_needed';
+    type: "sync_needed";
     client_id?: string;
   }
   interface AgendaUpdatedEvent {
-    type: 'agenda_updated';
+    type: "agenda_updated";
   }
   type EventMessage = SyncNeededEvent | AgendaUpdatedEvent;
 
   export class ApiClient {
-    private constructor(private socket: WebSocket, private onCloseListener: any) {}
+    private constructor(
+      private socket: WebSocket,
+      private onCloseListener: any
+    ) {}
 
     terminate() {
-      this.socket.removeEventListener('close', this.onCloseListener);
-      this.socket.close(1000, 'Terminate client.');
+      this.socket.removeEventListener("close", this.onCloseListener);
+      this.socket.close(1000, "Terminate client.");
     }
 
     static use(token: string, listener: EventListener): ApiClient {
       const socket = new WebSocket(`wss://ws.todoist.com/ws?token=${token}`);
 
-      const onOpenListener = (ev: WebSocketEventMap['open']) => listener.onOpen?.();
-      const onCloseListener = (ev: WebSocketEventMap['close']) => listener.onClose?.(ev);
-      const onErrorListener = (ev: WebSocketEventMap['error']) => listener.onError?.(ev);
-      const onMessageListener = (ev: WebSocketEventMap['message']) => {
+      const onOpenListener = (ev: WebSocketEventMap["open"]) =>
+        listener.onOpen?.();
+      const onCloseListener = (ev: WebSocketEventMap["close"]) =>
+        listener.onClose?.(ev);
+      const onErrorListener = (ev: WebSocketEventMap["error"]) =>
+        listener.onError?.(ev);
+      const onMessageListener = (ev: WebSocketEventMap["message"]) => {
         const data: EventMessage = JSON.parse(ev.data);
         switch (data.type) {
-          case 'sync_needed':
+          case "sync_needed":
             listener.onSyncNeeded?.(data.client_id);
             break;
-          case 'agenda_updated':
+          case "agenda_updated":
             // DO NOTHING
             break;
           default:
@@ -163,10 +184,10 @@ export namespace SocketApi {
         }
       };
 
-      socket.addEventListener('open', onOpenListener);
-      socket.addEventListener('close', onCloseListener);
-      socket.addEventListener('error', onErrorListener);
-      socket.addEventListener('message', onMessageListener);
+      socket.addEventListener("open", onOpenListener);
+      socket.addEventListener("close", onCloseListener);
+      socket.addEventListener("error", onErrorListener);
+      socket.addEventListener("message", onMessageListener);
 
       return new ApiClient(socket, onCloseListener);
     }

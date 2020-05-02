@@ -6,10 +6,10 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import ProjectSummary from '~/components/ProjectSummary.vue';
-import { Task } from '~/domain/task/entity/Task';
-import { toEmojiString } from '~/utils/string';
+import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import ProjectSummary from "~/components/ProjectSummary.vue";
+import { Task } from "~/domain/task/entity/Task";
+import { toEmojiString } from "~/utils/string";
 
 @Component({ components: { ProjectSummary } })
 class TaskSummary extends Vue {

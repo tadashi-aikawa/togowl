@@ -1,1 +1,6 @@
-export type AuthenticationStatus = 'init' | 'check' | 'login' | 'logout' | 'error';
+export type AuthenticationStatus =
+  | "init"
+  | "check"
+  | "login"
+  | "logout"
+  | "error";

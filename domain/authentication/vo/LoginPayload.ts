@@ -1,5 +1,5 @@
-import { ValueObject } from '~/utils/vo';
-import { MailAddress } from '~/domain/authentication/vo/MailAddress';
+import { ValueObject } from "~/utils/vo";
+import { MailAddress } from "~/domain/authentication/vo/MailAddress";
 
 interface Props {
   mailAddress: MailAddress;

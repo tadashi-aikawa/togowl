@@ -1,10 +1,10 @@
-import { ProjectId } from '~/domain/timer/vo/ProjectId';
-import { ProjectName } from '~/domain/timer/vo/ProjectlName';
-import { Entity } from '~/utils/entity';
-import { trimBracketContents } from '~/utils/string';
-import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
-import { Icon } from '~/domain/common/Icon';
-import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
+import { ProjectId } from "~/domain/timer/vo/ProjectId";
+import { ProjectName } from "~/domain/timer/vo/ProjectlName";
+import { Entity } from "~/utils/entity";
+import { trimBracketContents } from "~/utils/string";
+import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
+import { Icon } from "~/domain/common/Icon";
+import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
 
 export class Project implements Entity {
   constructor(
@@ -12,7 +12,7 @@ export class Project implements Entity {
     public name: ProjectName,
     public icon?: Icon,
     public category?: ProjectCategory,
-    public taskProjectIds?: TaskProjectId[],
+    public taskProjectIds?: TaskProjectId[]
   ) {}
 
   equals(entity?: Project): boolean {
@@ -23,7 +23,11 @@ export class Project implements Entity {
     return trimBracketContents(this.name.value);
   }
 
-  cloneWith(icon?: Icon, category?: ProjectCategory, taskProjectIds?: TaskProjectId[]): Project {
+  cloneWith(
+    icon?: Icon,
+    category?: ProjectCategory,
+    taskProjectIds?: TaskProjectId[]
+  ): Project {
     return new Project(this.id, this.name, icon, category, taskProjectIds);
   }
 }

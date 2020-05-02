@@ -18,9 +18,9 @@
   </v-slide-y-transition>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import { Entry } from '~/domain/timer/entity/Entry';
-import TimeEntry from '~/components/TimeEntry.vue';
+import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { Entry } from "~/domain/timer/entity/Entry";
+import TimeEntry from "~/components/TimeEntry.vue";
 
 @Component({
   components: { TimeEntry },
@@ -33,7 +33,7 @@ class TimeEntries extends Vue {
   loading: boolean;
 
   handleClickPlayButton(entry: Entry) {
-    this.$emit('on-click-start', entry);
+    this.$emit("on-click-start", entry);
   }
 }
 export default TimeEntries;

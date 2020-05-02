@@ -13,12 +13,15 @@
         :interval-height="intervalHeight"
         interval-count="24"
         interval-width="35"
-        :interval-format="d => d.time"
+        :interval-format="(d) => d.time"
       >
         <template #event="{ event }">
           <div style="height: 100%; padding: 2px;">
             <v-avatar v-if="event.entry.project" tile size="14px">
-              <ProjectIcon :project="event.entry.project" :project-category-as-default="true" />
+              <ProjectIcon
+                :project="event.entry.project"
+                :project-category-as-default="true"
+              />
             </v-avatar>
             {{ event.name }}
           </div>
@@ -38,26 +41,63 @@
       >
         <v-icon>mdi-magnify-minus</v-icon>
       </v-btn>
-      <v-btn v-else fixed dark small bottom right fab style="margin: 0 168px 48px 0;" @click="handleClickZoomUp">
+      <v-btn
+        v-else
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin: 0 168px 48px 0;"
+        @click="handleClickZoomUp"
+      >
         <v-icon>mdi-magnify-plus</v-icon>
       </v-btn>
-      <v-btn fixed dark small bottom right fab style="margin: 0 112px 48px 0;" @click="handleClickPrevious">
+      <v-btn
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin: 0 112px 48px 0;"
+        @click="handleClickPrevious"
+      >
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
-      <v-btn fixed dark small bottom right fab style="margin: 0 56px 48px 0;" @click="handleClickNext">
+      <v-btn
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin: 0 56px 48px 0;"
+        @click="handleClickNext"
+      >
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
-      <v-btn fixed dark small bottom right fab style="margin: 0 0 48px 0;" @click="handleClickMoveToNow">
+      <v-btn
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin: 0 0 48px 0;"
+        @click="handleClickMoveToNow"
+      >
         <v-icon>mdi-send-clock</v-icon>
       </v-btn>
     </v-sheet>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import { Entry } from '~/domain/timer/entity/Entry';
-import { DateTime } from '~/domain/common/DateTime';
-import ProjectIcon from '~/components/ProjectIcon.vue';
+import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { Entry } from "~/domain/timer/entity/Entry";
+import { DateTime } from "~/domain/common/DateTime";
+import ProjectIcon from "~/components/ProjectIcon.vue";
 
 @Component({ components: { ProjectIcon } })
 class EntryCalendar extends Vue {
@@ -77,7 +117,7 @@ class EntryCalendar extends Vue {
 
   get events(): any[] {
     return this.entries
-      ? this.entries.map(x => ({
+      ? this.entries.map((x) => ({
           name: x.description,
           start: x.start.displayDateTimeWithoutSeconds,
           end: x.stop?.displayDateTimeWithoutSeconds,
@@ -92,7 +132,9 @@ class EntryCalendar extends Vue {
 
   moveToNow() {
     const calendarRef: any = this.$refs.calendar;
-    calendarRef.scrollToTime(DateTime.now().minusMinutes(240).displayTimeWithoutSeconds);
+    calendarRef.scrollToTime(
+      DateTime.now().minusMinutes(240).displayTimeWithoutSeconds
+    );
   }
 
   handleClickMoveToNow() {

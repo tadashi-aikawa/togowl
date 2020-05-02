@@ -3,11 +3,11 @@
  * @param time (例: 10:05:02)
  */
 export function toSeconds(time: string): number {
-  const [hours, minutes, seconds] = time.split(':').map(Number);
+  const [hours, minutes, seconds] = time.split(":").map(Number);
   return hours * 60 * 60 + minutes * 60 + seconds;
 }
 
-const pad00 = (v: number) => String(v).padStart(2, '0');
+const pad00 = (v: number) => String(v).padStart(2, "0");
 
 /**
  * 131 -> 00:02:11
@@ -27,10 +27,14 @@ export function toHHmmss(seconds: number): string {
  * @param time (例: 10:05:02)
  */
 export function toJapanese(time: string): string {
-  const [hours, minutes, seconds] = time.split(':').map(Number);
-  return [hours && `${hours}時間`, minutes && `${minutes}分`, hours === 0 && minutes === 0 && `${seconds}秒`]
-    .filter(x => x)
-    .join('');
+  const [hours, minutes, seconds] = time.split(":").map(Number);
+  return [
+    hours && `${hours}時間`,
+    minutes && `${minutes}分`,
+    hours === 0 && minutes === 0 && `${seconds}秒`,
+  ]
+    .filter((x) => x)
+    .join("");
 }
 
 /**

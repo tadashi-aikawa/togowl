@@ -19,12 +19,26 @@
         <v-container>
           <v-row align="center" justify="center">
             <div align="center">
-              <v-btn outlined class="mx-2" fab small dark @click="updateToToday">
+              <v-btn
+                outlined
+                class="mx-2"
+                fab
+                small
+                dark
+                @click="updateToToday"
+              >
                 <v-icon>mdi-calendar-today</v-icon>
               </v-btn>
             </div>
             <div align="center">
-              <v-btn outlined class="mx-2" fab small dark @click="updateToTomorrow">
+              <v-btn
+                outlined
+                class="mx-2"
+                fab
+                small
+                dark
+                @click="updateToTomorrow"
+              >
                 <v-icon>mdi-calendar-arrow-right</v-icon>
               </v-btn>
             </div>
@@ -35,11 +49,11 @@
   </swiper>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import { Task } from '~/domain/task/entity/Task';
-import TaskEntry from '~/components/TaskEntry.vue';
-import { taskStore } from '~/utils/store-accessor';
-import { DateTime } from '~/domain/common/DateTime';
+import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { Task } from "~/domain/task/entity/Task";
+import TaskEntry from "~/components/TaskEntry.vue";
+import { taskStore } from "~/utils/store-accessor";
+import { DateTime } from "~/domain/common/DateTime";
 
 @Component({
   components: { TaskEntry },
@@ -58,7 +72,7 @@ class TaskSwiperEntry extends Vue {
     this.swiperOption = {
       initialSlide: 1,
       loop: false,
-      noSwipingClass: 'no-swiping-class',
+      noSwipingClass: "no-swiping-class",
       on: {
         transitionEnd(this: { activeIndex: number }) {
           if (this.activeIndex === 0) {
@@ -84,16 +98,22 @@ class TaskSwiperEntry extends Vue {
 
   async updateToToday() {
     this.revertSwiperStateAsDefault();
-    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.now() });
+    await taskStore.updateDueDate({
+      taskId: this.task.id,
+      dueDate: DateTime.now(),
+    });
   }
 
   async updateToTomorrow() {
     this.revertSwiperStateAsDefault();
-    await taskStore.updateDueDate({ taskId: this.task.id, dueDate: DateTime.tomorrow() });
+    await taskStore.updateDueDate({
+      taskId: this.task.id,
+      dueDate: DateTime.tomorrow(),
+    });
   }
 
   handleClickStartButton() {
-    this.$emit('on-click-start-button', this.task);
+    this.$emit("on-click-start-button", this.task);
   }
 }
 export default TaskSwiperEntry;

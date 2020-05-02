@@ -8,9 +8,14 @@
     <v-row align="center" justify="center" style="margin-top: 5px;">
       <div v-if="displayProjectCategory" class="sub-title">
         <v-avatar v-if="currentEntry.projectCategory" tile size="16px">
-          <ProjectCategoryIcon :project-category="currentEntry.projectCategory" />
+          <ProjectCategoryIcon
+            :project-category="currentEntry.projectCategory"
+          />
         </v-avatar>
-        <span :class="{ 'rainbow-loading': loading }" v-text="displayProjectCategory" />
+        <span
+          :class="{ 'rainbow-loading': loading }"
+          v-text="displayProjectCategory"
+        />
         <span style="padding: 0 8px 0;">></span>
       </div>
       <div v-if="displayProject" class="sub-title">
@@ -23,20 +28,31 @@
     <v-row align="center" justify="center">
       <div v-if="!disabled" class="timer">
         <v-icon>mdi-timer</v-icon>
-        <span :class="{ 'rainbow-loading': loading }" v-text="currentEntryTime" />
+        <span
+          :class="{ 'rainbow-loading': loading }"
+          v-text="currentEntryTime"
+        />
       </div>
       <div v-else class="timer" style="color: grey;">
         <v-icon color="grey">mdi-timer</v-icon>
-        <span :class="{ 'rainbow-loading': loading }" v-text="currentEntryTime" />
+        <span
+          :class="{ 'rainbow-loading': loading }"
+          v-text="currentEntryTime"
+        />
       </div>
     </v-row>
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
-import { Entry } from '~/domain/timer/entity/Entry';
-import ProjectIcon from '~/components/ProjectIcon.vue';
-import ProjectCategoryIcon from '~/components/ProjectCategoryIcon.vue';
+import {
+  Component,
+  Prop,
+  Vue,
+  Watch,
+} from "~/node_modules/nuxt-property-decorator";
+import { Entry } from "~/domain/timer/entity/Entry";
+import ProjectIcon from "~/components/ProjectIcon.vue";
+import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";
 
 @Component({ components: { ProjectIcon, ProjectCategoryIcon } })
 class CurrentTimeEntry extends Vue {
@@ -49,10 +65,10 @@ class CurrentTimeEntry extends Vue {
   @Prop()
   loading: boolean;
 
-  currentEntryTime = '';
+  currentEntryTime = "";
   timerSubscriberId: number;
 
-  @Watch('currentEntry')
+  @Watch("currentEntry")
   countUp() {
     this.currentEntryTime = this.currentEntry.start.displayDiffFromNow();
   }
@@ -67,7 +83,7 @@ class CurrentTimeEntry extends Vue {
   }
 
   get displayEntry(): string {
-    return this.currentEntry.description ?? 'What are you doing?';
+    return this.currentEntry.description ?? "What are you doing?";
   }
 
   get displayProjectCategory(): string | undefined {
@@ -79,7 +95,7 @@ class CurrentTimeEntry extends Vue {
       return undefined;
     }
     if (!this.currentEntry.project) {
-      return 'No project';
+      return "No project";
     }
     return this.currentEntry.project.nameWithoutBracket;
   }

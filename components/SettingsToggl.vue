@@ -56,35 +56,35 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from '~/node_modules/nuxt-property-decorator';
-import { timerStore } from '~/utils/store-accessor';
-import { TogowlError } from '~/domain/common/TogowlError';
-import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
+import { Component, Vue } from "~/node_modules/nuxt-property-decorator";
+import { timerStore } from "~/utils/store-accessor";
+import { TogowlError } from "~/domain/common/TogowlError";
+import { TimerConfig } from "~/domain/timer/vo/TimerConfig";
 
 @Component({})
 class SettingsToggl extends Vue {
   // Toggl
   isValid = false;
 
-  togglApiToken = '';
-  togglApiTokenRules = [(v: string) => !!v || 'Toggl API token is required'];
+  togglApiToken = "";
+  togglApiTokenRules = [(v: string) => !!v || "Toggl API token is required"];
 
-  togglWorkSpaceId = '';
+  togglWorkSpaceId = "";
   togglWorkSpaceIdRules = [
-    (v: string) => !!v || 'Toggl workspace ID is required',
-    (v: string) => /^[0-9]+$/.test(v) || 'Toggl workspace ID must be numbers',
+    (v: string) => !!v || "Toggl workspace ID is required",
+    (v: string) => /^[0-9]+$/.test(v) || "Toggl workspace ID must be numbers",
   ];
 
-  proxy = '';
+  proxy = "";
 
   mounted() {
-    this.togglApiToken = timerStore.timerConfig?.token ?? '';
-    this.togglWorkSpaceId = String(timerStore.timerConfig?.workspaceId ?? '');
-    this.proxy = timerStore.timerConfig?.proxy ?? '';
+    this.togglApiToken = timerStore.timerConfig?.token ?? "";
+    this.togglWorkSpaceId = String(timerStore.timerConfig?.workspaceId ?? "");
+    this.proxy = timerStore.timerConfig?.proxy ?? "";
   }
 
   get isTimerConfigUpdating(): boolean {
-    return timerStore.updateStatus === 'in_progress';
+    return timerStore.updateStatus === "in_progress";
   }
 
   get timerConfigUpdateError(): TogowlError | null {
@@ -93,7 +93,13 @@ class SettingsToggl extends Vue {
 
   saveTimerConfig() {
     // XXX: currentTaskId?
-    timerStore.updateTimerConfig(TimerConfig.create(this.togglApiToken, Number(this.togglWorkSpaceId), this.proxy));
+    timerStore.updateTimerConfig(
+      TimerConfig.create(
+        this.togglApiToken,
+        Number(this.togglWorkSpaceId),
+        this.proxy
+      )
+    );
   }
 }
 export default SettingsToggl;

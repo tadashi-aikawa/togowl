@@ -6,7 +6,8 @@
       </v-list-item-title>
       <v-list-item-subtitle class="sub-title">
         <span style="padding: 0 4px 0 0;"
-          >{{ entry.start.displayTimeWithoutSeconds }} - {{ entry.stop.displayTimeWithoutSeconds }}</span
+          >{{ entry.start.displayTimeWithoutSeconds }} -
+          {{ entry.stop.displayTimeWithoutSeconds }}</span
         >
         <v-icon size="small">mdi-timer</v-icon>
         <span>{{ entry.duration.asJapanese }}</span>
@@ -21,9 +22,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from '~/node_modules/nuxt-property-decorator';
-import { Entry } from '~/domain/timer/entity/Entry';
-import EntrySummary from '~/components/EntrySummary.vue';
+import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { Entry } from "~/domain/timer/entity/Entry";
+import EntrySummary from "~/components/EntrySummary.vue";
 
 @Component({
   components: { EntrySummary },
@@ -33,7 +34,7 @@ class TimeEntry extends Vue {
   entry: Entry;
 
   handleClickPlayButton(entry: Entry) {
-    this.$emit('on-click-start', entry);
+    this.$emit("on-click-start", entry);
   }
 }
 export default TimeEntry;

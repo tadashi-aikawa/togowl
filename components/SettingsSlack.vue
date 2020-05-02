@@ -56,32 +56,35 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from '~/node_modules/nuxt-property-decorator';
-import { notificationStore } from '~/utils/store-accessor';
-import { Url } from '~/domain/common/Url';
-import { ChannelName } from '~/domain/notification/vo/ChannelName';
-import { TogowlError } from '~/domain/common/TogowlError';
-import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
+import { Component, Vue } from "~/node_modules/nuxt-property-decorator";
+import { notificationStore } from "~/utils/store-accessor";
+import { Url } from "~/domain/common/Url";
+import { ChannelName } from "~/domain/notification/vo/ChannelName";
+import { TogowlError } from "~/domain/common/TogowlError";
+import { SlackConfig } from "~/domain/notification/vo/SlackConfig";
 
 @Component({})
 class SettingsSlack extends Vue {
   isValid = false;
 
-  incomingWebHookUrl = '';
+  incomingWebHookUrl = "";
   incomingWebHookUrlRules = [
-    (v: string) => !!v || 'Incoming web hook URL is required',
-    (v: string) => Url.isValid(v) || 'Invalid URL',
+    (v: string) => !!v || "Incoming web hook URL is required",
+    (v: string) => Url.isValid(v) || "Invalid URL",
   ];
 
-  notifyChannel = '';
-  notifyChannelRules = [(v: string) => ChannelName.isValid(v) || 'Channel name must start with "#"'];
+  notifyChannel = "";
+  notifyChannelRules = [
+    (v: string) => ChannelName.isValid(v) || 'Channel name must start with "#"',
+  ];
 
-  proxy = '';
+  proxy = "";
 
   mounted() {
-    this.incomingWebHookUrl = notificationStore.slackConfig?.incomingWebHookUrl?.value ?? '';
-    this.notifyChannel = notificationStore.slackConfig?.notifyTo?.value ?? '';
-    this.proxy = notificationStore.slackConfig?.proxy ?? '';
+    this.incomingWebHookUrl =
+      notificationStore.slackConfig?.incomingWebHookUrl?.value ?? "";
+    this.notifyChannel = notificationStore.slackConfig?.notifyTo?.value ?? "";
+    this.proxy = notificationStore.slackConfig?.proxy ?? "";
   }
 
   get slackConfigUpdateError(): TogowlError | null {
@@ -89,11 +92,17 @@ class SettingsSlack extends Vue {
   }
 
   get isSlackConfigUpdating(): boolean {
-    return notificationStore.updateStatus === 'in_progress';
+    return notificationStore.updateStatus === "in_progress";
   }
 
   saveSlackConfig() {
-    notificationStore.updateSlackConfig(SlackConfig.create(this.incomingWebHookUrl, this.notifyChannel, this.proxy));
+    notificationStore.updateSlackConfig(
+      SlackConfig.create(
+        this.incomingWebHookUrl,
+        this.notifyChannel,
+        this.proxy
+      )
+    );
   }
 }
 export default SettingsSlack;

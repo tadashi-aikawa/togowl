@@ -1,1 +1,1 @@
-export type ActionStatus = 'init' | 'in_progress' | 'success' | 'error';
+export type ActionStatus = "init" | "in_progress" | "success" | "error";

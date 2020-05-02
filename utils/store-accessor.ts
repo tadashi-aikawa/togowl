@@ -1,11 +1,11 @@
-import { Store } from 'vuex';
-import { getModule } from 'vuex-module-decorators';
-import AuthenticationModule from '~/store/Authentication';
-import CloudUserModule from '~/store/CloudUser';
-import SlackModule from '~/store/Slack';
-import TimerModule from '~/store/Timer';
-import TaskModule from '~/store/Task';
-import ProjectModule from '~/store/Project';
+import { Store } from "vuex";
+import { getModule } from "vuex-module-decorators";
+import AuthenticationModule from "~/store/Authentication";
+import CloudUserModule from "~/store/CloudUser";
+import SlackModule from "~/store/Slack";
+import TimerModule from "~/store/Timer";
+import TaskModule from "~/store/Task";
+import ProjectModule from "~/store/Project";
 
 // eslint-disable-next-line import/no-mutable-exports
 let authenticationStore: AuthenticationModule;
@@ -29,4 +29,12 @@ function initialiseStores(store: Store<any>): void {
   projectStore = getModule(ProjectModule, store);
 }
 
-export { initialiseStores, authenticationStore, userStore, notificationStore, timerStore, taskStore, projectStore };
+export {
+  initialiseStores,
+  authenticationStore,
+  userStore,
+  notificationStore,
+  timerStore,
+  taskStore,
+  projectStore,
+};

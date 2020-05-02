@@ -1,4 +1,4 @@
-import { ValueObject } from '~/utils/vo';
+import { ValueObject } from "~/utils/vo";
 
 interface Props {
   token?: string;
@@ -7,7 +7,11 @@ interface Props {
 }
 
 export class TimerConfig extends ValueObject<Props> {
-  static create(token?: string, workspaceId?: number, proxy?: string): TimerConfig {
+  static create(
+    token?: string,
+    workspaceId?: number,
+    proxy?: string
+  ): TimerConfig {
     return new TimerConfig({
       token,
       workspaceId,

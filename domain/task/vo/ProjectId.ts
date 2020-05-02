@@ -1,4 +1,4 @@
-import { PrimitiveValueObject } from '~/utils/vo';
+import { PrimitiveValueObject } from "~/utils/vo";
 
 export class ProjectId extends PrimitiveValueObject<string> {
   static create(value: number | string): ProjectId {

@@ -3,19 +3,55 @@
     <template v-if="activeViewIndex === 0">
       <v-flex xs12 sm8 md6>
         <v-fade-transition hide-on-leave>
-          <div v-if="currentEntry" style="height: 220px">
-            <CurrentTimeEntry :current-entry="currentEntry" :disabled="!isTimeEntryTrusted" :loading="isLoading" />
+          <div v-if="currentEntry" style="height: 220px;">
+            <CurrentTimeEntry
+              :current-entry="currentEntry"
+              :disabled="!isTimeEntryTrusted"
+              :loading="isLoading"
+            />
             <v-row align="center" justify="center" style="margin-bottom: 20px;">
-              <v-btn class="mx-2" fab small dark color="purple darken-1" :disabled="!canAction" @click="cancel">
+              <v-btn
+                class="mx-2"
+                fab
+                small
+                dark
+                color="purple darken-1"
+                :disabled="!canAction"
+                @click="cancel"
+              >
                 <v-icon dark>mdi-delete</v-icon>
               </v-btn>
-              <v-btn class="mx-2" fab small dark color="grey darken-1" :disabled="!canAction" @click="pause">
+              <v-btn
+                class="mx-2"
+                fab
+                small
+                dark
+                color="grey darken-1"
+                :disabled="!canAction"
+                @click="pause"
+              >
                 <v-icon dark>mdi-pause</v-icon>
               </v-btn>
-              <v-btn class="mx-2" fab small dark color="teal" :disabled="!canAction" @click="complete">
+              <v-btn
+                class="mx-2"
+                fab
+                small
+                dark
+                color="teal"
+                :disabled="!canAction"
+                @click="complete"
+              >
                 <v-icon dark>mdi-check-bold</v-icon>
               </v-btn>
-              <v-btn class="mx-2" fab small dark color="brown darken-1" :disabled="!canAction" @click="connectPrevious">
+              <v-btn
+                class="mx-2"
+                fab
+                small
+                dark
+                color="brown darken-1"
+                :disabled="!canAction"
+                @click="connectPrevious"
+              >
                 <v-icon dark>mdi-transit-connection-variant</v-icon>
               </v-btn>
             </v-row>
@@ -106,7 +142,14 @@
       </div>
     </template>
 
-    <v-bottom-navigation v-model="activeViewIndex" grow color="teal" dark shift fixed>
+    <v-bottom-navigation
+      v-model="activeViewIndex"
+      grow
+      color="teal"
+      dark
+      shift
+      fixed
+    >
       <v-btn>
         <span>Timer</span>
         <v-icon>mdi-clock</v-icon>
@@ -120,42 +163,53 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
-import { notificationStore, taskStore, timerStore } from '~/utils/store-accessor';
-import { Entry } from '~/domain/timer/entity/Entry';
-import { TogowlError } from '~/domain/common/TogowlError';
-import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
-import { fold } from '~/node_modules/fp-ts/lib/Either';
-import { ActionStatus } from '~/domain/common/ActionStatus';
-import CurrentTimeEntry from '~/components/CurrentTimeEntry.vue';
-import TimeEntry from '~/components/TimeEntry.vue';
-import EntryCalendar from '~/components/EntryCalendar.vue';
-import EntrySummary from '~/components/EntrySummary.vue';
-import TimeEntries from '~/components/TimeEntries.vue';
-import { Task } from '~/domain/task/entity/Task';
-import TaskEntryList from '~/components/TaskEntryList.vue';
+import { Component, Vue } from "nuxt-property-decorator";
+import {
+  notificationStore,
+  taskStore,
+  timerStore,
+} from "~/utils/store-accessor";
+import { Entry } from "~/domain/timer/entity/Entry";
+import { TogowlError } from "~/domain/common/TogowlError";
+import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
+import { fold } from "~/node_modules/fp-ts/lib/Either";
+import { ActionStatus } from "~/domain/common/ActionStatus";
+import CurrentTimeEntry from "~/components/CurrentTimeEntry.vue";
+import TimeEntry from "~/components/TimeEntry.vue";
+import EntryCalendar from "~/components/EntryCalendar.vue";
+import EntrySummary from "~/components/EntrySummary.vue";
+import TimeEntries from "~/components/TimeEntries.vue";
+import { Task } from "~/domain/task/entity/Task";
+import TaskEntryList from "~/components/TaskEntryList.vue";
 
 @Component({
-  components: { CurrentTimeEntry, TimeEntry, TimeEntries, TaskEntryList, EntryCalendar, EntrySummary },
+  components: {
+    CurrentTimeEntry,
+    TimeEntry,
+    TimeEntries,
+    TaskEntryList,
+    EntryCalendar,
+    EntrySummary,
+  },
 })
 class Root extends Vue {
   activeViewIndex = 0;
 
   snackbar = false;
   snackbarColor: string | null = null;
-  snackMessage = '';
+  snackMessage = "";
   waitForBlockedAction = false;
 
   selectedEntry: Entry | null = null;
 
   subActionSwiperOption = {
-    direction: 'vertical',
-    effect: 'cube',
+    direction: "vertical",
+    effect: "cube",
   };
 
   showSnackBar(message: string, error: boolean) {
     this.snackMessage = message;
-    this.snackbarColor = error ? 'error' : null;
+    this.snackbarColor = error ? "error" : null;
     this.snackbar = true;
   }
 
@@ -165,14 +219,14 @@ class Root extends Vue {
     pipe(
       await timerStore.startEntry(entry),
       fold(
-        _err => {},
-        async _entry => {
+        (_err) => {},
+        async (_entry) => {
           const err = await notificationStore.notifyStartEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);
           }
-        },
-      ),
+        }
+      )
     );
 
     this.waitForBlockedAction = false;
@@ -184,14 +238,14 @@ class Root extends Vue {
     pipe(
       await timerStore.startEntryByTask(task),
       fold(
-        _err => {},
-        async entry => {
+        (_err) => {},
+        async (entry) => {
           const err = await notificationStore.notifyStartEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);
           }
-        },
-      ),
+        }
+      )
     );
 
     this.waitForBlockedAction = false;
@@ -202,15 +256,15 @@ class Root extends Vue {
     pipe(
       await timerStore.completeCurrentEntry(),
       fold(
-        _err => {},
-        async entry => {
+        (_err) => {},
+        async (entry) => {
           this.selectedEntry = null;
           const err = await notificationStore.notifyDoneEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);
           }
-        },
-      ),
+        }
+      )
     );
     this.waitForBlockedAction = false;
   }
@@ -220,15 +274,15 @@ class Root extends Vue {
     pipe(
       await timerStore.pauseCurrentEntry(),
       fold(
-        _err => {},
-        async entry => {
+        (_err) => {},
+        async (entry) => {
           this.selectedEntry = null;
           const err = await notificationStore.notifyPauseEvent(entry);
           if (err) {
             this.showSnackBar(err.message, true);
           }
-        },
-      ),
+        }
+      )
     );
     this.waitForBlockedAction = false;
   }
@@ -244,15 +298,15 @@ class Root extends Vue {
     pipe(
       await timerStore.cancelCurrentEntry(),
       fold(
-        _err => {},
-        async _entry => {
+        (_err) => {},
+        async (_entry) => {
           this.selectedEntry = null;
           const err = await notificationStore.notifyCancelEvent();
           if (err) {
             this.showSnackBar(err.message, true);
           }
-        },
-      ),
+        }
+      )
     );
     this.waitForBlockedAction = false;
   }
@@ -310,7 +364,7 @@ class Root extends Vue {
   }
 
   get isTimeEntryTrusted(): boolean {
-    return this.isRealtimeEnabled && this.fetchingStatus === 'success';
+    return this.isRealtimeEnabled && this.fetchingStatus === "success";
   }
 
   get canAction(): boolean {
@@ -318,15 +372,15 @@ class Root extends Vue {
   }
 
   get isLoading(): boolean {
-    return this.fetchingStatus === 'in_progress';
+    return this.fetchingStatus === "in_progress";
   }
 
   get isEntriesLoading(): boolean {
-    return this.entriesStatus === 'in_progress' && this.entries.length === 0;
+    return this.entriesStatus === "in_progress" && this.entries.length === 0;
   }
 
   get isTasksLoading(): boolean {
-    return this.tasksStatus === 'in_progress' && this.tasks.length === 0;
+    return this.tasksStatus === "in_progress" && this.tasks.length === 0;
   }
 
   get disabledStart(): boolean {
@@ -334,7 +388,7 @@ class Root extends Vue {
   }
 
   get calendarHeight(): string {
-    return 'calc(100vh - 80px - 56px)';
+    return "calc(100vh - 80px - 56px)";
   }
 
   customFilter(item: Entry, queryText: string): boolean {
@@ -344,8 +398,13 @@ class Root extends Vue {
 
     return queryText
       .toLowerCase()
-      .split(' ')
-      .every(q => description.includes(q) || projectName?.includes(q) || projectCategoryName?.includes(q));
+      .split(" ")
+      .every(
+        (q) =>
+          description.includes(q) ||
+          projectName?.includes(q) ||
+          projectCategoryName?.includes(q)
+      );
   }
 }
 

@@ -1,20 +1,23 @@
-import _ from 'lodash';
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { UId } from '~/domain/authentication/vo/UId';
-import { TogowlError } from '~/domain/common/TogowlError';
-import { ActionStatus } from '~/domain/common/ActionStatus';
-import { createTaskService } from '~/utils/service-factory';
-import { TaskService } from '~/domain/task/service/TaskService';
-import { Task } from '~/domain/task/entity/Task';
-import { FirestoreTask, toTaskConfig } from '~/repository/FirebaseCloudRepository';
-import { TaskConfig } from '~/domain/task/vo/TaskConfig';
-import { fold } from '~/node_modules/fp-ts/lib/Either';
-import { pipe } from '~/node_modules/fp-ts/lib/pipeable';
-import { cloudRepository, projectStore } from '~/store/index';
-import { createAction } from '~/utils/firestore-facade';
-import { Project } from '~/domain/task/entity/Project';
-import { TaskId } from '~/domain/task/vo/TaskId';
-import { DateTime } from '~/domain/common/DateTime';
+import _ from "lodash";
+import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
+import { UId } from "~/domain/authentication/vo/UId";
+import { TogowlError } from "~/domain/common/TogowlError";
+import { ActionStatus } from "~/domain/common/ActionStatus";
+import { createTaskService } from "~/utils/service-factory";
+import { TaskService } from "~/domain/task/service/TaskService";
+import { Task } from "~/domain/task/entity/Task";
+import {
+  FirestoreTask,
+  toTaskConfig,
+} from "~/repository/FirebaseCloudRepository";
+import { TaskConfig } from "~/domain/task/vo/TaskConfig";
+import { fold } from "~/node_modules/fp-ts/lib/Either";
+import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
+import { cloudRepository, projectStore } from "~/store/index";
+import { createAction } from "~/utils/firestore-facade";
+import { Project } from "~/domain/task/entity/Project";
+import { TaskId } from "~/domain/task/vo/TaskId";
+import { DateTime } from "~/domain/common/DateTime";
 
 let service: TaskService | null;
 
@@ -23,7 +26,11 @@ interface Command {
 }
 
 class CompleteCommand implements Command {
-  constructor(public execFunction: (taskId: TaskId) => Promise<TogowlError | null>, public taskId: TaskId) {}
+  constructor(
+    public execFunction: (taskId: TaskId) => Promise<TogowlError | null>,
+    public taskId: TaskId
+  ) {}
+
   exec() {
     return this.execFunction(this.taskId);
   }
@@ -31,9 +38,12 @@ class CompleteCommand implements Command {
 
 class UpdateDueDateCommand implements Command {
   constructor(
-    public execFunction: (taskId: TaskId, date: DateTime) => Promise<TogowlError | null>,
+    public execFunction: (
+      taskId: TaskId,
+      date: DateTime
+    ) => Promise<TogowlError | null>,
     public taskId: TaskId,
-    public date: DateTime,
+    public date: DateTime
   ) {}
 
   exec() {
@@ -43,8 +53,10 @@ class UpdateDueDateCommand implements Command {
 
 class UpdateOrderCommand implements Command {
   constructor(
-    public execFunction: (taskById: { [taskId: number]: Task }) => Promise<TogowlError | null>,
-    public taskById: { [taskId: number]: Task },
+    public execFunction: (taskById: {
+      [taskId: number]: Task;
+    }) => Promise<TogowlError | null>,
+    public taskById: { [taskId: number]: Task }
   ) {}
 
   exec() {
@@ -66,7 +78,11 @@ class CommandExecutor {
 
   needSync(clientId?: string): CommandExecutor {
     // `clientId is defined` means sync from Todoist official application and others
-    if (clientId || !this.lastExecutedDateTime || !this.lastExecutedDateTime.within(3)) {
+    if (
+      clientId ||
+      !this.lastExecutedDateTime ||
+      !this.lastExecutedDateTime.within(3)
+    ) {
       this.syncNeeded = true;
     }
     return this;
@@ -78,13 +94,18 @@ class CommandExecutor {
   }
 
   execAll(delaySeconds = 0): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (this.timerId) {
         window.clearTimeout(this.timerId);
       }
 
-      const lastUpdateOrderCommand = _.last(this.commands.filter(x => x instanceof UpdateOrderCommand));
-      _.remove(this.commands, x => x instanceof UpdateOrderCommand && x !== lastUpdateOrderCommand);
+      const lastUpdateOrderCommand = _.last(
+        this.commands.filter((x) => x instanceof UpdateOrderCommand)
+      );
+      _.remove(
+        this.commands,
+        (x) => x instanceof UpdateOrderCommand && x !== lastUpdateOrderCommand
+      );
 
       this.timerId = window.setTimeout(async () => {
         while (this.commands.length > 0) {
@@ -107,7 +128,7 @@ class CommandExecutor {
 /**
  * Concrete implementation by using firebase
  */
-@Module({ name: 'Task', namespaced: true, stateFactory: true })
+@Module({ name: "Task", namespaced: true, stateFactory: true })
 class TaskModule extends VuexModule {
   private _taskConfig: FirestoreTask | null = null;
   private commandExecutor: CommandExecutor;
@@ -118,8 +139,12 @@ class TaskModule extends VuexModule {
 
   get tasks(): Task[] {
     // FIXME: refactoring extract
-    return Object.values(this._taskById).map(x =>
-      x.cloneWith(x.projectId ? projectStore.projectByTaskProjectId[x.projectId.asNumber] : undefined),
+    return Object.values(this._taskById).map((x) =>
+      x.cloneWith(
+        x.projectId
+          ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
+          : undefined
+      )
     );
   }
 
@@ -127,11 +152,16 @@ class TaskModule extends VuexModule {
     const today = DateTime.now();
     const yesterday = DateTime.now().minusDays(1);
     return _(this.tasks)
-      .reject(x => !x.dueDate)
-      .filter(x => (today.equalsAsDate(x.dueDate!) || yesterday.equalsAsDate(x.dueDate!)) ?? false)
-      .orderBy(x => x.dayOrder)
-      .orderBy(x => x.priority.value, 'desc')
-      .orderBy(x => x.dueDate?.unix, 'asc')
+      .reject((x) => !x.dueDate)
+      .filter(
+        (x) =>
+          (today.equalsAsDate(x.dueDate!) ||
+            yesterday.equalsAsDate(x.dueDate!)) ??
+          false
+      )
+      .orderBy((x) => x.dayOrder)
+      .orderBy((x) => x.priority.value, "desc")
+      .orderBy((x) => x.dueDate?.unix, "asc")
       .value();
   }
 
@@ -145,7 +175,7 @@ class TaskModule extends VuexModule {
     this._taskById = taskById;
   }
 
-  status: ActionStatus = 'init';
+  status: ActionStatus = "init";
   @Mutation
   setStatus(status: ActionStatus) {
     this.status = status;
@@ -163,7 +193,7 @@ class TaskModule extends VuexModule {
     this._projectById = projectById;
   }
 
-  projectStatus: ActionStatus = 'init';
+  projectStatus: ActionStatus = "init";
   @Mutation
   setProjectStatus(status: ActionStatus) {
     this.projectStatus = status;
@@ -175,7 +205,7 @@ class TaskModule extends VuexModule {
     this.projectError = error;
   }
 
-  configStatus: ActionStatus = 'init';
+  configStatus: ActionStatus = "init";
   @Mutation
   setConfigStatus(status: ActionStatus) {
     this.configStatus = status;
@@ -196,16 +226,16 @@ class TaskModule extends VuexModule {
   @Action({ rawError: true })
   async updateTaskConfig(config: TaskConfig) {
     this.setConfigError(null);
-    this.setConfigStatus('in_progress');
+    this.setConfigStatus("in_progress");
 
     // TODO: Recreate service?
     const err = await cloudRepository.saveTaskConfig(config);
     if (err) {
-      this.setConfigStatus('error');
+      this.setConfigStatus("error");
       this.setConfigError(err);
     } else {
       await this.updateService();
-      this.setConfigStatus('success');
+      this.setConfigStatus("success");
     }
   }
 
@@ -215,21 +245,21 @@ class TaskModule extends VuexModule {
       return;
     }
 
-    this.setStatus('in_progress');
+    this.setStatus("in_progress");
     await this.commandExecutor.execAll();
     pipe(
       await service.fetchTasks(),
       fold(
-        err => {
+        (err) => {
           this.setError(err);
-          this.setStatus('error');
+          this.setStatus("error");
         },
-        tasks => {
-          this.setTaskById(_.keyBy(tasks, x => x.id.asNumber));
+        (tasks) => {
+          this.setTaskById(_.keyBy(tasks, (x) => x.id.asNumber));
           this.setError(null);
-          this.setStatus('success');
-        },
-      ),
+          this.setStatus("success");
+        }
+      )
     );
   }
 
@@ -237,19 +267,32 @@ class TaskModule extends VuexModule {
   async completeTask(taskId: TaskId): Promise<void> {
     // TODO: Illegal case
     this.setTaskById(_.omit(this._taskById, [taskId.asNumber]));
-    await this.commandExecutor.add(new CompleteCommand(service!.completeTask.bind(service), taskId)).execAll(1000);
+    await this.commandExecutor
+      .add(new CompleteCommand(service!.completeTask.bind(service), taskId))
+      .execAll(1000);
   }
 
   @Action({ rawError: true })
-  async updateDueDate(payload: { taskId: TaskId; dueDate: DateTime }): Promise<void> {
+  async updateDueDate(payload: {
+    taskId: TaskId;
+    dueDate: DateTime;
+  }): Promise<void> {
     const { taskId, dueDate } = payload;
     // TODO: Illegal case
     this.setTaskById({
       ...this._taskById,
-      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWithDueDate(dueDate),
+      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWithDueDate(
+        dueDate
+      ),
     });
     await this.commandExecutor
-      .add(new UpdateDueDateCommand(service!.updateDueDate.bind(service), taskId, dueDate))
+      .add(
+        new UpdateDueDateCommand(
+          service!.updateDueDate.bind(service),
+          taskId,
+          dueDate
+        )
+      )
       .execAll(1000);
   }
 
@@ -257,13 +300,18 @@ class TaskModule extends VuexModule {
   async updateTasksOrder(tasks: Task[]): Promise<void> {
     const orderedTasks = _(tasks)
       .map((v, idx) => v.cloneWithDayOrder(idx + 1))
-      .keyBy(x => x.id.asNumber)
+      .keyBy((x) => x.id.asNumber)
       .value();
     this.setTaskById(orderedTasks);
     // TODO: Illegal case
     // TODO: 5000 -> 1000 and restrict when dragging
     await this.commandExecutor
-      .add(new UpdateOrderCommand(service!.updateTasksOrder.bind(service), orderedTasks))
+      .add(
+        new UpdateOrderCommand(
+          service!.updateTasksOrder.bind(service),
+          orderedTasks
+        )
+      )
       .execAll(5000);
   }
 
@@ -273,21 +321,21 @@ class TaskModule extends VuexModule {
       return;
     }
 
-    this.setProjectStatus('in_progress');
+    this.setProjectStatus("in_progress");
     await this.commandExecutor.execAll();
     pipe(
       await service.fetchProjects(),
       fold(
-        err => {
+        (err) => {
           this.setProjectError(err);
-          this.setProjectStatus('error');
+          this.setProjectStatus("error");
         },
-        projects => {
-          this.setProjectById(_.keyBy(projects, x => x.id.asNumber));
+        (projects) => {
+          this.setProjectById(_.keyBy(projects, (x) => x.id.asNumber));
           this.setProjectError(null);
-          this.setProjectStatus('success');
-        },
-      ),
+          this.setProjectStatus("success");
+        }
+      )
     );
   }
 
@@ -318,7 +366,7 @@ class TaskModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    createAction(uid.value, '_taskConfig', 'task')(this.context);
+    createAction(uid.value, "_taskConfig", "task")(this.context);
     this.commandExecutor = new CommandExecutor({
       onSyncNeeded: this.fetchTasks.bind(this),
     });

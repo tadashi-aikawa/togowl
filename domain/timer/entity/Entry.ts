@@ -1,10 +1,10 @@
-import { DateTime } from '~/domain/common/DateTime';
-import { EntryId } from '~/domain/timer/vo/EntryId';
-import { Duration } from '~/domain/timer/vo/Duration';
-import { Project } from '~/domain/timer/entity/Project';
-import { ProjectCategory } from '~/domain/timer/entity/ProjectCategory';
-import { Entity } from '~/utils/entity';
-import { ProjectId } from '~/domain/timer/vo/ProjectId';
+import { DateTime } from "~/domain/common/DateTime";
+import { EntryId } from "~/domain/timer/vo/EntryId";
+import { Duration } from "~/domain/timer/vo/Duration";
+import { Project } from "~/domain/timer/entity/Project";
+import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
+import { Entity } from "~/utils/entity";
+import { ProjectId } from "~/domain/timer/vo/ProjectId";
 
 interface Args {
   id: string | number;
@@ -24,7 +24,7 @@ export class Entry implements Entity {
     public duration: Duration,
     public stop?: DateTime,
     public project?: Project,
-    public _projectId?: ProjectId,
+    public _projectId?: ProjectId
   ) {}
 
   equals(entry?: Entry): boolean {
@@ -43,7 +43,7 @@ export class Entry implements Entity {
       Duration.create(args.duration),
       args.stop ? DateTime.create(args.stop) : undefined,
       args.project,
-      args._projectId,
+      args._projectId
     );
   }
 
@@ -52,8 +52,15 @@ export class Entry implements Entity {
   }
 
   cloneWithProject(project?: Project): Entry {
-    return new Entry(this.id, this.description, this.start, this.duration, this.stop, project);
+    return new Entry(
+      this.id,
+      this.description,
+      this.start,
+      this.duration,
+      this.stop,
+      project
+    );
   }
 }
 
-export type PartialEntry = Partial<Omit<Entry, 'id'>>;
+export type PartialEntry = Partial<Omit<Entry, "id">>;

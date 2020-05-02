@@ -2,7 +2,10 @@
   <v-flex xs12 sm8 md6>
     <v-container fluid>
       <v-card class="card-area">
-        <v-img src="https://cdn.svgporn.com/logos/slack-icon.svg" max-width="30" />
+        <v-img
+          src="https://cdn.svgporn.com/logos/slack-icon.svg"
+          max-width="30"
+        />
         <SettingsSlack />
       </v-card>
 
@@ -15,7 +18,10 @@
       </v-card>
 
       <v-card class="card-area">
-        <v-img src="https://cdn.svgporn.com/logos/todoist-icon.svg" max-width="30" />
+        <v-img
+          src="https://cdn.svgporn.com/logos/todoist-icon.svg"
+          max-width="30"
+        />
         <SettingsTodoist />
       </v-card>
 
@@ -27,13 +33,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator';
-import SettingsSlack from '~/components/SettingsSlack.vue';
-import SettingsToggl from '~/components/SettingsToggl.vue';
-import SettingsProject from '~/components/SettingsProject.vue';
-import SettingsTodoist from '~/components/SettingsTodoist.vue';
+import { Component, Vue } from "nuxt-property-decorator";
+import SettingsSlack from "~/components/SettingsSlack.vue";
+import SettingsToggl from "~/components/SettingsToggl.vue";
+import SettingsProject from "~/components/SettingsProject.vue";
+import SettingsTodoist from "~/components/SettingsTodoist.vue";
 
-@Component({ components: { SettingsSlack, SettingsToggl, SettingsTodoist, SettingsProject } })
+@Component({
+  components: {
+    SettingsSlack,
+    SettingsToggl,
+    SettingsTodoist,
+    SettingsProject,
+  },
+})
 class Settings extends Vue {}
 
 export default Settings;

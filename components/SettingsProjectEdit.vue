@@ -15,7 +15,13 @@
             placeholder="https://your/favorite/image.png"
             clearable
           />
-          <v-text-field v-model="iconEmoji" :rules="iconEmojiRules" label="Icon Emoji" placeholder="smile" clearable />
+          <v-text-field
+            v-model="iconEmoji"
+            :rules="iconEmojiRules"
+            label="Icon Emoji"
+            placeholder="smile"
+            clearable
+          />
 
           <v-autocomplete
             v-if="showProjects"
@@ -53,12 +59,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from '~/node_modules/nuxt-property-decorator';
-import { Icon } from '~/domain/common/Icon';
-import { Url } from '~/domain/common/Url';
-import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
-import { taskStore } from '~/utils/store-accessor';
-import { Project as TaskProject } from '~/domain/task/entity/Project';
+import {
+  Component,
+  Prop,
+  Vue,
+  Watch,
+} from "~/node_modules/nuxt-property-decorator";
+import { Icon } from "~/domain/common/Icon";
+import { Url } from "~/domain/common/Url";
+import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
+import { taskStore } from "~/utils/store-accessor";
+import { Project as TaskProject } from "~/domain/task/entity/Project";
 
 @Component({})
 class SettingsProjectEdit extends Vue {
@@ -74,11 +85,13 @@ class SettingsProjectEdit extends Vue {
   @Prop()
   showProjects: boolean;
 
-  iconUrl: string = '';
-  iconUrlRules = [(v: string) => !v || Url.isValid(v) || 'Invalid URL'];
+  iconUrl: string = "";
+  iconUrlRules = [(v: string) => !v || Url.isValid(v) || "Invalid URL"];
 
-  iconEmoji: string = '';
-  iconEmojiRules = [(v: string) => !v || !v.includes(':') || 'Can not contain colons'];
+  iconEmoji: string = "";
+  iconEmojiRules = [
+    (v: string) => !v || !v.includes(":") || "Can not contain colons",
+  ];
 
   selectedTaskProjects: TaskProject[] = [];
 
@@ -88,21 +101,25 @@ class SettingsProjectEdit extends Vue {
     return taskStore.projects;
   }
 
-  @Watch('icon', { immediate: true })
+  @Watch("icon", { immediate: true })
   updateFormValues() {
-    this.iconUrl = this.icon?.url ?? '';
-    this.iconEmoji = this.icon?.emoji ?? '';
+    this.iconUrl = this.icon?.url ?? "";
+    this.iconEmoji = this.icon?.emoji ?? "";
   }
 
-  @Watch('taskProjectIds', { immediate: true })
+  @Watch("taskProjectIds", { immediate: true })
   onUpdateTaskProjectIds() {
     this.selectedTaskProjects = this.candidatedTaskProjects.filter(
-      x => this.taskProjectIds?.some(id => x.id.equals(id)) ?? false,
+      (x) => this.taskProjectIds?.some((id) => x.id.equals(id)) ?? false
     );
   }
 
   save() {
-    this.$emit('on-save', Icon.create({ url: this.iconUrl, emoji: this.iconEmoji }), this.selectedTaskProjects);
+    this.$emit(
+      "on-save",
+      Icon.create({ url: this.iconUrl, emoji: this.iconEmoji }),
+      this.selectedTaskProjects
+    );
   }
 }
 export default SettingsProjectEdit;

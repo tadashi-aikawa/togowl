@@ -1,4 +1,4 @@
-import { DateTime } from '~/domain/common/DateTime';
+import { DateTime } from "~/domain/common/DateTime";
 
 class Logger {
   constructor(private _logs: string[] = []) {}

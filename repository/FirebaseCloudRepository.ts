@@ -1,23 +1,23 @@
-import _ from 'lodash';
-import { User } from '~/domain/authentication/vo/User';
-import { LoginPayload } from '~/domain/authentication/vo/LoginPayload';
-import { TogowlError } from '~/domain/common/TogowlError';
-import { Either, left, right } from '~/node_modules/fp-ts/lib/Either';
-import CloudRepository from '~/repository/CloudRepository';
-import firebase from '~/plugins/firebase';
-import { UId } from '~/domain/authentication/vo/UId';
-import { UserName } from '~/domain/authentication/vo/UserName';
-import { SlackConfig } from '~/domain/notification/vo/SlackConfig';
-import { TimerConfig } from '~/domain/timer/vo/TimerConfig';
-import { Icon } from '~/domain/common/Icon';
-import { ProjectConfig } from '~/domain/timer/vo/ProjectConfig';
-import { ProjectCategoryConfig } from '~/domain/timer/vo/ProjectCategoryConfig';
-import { store } from '~/utils/firestore-facade';
-import { TaskConfig } from '~/domain/task/vo/TaskConfig';
-import { ProjectId as TaskProjectId } from '~/domain/task/vo/ProjectId';
-import { TaskId } from '~/domain/task/vo/TaskId';
-import { RecentTask } from '~/domain/common/RecentTask';
-import { EntryId } from '~/domain/timer/vo/EntryId';
+import _ from "lodash";
+import { User } from "~/domain/authentication/vo/User";
+import { LoginPayload } from "~/domain/authentication/vo/LoginPayload";
+import { TogowlError } from "~/domain/common/TogowlError";
+import { Either, left, right } from "~/node_modules/fp-ts/lib/Either";
+import CloudRepository from "~/repository/CloudRepository";
+import firebase from "~/plugins/firebase";
+import { UId } from "~/domain/authentication/vo/UId";
+import { UserName } from "~/domain/authentication/vo/UserName";
+import { SlackConfig } from "~/domain/notification/vo/SlackConfig";
+import { TimerConfig } from "~/domain/timer/vo/TimerConfig";
+import { Icon } from "~/domain/common/Icon";
+import { ProjectConfig } from "~/domain/timer/vo/ProjectConfig";
+import { ProjectCategoryConfig } from "~/domain/timer/vo/ProjectCategoryConfig";
+import { store } from "~/utils/firestore-facade";
+import { TaskConfig } from "~/domain/task/vo/TaskConfig";
+import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
+import { TaskId } from "~/domain/task/vo/TaskId";
+import { RecentTask } from "~/domain/common/RecentTask";
+import { EntryId } from "~/domain/timer/vo/EntryId";
 
 export interface FirestoreRecentTask {
   taskId?: string;
@@ -63,14 +63,14 @@ export interface FirestoreProjectCategory {
 export function toRecentTask(data: FirestoreRecentTask): RecentTask {
   return RecentTask.create(
     data.taskId ? TaskId.create(data.taskId) : undefined,
-    data.entryId ? EntryId.create(data.entryId) : undefined,
+    data.entryId ? EntryId.create(data.entryId) : undefined
   );
 }
 
 export function fromRecentTask(recentTask: RecentTask): FirestoreRecentTask {
   return {
-    taskId: recentTask.taskId?.value ?? '',
-    entryId: recentTask.entryId?.value ?? '',
+    taskId: recentTask.taskId?.value ?? "",
+    entryId: recentTask.entryId?.value ?? "",
   };
 }
 
@@ -80,8 +80,8 @@ export function toTaskConfig(data: FirestoreTask): TaskConfig {
 
 export function fromTaskConfig(config: TaskConfig): FirestoreTask {
   return {
-    token: config.token ?? '',
-    syncToken: config.syncToken ?? '',
+    token: config.token ?? "",
+    syncToken: config.syncToken ?? "",
   };
 }
 
@@ -95,36 +95,42 @@ export function toSlackConfig(data: FirestoreSlack): SlackConfig {
 
 export function toProjectConfig(data: FirestoreProject): ProjectConfig {
   return ProjectConfig.create(
-    _.mapValues(data, meta => ({
+    _.mapValues(data, (meta) => ({
       icon: meta.icon ? Icon.create(meta.icon) : undefined,
-      taskProjectIds: meta.taskProjectIds ? meta.taskProjectIds.map(TaskProjectId.create) : [],
-    })),
+      taskProjectIds: meta.taskProjectIds
+        ? meta.taskProjectIds.map(TaskProjectId.create)
+        : [],
+    }))
   );
 }
 
 export function fromProjectConfig(config: ProjectConfig): FirestoreProject {
-  return _.mapValues(config.value, meta => ({
+  return _.mapValues(config.value, (meta) => ({
     icon: {
-      url: meta.icon?.url ?? '',
-      emoji: meta.icon?.emoji ?? '',
+      url: meta.icon?.url ?? "",
+      emoji: meta.icon?.emoji ?? "",
     },
-    taskProjectIds: meta.taskProjectIds.map(x => x.value),
+    taskProjectIds: meta.taskProjectIds.map((x) => x.value),
   }));
 }
 
-export function toProjectCategoryConfig(data: FirestoreProjectCategory): ProjectCategoryConfig {
+export function toProjectCategoryConfig(
+  data: FirestoreProjectCategory
+): ProjectCategoryConfig {
   return ProjectCategoryConfig.create(
-    _.mapValues(data, meta => ({
+    _.mapValues(data, (meta) => ({
       icon: meta.icon ? Icon.create(meta.icon) : undefined,
-    })),
+    }))
   );
 }
 
-export function fromProjectCategoryConfig(config: ProjectCategoryConfig): FirestoreProjectCategory {
-  return _.mapValues(config.value, meta => ({
+export function fromProjectCategoryConfig(
+  config: ProjectCategoryConfig
+): FirestoreProjectCategory {
+  return _.mapValues(config.value, (meta) => ({
     icon: {
-      url: meta.icon?.url ?? '',
-      emoji: meta.icon?.emoji ?? '',
+      url: meta.icon?.url ?? "",
+      emoji: meta.icon?.emoji ?? "",
     },
   }));
 }
@@ -135,20 +141,26 @@ class FirebaseCloudRepository implements CloudRepository {
   async login(payload?: LoginPayload): Promise<Either<TogowlError, User>> {
     try {
       const user = payload
-        ? (await firebase.auth().signInWithEmailAndPassword(payload.mailAddress.value, payload.password)).user
+        ? (
+            await firebase
+              .auth()
+              .signInWithEmailAndPassword(
+                payload.mailAddress.value,
+                payload.password
+              )
+          ).user
         : firebase.auth().currentUser;
 
       if (!user) {
-        return left(TogowlError.create('NOT_USER', 'TODO: ...'));
+        return left(TogowlError.create("NOT_USER", "TODO: ..."));
       }
 
       this.uid = user.uid!;
-      const userDoc = await store
-        .collection('users')
-        .doc(this.uid)
-        .get();
+      const userDoc = await store.collection("users").doc(this.uid).get();
       // Databaseにユーザ登録をしていないと、userDoc.data()はnullになる
-      return right(User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name)));
+      return right(
+        User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name))
+      );
     } catch (e) {
       return left(TogowlError.create(e.code, e.message));
     }
@@ -157,12 +169,11 @@ class FirebaseCloudRepository implements CloudRepository {
   async loadUser(userId: UId): Promise<Either<TogowlError, User>> {
     try {
       this.uid = userId.value;
-      const userDoc = await store
-        .collection('users')
-        .doc(this.uid)
-        .get();
+      const userDoc = await store.collection("users").doc(this.uid).get();
       // Databaseにユーザ登録をしていないと、userDoc.data()はnullになる
-      return right(User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name)));
+      return right(
+        User.create(UId.create(this.uid), UserName.create(userDoc.data()!.name))
+      );
     } catch (e) {
       return left(TogowlError.create(e.code, e.message));
     }
@@ -179,38 +190,63 @@ class FirebaseCloudRepository implements CloudRepository {
       proxy: config.proxy,
     };
     return store
-      .collection('slack')
+      .collection("slack")
       .doc(this.uid)
       .set(document)
       .then(() => {
         return null;
       })
-      .catch(err => TogowlError.create('SAVE_SLACK_CONFIG_ERROR', 'Fail to save slack config.', err));
+      .catch((err) =>
+        TogowlError.create(
+          "SAVE_SLACK_CONFIG_ERROR",
+          "Fail to save slack config.",
+          err
+        )
+      );
   }
 
   loadSlackConfig(): Promise<Either<TogowlError, SlackConfig>> {
     return store
-      .collection('slack')
+      .collection("slack")
       .doc(this.uid)
       .get()
-      .then(x => {
+      .then((x) => {
         const data = x.data() as FirestoreSlack;
         return data
           ? right(toSlackConfig(data))
-          : left(TogowlError.create('GET_SLACK_CONFIG_ERROR', 'Empty slack config.'));
+          : left(
+              TogowlError.create(
+                "GET_SLACK_CONFIG_ERROR",
+                "Empty slack config."
+              )
+            );
       })
-      .catch(err => left(TogowlError.create('GET_SLACK_CONFIG_ERROR', 'Fail to get slack config.', err)));
+      .catch((err) =>
+        left(
+          TogowlError.create(
+            "GET_SLACK_CONFIG_ERROR",
+            "Fail to get slack config.",
+            err
+          )
+        )
+      );
   }
 
   saveRecentTask(recentTask: RecentTask): Promise<TogowlError | null> {
     return store
-      .collection('recentTask')
+      .collection("recentTask")
       .doc(this.uid)
       .set(fromRecentTask(recentTask))
       .then(() => {
         return null;
       })
-      .catch(err => TogowlError.create('SAVE_RECENT_TASK_ERROR', 'Fail to save recent task.', err));
+      .catch((err) =>
+        TogowlError.create(
+          "SAVE_RECENT_TASK_ERROR",
+          "Fail to save recent task.",
+          err
+        )
+      );
   }
 
   saveTimerConfig(config: TimerConfig): Promise<TogowlError | null> {
@@ -220,105 +256,178 @@ class FirebaseCloudRepository implements CloudRepository {
       proxy: config.proxy,
     };
     return store
-      .collection('timer')
+      .collection("timer")
       .doc(this.uid)
       .set(document)
       .then(() => {
         return null;
       })
-      .catch(err => TogowlError.create('SAVE_TIMER_CONFIG_ERROR', 'Fail to save timer config.', err));
+      .catch((err) =>
+        TogowlError.create(
+          "SAVE_TIMER_CONFIG_ERROR",
+          "Fail to save timer config.",
+          err
+        )
+      );
   }
 
   loadTimerConfig(): Promise<Either<TogowlError, TimerConfig>> {
     return store
-      .collection('timer')
+      .collection("timer")
       .doc(this.uid)
       .get()
-      .then(x => {
+      .then((x) => {
         const data = x.data() as FirestoreTimer;
         return data
           ? right(toTimerConfig(data))
-          : left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Empty timer config.'));
+          : left(
+              TogowlError.create(
+                "GET_TIMER_CONFIG_ERROR",
+                "Empty timer config."
+              )
+            );
       })
-      .catch(err => left(TogowlError.create('GET_TIMER_CONFIG_ERROR', 'Fail to get timer config.', err)));
+      .catch((err) =>
+        left(
+          TogowlError.create(
+            "GET_TIMER_CONFIG_ERROR",
+            "Fail to get timer config.",
+            err
+          )
+        )
+      );
   }
 
   saveTaskConfig(config: TaskConfig): Promise<TogowlError | null> {
     return store
-      .collection('task')
+      .collection("task")
       .doc(this.uid)
       .set(fromTaskConfig(config))
       .then(() => {
         return null;
       })
-      .catch(err => TogowlError.create('SAVE_TASK_CONFIG_ERROR', 'Fail to save task config.', err));
+      .catch((err) =>
+        TogowlError.create(
+          "SAVE_TASK_CONFIG_ERROR",
+          "Fail to save task config.",
+          err
+        )
+      );
   }
 
   loadTaskConfig(): Promise<Either<TogowlError, TaskConfig>> {
     return store
-      .collection('task')
+      .collection("task")
       .doc(this.uid)
       .get()
-      .then(x => {
+      .then((x) => {
         const data = x.data() as FirestoreTask;
         return data
           ? right(toTaskConfig(data))
-          : left(TogowlError.create('GET_TASK_CONFIG_ERROR', 'Empty task config.'));
+          : left(
+              TogowlError.create("GET_TASK_CONFIG_ERROR", "Empty task config.")
+            );
       })
-      .catch(err => left(TogowlError.create('GET_TASK_CONFIG_ERROR', 'Fail to get task config.', err)));
+      .catch((err) =>
+        left(
+          TogowlError.create(
+            "GET_TASK_CONFIG_ERROR",
+            "Fail to get task config.",
+            err
+          )
+        )
+      );
   }
 
   saveProjectConfig(config: ProjectConfig): Promise<TogowlError | null> {
     return store
-      .collection('projects')
+      .collection("projects")
       .doc(this.uid)
       .set(fromProjectConfig(config))
       .then(() => {
         return null;
       })
-      .catch(err => TogowlError.create('SAVE_PROJECT_CONFIG_ERROR', 'Fail to save project config.', err));
+      .catch((err) =>
+        TogowlError.create(
+          "SAVE_PROJECT_CONFIG_ERROR",
+          "Fail to save project config.",
+          err
+        )
+      );
   }
 
   loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>> {
     return store
-      .collection('projects')
+      .collection("projects")
       .doc(this.uid)
       .get()
-      .then(x => {
+      .then((x) => {
         const data = x.data() as FirestoreProject;
         return data
           ? right(toProjectConfig(data))
-          : left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Empty project config.'));
+          : left(
+              TogowlError.create(
+                "GET_PROJECT_CONFIG_ERROR",
+                "Empty project config."
+              )
+            );
       })
-      .catch(err => left(TogowlError.create('GET_PROJECT_CONFIG_ERROR', 'Fail to get project config.', err)));
+      .catch((err) =>
+        left(
+          TogowlError.create(
+            "GET_PROJECT_CONFIG_ERROR",
+            "Fail to get project config.",
+            err
+          )
+        )
+      );
   }
 
-  saveProjectCategoryConfig(config: ProjectCategoryConfig): Promise<TogowlError | null> {
+  saveProjectCategoryConfig(
+    config: ProjectCategoryConfig
+  ): Promise<TogowlError | null> {
     return store
-      .collection('projectCategories')
+      .collection("projectCategories")
       .doc(this.uid)
       .set(fromProjectCategoryConfig(config))
       .then(() => {
         return null;
       })
-      .catch(err =>
-        TogowlError.create('SAVE_PROJECT_CATEGORY_CONFIG_ERROR', 'Fail to save project category config.', err),
+      .catch((err) =>
+        TogowlError.create(
+          "SAVE_PROJECT_CATEGORY_CONFIG_ERROR",
+          "Fail to save project category config.",
+          err
+        )
       );
   }
 
-  loadProjectCategoryConfig(): Promise<Either<TogowlError, ProjectCategoryConfig>> {
+  loadProjectCategoryConfig(): Promise<
+    Either<TogowlError, ProjectCategoryConfig>
+  > {
     return store
-      .collection('projectCategories')
+      .collection("projectCategories")
       .doc(this.uid)
       .get()
-      .then(x => {
+      .then((x) => {
         const data = x.data() as FirestoreProjectCategory;
         return data
           ? right(toProjectCategoryConfig(data))
-          : left(TogowlError.create('GET_PROJECT_CATEGORY_CONFIG_ERROR', 'Empty project category config.'));
+          : left(
+              TogowlError.create(
+                "GET_PROJECT_CATEGORY_CONFIG_ERROR",
+                "Empty project category config."
+              )
+            );
       })
-      .catch(err =>
-        left(TogowlError.create('GET_PROJECT_CATEGORY_CONFIG_ERROR', 'Fail to get project category config.', err)),
+      .catch((err) =>
+        left(
+          TogowlError.create(
+            "GET_PROJECT_CATEGORY_CONFIG_ERROR",
+            "Fail to get project category config.",
+            err
+          )
+        )
       );
   }
 }

@@ -1,6 +1,6 @@
-import { ValueObject } from '~/utils/vo';
-import { Icon } from '~/domain/common/Icon';
-import { ProjectCategoryId } from '~/domain/timer/vo/ProjectCategoryId';
+import { ValueObject } from "~/utils/vo";
+import { Icon } from "~/domain/common/Icon";
+import { ProjectCategoryId } from "~/domain/timer/vo/ProjectCategoryId";
 
 interface Args {
   [projectCategoryId: string]: {
@@ -33,7 +33,13 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     return this._value?.[projectCategoryId.value]?.icon;
   }
 
-  cloneWith(projectCategoryId: ProjectCategoryId, icon?: Icon): ProjectCategoryConfig {
-    return ProjectCategoryConfig.create({ ...this.value, [projectCategoryId.value]: { icon } });
+  cloneWith(
+    projectCategoryId: ProjectCategoryId,
+    icon?: Icon
+  ): ProjectCategoryConfig {
+    return ProjectCategoryConfig.create({
+      ...this.value,
+      [projectCategoryId.value]: { icon },
+    });
   }
 }

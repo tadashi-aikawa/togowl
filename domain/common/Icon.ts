@@ -1,5 +1,5 @@
-import { ValueObject } from '~/utils/vo';
-import { Url } from '~/domain/common/Url';
+import { ValueObject } from "~/utils/vo";
+import { Url } from "~/domain/common/Url";
 
 interface Args {
   url?: string;
