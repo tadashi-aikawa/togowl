@@ -1,23 +1,19 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 import { Icon } from "~/domain/common/Icon";
 import { ProjectCategoryId } from "~/domain/timer/vo/ProjectCategoryId";
 
-interface Args {
+interface Props {
   [projectCategoryId: string]: {
     icon?: Icon;
   };
 }
 
-interface Meta {
-  icon?: Icon;
-}
-
-interface Props {
-  [projectCategoryId: string]: Meta;
-}
+type Args = Props;
 
 export class ProjectCategoryConfig extends ValueObject<Props> {
-  static create(args: Args): ProjectCategoryConfig {
+  private _voTaskProjectCategoryConfigBrand!: never;
+
+  static of(args: Args): ProjectCategoryConfig {
     return new ProjectCategoryConfig(args);
   }
 
@@ -37,7 +33,7 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     projectCategoryId: ProjectCategoryId,
     icon?: Icon
   ): ProjectCategoryConfig {
-    return ProjectCategoryConfig.create({
+    return ProjectCategoryConfig.of({
       ...this.value,
       [projectCategoryId.value]: { icon },
     });

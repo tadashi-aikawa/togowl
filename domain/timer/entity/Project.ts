@@ -1,26 +1,50 @@
+import { Entity } from "owlelia";
 import { ProjectId } from "~/domain/timer/vo/ProjectId";
 import { ProjectName } from "~/domain/timer/vo/ProjectlName";
-import { Entity } from "~/utils/entity";
 import { trimBracketContents } from "~/utils/string";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import { Icon } from "~/domain/common/Icon";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
 
-export class Project implements Entity {
-  constructor(
-    public id: ProjectId,
-    public name: ProjectName,
-    public icon?: Icon,
-    public category?: ProjectCategory,
-    public taskProjectIds?: TaskProjectId[]
-  ) {}
+interface Props {
+  id: ProjectId;
+  name: ProjectName;
+  icon?: Icon;
+  category?: ProjectCategory;
+  taskProjectIds?: TaskProjectId[];
+}
 
-  equals(entity?: Project): boolean {
-    return this.id.equals(entity?.id);
+type Args = Props;
+
+export class Project extends Entity<Props> {
+  private _entityTimerProjectBrand!: never;
+
+  static of(args: Args): Project {
+    return new Project(args.id.value, args);
+  }
+
+  get id(): ProjectId {
+    return this._props.id;
+  }
+
+  get name(): ProjectName {
+    return this._props.name;
+  }
+
+  get icon(): Icon | undefined {
+    return this._props.icon;
+  }
+
+  get category(): ProjectCategory | undefined {
+    return this._props.category;
+  }
+
+  get taskProjectIds(): TaskProjectId[] {
+    return this._props.taskProjectIds ?? [];
   }
 
   get nameWithoutBracket(): string {
-    return trimBracketContents(this.name.value);
+    return trimBracketContents(this._props.name.value);
   }
 
   cloneWith(
@@ -28,6 +52,6 @@ export class Project implements Entity {
     category?: ProjectCategory,
     taskProjectIds?: TaskProjectId[]
   ): Project {
-    return new Project(this.id, this.name, icon, category, taskProjectIds);
+    return Project.of({ ...this._props, icon, category, taskProjectIds });
   }
 }

@@ -1,19 +1,28 @@
-import { PrimitiveValueObject, ValueObject } from "~/utils/vo";
+import { Either, left, PrimitiveValueObject, right } from "owlelia";
 import { TogowlError } from "~/domain/common/TogowlError";
 
-export class MailAddress extends PrimitiveValueObject<string> {
-  static create(value: string): MailAddress {
-    if (!this.isValid(value)) {
-      throw new TogowlError({
-        code: "INVALID_VALUE",
-        message: "Invalid mail address!",
-      });
-    }
+export class InvalidMailAddressError extends TogowlError {
+  code = "INVALID_MAIL_ADDRESS";
+  name = "Invalid mail address.";
 
-    return new MailAddress(value);
+  static of(args: { invalidValue: string }): InvalidMailAddressError {
+    return new InvalidMailAddressError(
+      `${args.invalidValue} is invalid mail address format.`
+    );
   }
+}
 
-  static isValid(value: string): boolean {
-    return /.+@.+\..+/.test(value);
+export class MailAddress extends PrimitiveValueObject<string> {
+  private _voAuthenticationMailAddressBrand!: never;
+
+  static try(value: string): Either<InvalidMailAddressError, MailAddress> {
+    if (!/.+@.+\..+/.test(value)) {
+      return left(
+        InvalidMailAddressError.of({
+          invalidValue: value,
+        })
+      );
+    }
+    return right(new MailAddress(value));
   }
 }

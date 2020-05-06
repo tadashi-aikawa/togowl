@@ -1,14 +1,12 @@
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 import { TogowlError } from "~/domain/common/TogowlError";
 import { LoginPayload } from "~/domain/authentication/vo/LoginPayload";
-import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
-import { fold } from "~/node_modules/fp-ts/lib/Either";
 import {
   notificationStore,
+  projectStore,
+  taskStore,
   timerStore,
   userStore,
-  taskStore,
-  projectStore,
 } from "~/utils/store-accessor";
 import firebase from "~/plugins/firebase";
 import { UId } from "~/domain/authentication/vo/UId";
@@ -52,21 +50,17 @@ class AuthenticationModule extends VuexModule {
       }
 
       logger.put(`AuthenticationStore.loadUser: ${user}`);
-      pipe(
-        await cloudRepository.loadUser(UId.create(user.uid)),
-        fold(
-          (e) => {
-            logger.put(`AuthenticationStore.loadUser.error: ${user}`);
-            this.setError(e);
-            this.setAuthenticationStatus("error");
-          },
-          async (user) => {
-            logger.put(`AuthenticationStore.loadUser.success: ${user}`);
-            await initCloudStores(user.uid);
-            this.setAuthenticationStatus("login");
-          }
-        )
-      );
+      const userOrErr = await cloudRepository.loadUser(UId.of(user.uid));
+      if (userOrErr.isLeft()) {
+        logger.put(`AuthenticationStore.loadUser.error: ${user}`);
+        this.setError(userOrErr.error);
+        this.setAuthenticationStatus("error");
+        return;
+      }
+
+      logger.put(`AuthenticationStore.loadUser.success: ${user}`);
+      await initCloudStores(userOrErr.value.uid);
+      this.setAuthenticationStatus("login");
     });
   }
 
@@ -76,21 +70,17 @@ class AuthenticationModule extends VuexModule {
     this.setAuthenticationStatus("check");
 
     logger.put(`AuthenticationStore.login`);
-    pipe(
-      await cloudRepository.login(payload),
-      fold(
-        (e) => {
-          logger.put(`AuthenticationStore.login.error`);
-          this.setError(e);
-          this.setAuthenticationStatus("error");
-        },
-        async (user) => {
-          logger.put(`AuthenticationStore.login.success`);
-          await initCloudStores(user.uid);
-          this.setAuthenticationStatus("login");
-        }
-      )
-    );
+    const loginUserOrErr = await cloudRepository.login(payload);
+    if (loginUserOrErr.isLeft()) {
+      logger.put(`AuthenticationStore.login.error`);
+      this.setError(loginUserOrErr.error);
+      this.setAuthenticationStatus("error");
+      return;
+    }
+
+    logger.put(`AuthenticationStore.login.success`);
+    await initCloudStores(loginUserOrErr.value.uid);
+    this.setAuthenticationStatus("login");
   }
 
   @Action

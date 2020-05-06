@@ -1,11 +1,10 @@
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 import _ from "lodash";
+import { Either, left, right } from "owlelia";
 import { UId } from "~/domain/authentication/vo/UId";
 import { TogowlError } from "~/domain/common/TogowlError";
 import { TimerService } from "~/domain/timer/service/TimerService";
 import { TimerConfig } from "~/domain/timer/vo/TimerConfig";
-import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
-import { Either, fold, left, right } from "~/node_modules/fp-ts/lib/Either";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { createTimerService } from "~/utils/service-factory";
 import {
@@ -21,6 +20,7 @@ import { createAction } from "~/utils/firestore-facade";
 import { addMetaToEntry } from "~/domain/timer/service/TimerMetaService";
 import { Task } from "~/domain/task/entity/Task";
 import { RecentTask } from "~/domain/common/RecentTask";
+import { UnexpectedError } from "~/domain/common/UnexpectedError";
 
 let service: TimerService | null;
 
@@ -156,249 +156,177 @@ class TimerModule extends VuexModule {
     }
 
     this.setFetchingStatus("in_progress");
-    pipe(
-      await service!.fetchCurrentEntry(),
-      fold(
-        (err) => {
-          this.setFetchingError(err);
-          this.setCurrentEntry(null);
-          this.setFetchingStatus("error");
-        },
-        (entry) => {
-          this.setCurrentEntry(entry);
-          this.setFetchingError(null);
-          this.setFetchingStatus("success");
-        }
-      )
-    );
+    const currentEntryOrErr = await service!.fetchCurrentEntry();
+    if (currentEntryOrErr.isLeft()) {
+      this.setFetchingError(currentEntryOrErr.error);
+      this.setCurrentEntry(null);
+      this.setFetchingStatus("error");
+      return;
+    }
+
+    this.setCurrentEntry(currentEntryOrErr.value);
+    this.setFetchingError(null);
+    this.setFetchingStatus("success");
   }
 
   @Action
   async startEntry(entry: Entry): Promise<Either<TogowlError, Entry>> {
-    if (!this.timerConfig?.token) {
-      return left(
-        TogowlError.create(
-          "TIMER_TOKEN_IS_EMPTY",
-          "Token for timer is required! It is empty!"
-        )
-      );
-    }
-    return pipe(
-      await service!.startEntry(entry.description, entry.project),
-      fold(
-        (err) => {
-          this.setCurrentEntry(null);
-          return left(err);
-        },
-        (entry) => {
-          this.setCurrentEntry(entry);
-          return right(addMetaToEntry(entry, projectStore.projectById));
-        }
-      )
+    const entryOrErr = await service!.startEntry(
+      entry.description,
+      entry.project
     );
+    if (entryOrErr.isLeft()) {
+      this.setCurrentEntry(null);
+      return left(entryOrErr.error);
+    }
+
+    this.setCurrentEntry(entryOrErr.value);
+    return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
 
   @Action
   async startEntryByTask(task: Task): Promise<Either<TogowlError, Entry>> {
-    if (!this.timerConfig?.token) {
-      return left(
-        TogowlError.create(
-          "TIMER_TOKEN_IS_EMPTY",
-          "Token for timer is required! It is empty!"
-        )
-      );
-    }
-    return pipe(
-      await service!.startEntry(task.titleWithoutDecorated, task.entryProject),
-      fold(
-        (err) => {
-          this.setCurrentEntry(null);
-          return left(err);
-        },
-        (entry) => {
-          this.setCurrentEntry(entry);
-          // TODO: Move to service
-          cloudRepository.saveRecentTask(RecentTask.create(task.id, entry.id));
-          return right(addMetaToEntry(entry, projectStore.projectById));
-        }
-      )
+    const entryOrErr = await service!.startEntry(
+      task.titleWithoutDecorated,
+      task.entryProject
     );
+    if (entryOrErr.isLeft()) {
+      this.setCurrentEntry(null);
+      return left(entryOrErr.error);
+    }
+
+    this.setCurrentEntry(entryOrErr.value);
+    // TODO: Move to service
+    await cloudRepository.saveRecentTask(
+      RecentTask.of({
+        taskId: task.id,
+        entryId: entryOrErr.value.id,
+      })
+    );
+    return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
 
   @Action
-  async completeCurrentEntry(): Promise<Either<TogowlError, Entry>> {
+  completeCurrentEntry(): Promise<Either<TogowlError, Entry>> {
     // TODO: Complete Todoist task and Add complete tag to toggl entry
-    const config = this.timerConfig;
-    if (!config?.token) {
-      // TODO: Show on UI
-      return left(
-        TogowlError.create(
-          "TIMER_TOKEN_IS_EMPTY",
-          "Token for timer is required! It is empty!"
+    if (!this.currentEntry) {
+      return Promise.resolve(
+        left(
+          UnexpectedError.of({
+            detail: "Fail trying to complete a current task but it is empty",
+          })
         )
       );
     }
-    if (!this.currentEntry) {
-      return left(
-        TogowlError.create("CURRENT_ENTRY_IS_EMPTY", "Current entry is empty!")
-      );
-    }
 
-    return pipe(
-      await service!.stopEntry(this.currentEntry),
-      fold(
-        (err) => {
-          return left(err);
-        },
-        (entry) => {
-          this.setCurrentEntry(null);
-          if (
-            this.recentTask?.taskId &&
-            this.recentTask?.entryId?.equals(entry.id)
-          ) {
-            taskStore.completeTask(this.recentTask?.taskId);
-          }
-          return right(addMetaToEntry(entry, projectStore.projectById));
+    return service!.stopEntry(this.currentEntry).then((e) =>
+      e.mapRight((entry) => {
+        this.setCurrentEntry(null);
+        if (
+          this.recentTask?.taskId &&
+          this.recentTask?.entryId?.equals(entry.id)
+        ) {
+          taskStore.completeTask(this.recentTask?.taskId);
         }
-      )
+        return addMetaToEntry(entry, projectStore.projectById);
+      })
     );
   }
 
   @Action
-  async pauseCurrentEntry(): Promise<Either<TogowlError, Entry>> {
+  pauseCurrentEntry(): Promise<Either<TogowlError, Entry>> {
     // XXX: This action is similar to completeCurrentEntry but not same
-    const config = this.timerConfig;
-    if (!config?.token) {
-      // TODO: Show on UI
-      return left(
-        TogowlError.create(
-          "TIMER_TOKEN_IS_EMPTY",
-          "Token for timer is required! It is empty!"
+    if (!this.currentEntry) {
+      return Promise.resolve(
+        left(
+          UnexpectedError.of({
+            detail: "Fail trying to pause a current task but it is empty",
+          })
         )
       );
     }
-    if (!this.currentEntry) {
-      return left(
-        TogowlError.create("CURRENT_ENTRY_IS_EMPTY", "Current entry is empty!")
-      );
-    }
 
-    return pipe(
-      await service!.stopEntry(this.currentEntry),
-      fold(
-        (err) => {
-          return left(err);
-        },
-        (entry) => {
-          this.setCurrentEntry(null);
-          return right(addMetaToEntry(entry, projectStore.projectById));
-        }
-      )
+    return service!.stopEntry(this.currentEntry).then((e) =>
+      e.mapRight((entry) => {
+        this.setCurrentEntry(null);
+        return addMetaToEntry(entry, projectStore.projectById);
+      })
     );
   }
 
   @Action
-  async cancelCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+  cancelCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     // XXX: This action is similar to completeCurrentEntry but not same
-    const config = this.timerConfig;
-    if (!config?.token) {
-      // TODO: Show on UI
-      return left(
-        TogowlError.create(
-          "TIMER_TOKEN_IS_EMPTY",
-          "Token for timer is required! It is empty!"
+    if (!this.currentEntry) {
+      return Promise.resolve(
+        left(
+          UnexpectedError.of({
+            detail: "Fail trying to cancel a current task but it is empty",
+          })
         )
       );
     }
-    if (!this.currentEntry) {
-      return left(
-        TogowlError.create("CURRENT_ENTRY_IS_EMPTY", "Current entry is empty!")
-      );
-    }
 
-    return pipe(
-      await service!.deleteEntry(this.currentEntry),
-      fold(
-        (err) => {
-          return left(err);
-        },
-        () => {
-          const entry = this.currentEntry!;
-          this.setCurrentEntry(null);
-          return right(addMetaToEntry(entry, projectStore.projectById));
-        }
-      )
+    return service!.deleteEntry(this.currentEntry).then((e) =>
+      e.mapRight(() => {
+        const entry = this.currentEntry!;
+        this.setCurrentEntry(null);
+        return addMetaToEntry(entry, projectStore.projectById);
+      })
     );
   }
 
   @Action
-  async connectPreviousEntry(): Promise<Either<TogowlError, Entry | null>> {
+  connectPreviousEntry(): Promise<Either<TogowlError, Entry | null>> {
     // XXX: This action is similar to completeCurrentEntry but not same
-    const config = this.timerConfig;
-    if (!config?.token) {
-      // TODO: Show on UI
-      return left(
-        TogowlError.create(
-          "TIMER_TOKEN_IS_EMPTY",
-          "Token for timer is required! It is empty!"
-        )
-      );
-    }
     if (!this.currentEntry) {
-      return left(
-        TogowlError.create("CURRENT_ENTRY_IS_EMPTY", "Current entry is empty!")
+      return Promise.resolve(
+        left(
+          UnexpectedError.of({
+            detail:
+              "Fail trying to connect with a previous task but current is empty",
+          })
+        )
       );
     }
     if (!this.previousEntry) {
-      return left(
-        TogowlError.create(
-          "PREVIOUS_ENTRY_IS_EMPTY",
-          "Previous entry is empty!"
+      return Promise.resolve(
+        left(
+          UnexpectedError.of({
+            detail:
+              "Fail trying to connect with a previous task but it is empty",
+          })
         )
       );
     }
 
-    return pipe(
-      await service!.updateEntry(this.currentEntry, {
+    return service!
+      .updateEntry(this.currentEntry, {
         start: this.previousEntry.stop?.plusSeconds(1),
-      }),
-      fold(
-        (err) => {
-          return left(err);
-        },
-        (entry) => {
+      })
+      .then((e) =>
+        e.mapRight((entry) => {
           this.setCurrentEntry(entry);
-          return right(addMetaToEntry(entry, projectStore.projectById));
-        }
-      )
-    );
+          return addMetaToEntry(entry, projectStore.projectById);
+        })
+      );
   }
 
   @Action
   async fetchEntries(): Promise<void> {
-    // XXX: Show current tab state?
-    const config = this.timerConfig;
-    if (!config?.token) {
-      // TODO: Show on UI
-      console.error("Token for timer is required! It is empty!");
+    this.setEntryByIdStatus("in_progress");
+    const entriesOrErr = await service!.fetchEntries(
+      DateTime.now().minusDays(MAX_HISTORY_DAYS)
+    );
+    if (entriesOrErr.isLeft()) {
+      this.setEntryByIdError(entriesOrErr.error);
+      this.setEntryByIdStatus("error");
       return;
     }
 
-    this.setEntryByIdStatus("in_progress");
-    pipe(
-      await service!.fetchEntries(DateTime.now().minusDays(MAX_HISTORY_DAYS)),
-      fold(
-        (err) => {
-          this.setEntryByIdError(err);
-          this.setEntryByIdStatus("error");
-        },
-        (entries) => {
-          this.setEntryById(_.keyBy(entries, (x) => x.id.asNumber));
-          this.setEntryByIdError(null);
-          this.setEntryByIdStatus("success");
-        }
-      )
-    );
+    this.setEntryById(_.keyBy(entriesOrErr.value, (x) => x.id.asNumber));
+    this.setEntryByIdError(null);
+    this.setEntryByIdStatus("success");
   }
 
   @Action({ rawError: true })

@@ -1,20 +1,31 @@
-import { Entity } from "~/utils/entity";
+import { Entity } from "owlelia";
 import { trimBracketContents } from "~/utils/string";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { ProjectName } from "~/domain/task/vo/ProjectlName";
 
-export class Project implements Entity {
-  constructor(public id: ProjectId, public name: ProjectName) {}
+interface Props {
+  id: ProjectId;
+  name: ProjectName;
+}
 
-  equals(entity?: Project): boolean {
-    return this.id.equals(entity?.id);
+type Args = Props;
+
+export class Project extends Entity<Props> {
+  private _entityTaskProjectBrand!: never;
+
+  static of(args: Args): Project {
+    return new Project(args.id.value, args);
   }
 
-  get hash(): string {
-    return `${this.id.value}${this.name.value}`;
+  get id(): ProjectId {
+    return this._props.id;
+  }
+
+  get name(): ProjectName {
+    return this._props.name;
   }
 
   get nameWithoutBracket(): string {
-    return trimBracketContents(this.name.value);
+    return trimBracketContents(this._props.name.value);
   }
 }

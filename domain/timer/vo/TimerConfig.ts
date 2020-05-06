@@ -1,4 +1,4 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 
 interface Props {
   token?: string;
@@ -6,17 +6,13 @@ interface Props {
   proxy?: string;
 }
 
+type Args = Props;
+
 export class TimerConfig extends ValueObject<Props> {
-  static create(
-    token?: string,
-    workspaceId?: number,
-    proxy?: string
-  ): TimerConfig {
-    return new TimerConfig({
-      token,
-      workspaceId,
-      proxy,
-    });
+  private _voTaskTimerConfigBrand!: never;
+
+  static of(args: Args): TimerConfig {
+    return new TimerConfig(args);
   }
 
   get token(): string | undefined {

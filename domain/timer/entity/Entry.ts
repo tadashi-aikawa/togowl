@@ -1,65 +1,69 @@
+import { Entity } from "owlelia";
 import { DateTime } from "~/domain/common/DateTime";
 import { EntryId } from "~/domain/timer/vo/EntryId";
 import { Duration } from "~/domain/timer/vo/Duration";
 import { Project } from "~/domain/timer/entity/Project";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
-import { Entity } from "~/utils/entity";
 import { ProjectId } from "~/domain/timer/vo/ProjectId";
 
-interface Args {
-  id: string | number;
+interface Props {
+  id: EntryId;
   description: string;
-  start: string;
-  stop?: string | null;
-  duration: number;
+  start: DateTime;
+  duration: Duration;
+  stop?: DateTime;
   project?: Project;
   _projectId?: ProjectId;
 }
 
-export class Entry implements Entity {
-  private constructor(
-    public id: EntryId,
-    public description: string,
-    public start: DateTime,
-    public duration: Duration,
-    public stop?: DateTime,
-    public project?: Project,
-    public _projectId?: ProjectId
-  ) {}
+type Args = Props;
 
-  equals(entry?: Entry): boolean {
-    return this.id.equals(entry?.id);
+export class Entry extends Entity<Props> {
+  private _entityTimerEntryBrand!: never;
+
+  static of(args: Args): Entry {
+    return new Entry(args.id.value, args);
+  }
+
+  get id(): EntryId {
+    return this._props.id;
   }
 
   get hashAsTask(): string {
-    return `${this.description}${this.project?.id.value}${this.projectCategory?.id.value}`;
+    return `${this._props.description}${this._props.project?.id.value}${this.projectCategory?.id.value}`;
   }
 
-  static create(args: Args): Entry {
-    return new Entry(
-      EntryId.create(args.id),
-      args.description,
-      DateTime.create(args.start),
-      Duration.create(args.duration),
-      args.stop ? DateTime.create(args.stop) : undefined,
-      args.project,
-      args._projectId
-    );
+  get description(): string {
+    return this._props.description;
+  }
+
+  get start(): DateTime {
+    return this._props.start;
+  }
+
+  get duration(): Duration {
+    return this._props.duration;
+  }
+
+  get stop(): DateTime | undefined {
+    return this._props.stop;
+  }
+
+  get project(): Project | undefined {
+    return this._props.project;
+  }
+
+  /** For clone With Project */
+  get _projectId(): ProjectId | undefined {
+    return this._props._projectId;
   }
 
   get projectCategory(): ProjectCategory | undefined {
-    return this.project?.category;
+    return this._props.project?.category;
   }
 
   cloneWithProject(project?: Project): Entry {
-    return new Entry(
-      this.id,
-      this.description,
-      this.start,
-      this.duration,
-      this.stop,
-      project
-    );
+    return Entry.of({ ...this._props, project });
   }
 }
 

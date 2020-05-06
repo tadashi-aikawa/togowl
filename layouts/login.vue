@@ -60,7 +60,7 @@ class Login extends Vue {
   mailAddress = "";
   mailAddressRules = [
     (v: string) => !!v || "Mail address is required",
-    (v: string) => MailAddress.isValid(v) || "Mail address must be valid",
+    (v: string) => MailAddress.try(v).isRight() || "Mail address must be valid",
   ];
 
   password = "";
@@ -68,7 +68,10 @@ class Login extends Vue {
 
   login() {
     authenticationStore.login(
-      LoginPayload.create(MailAddress.create(this.mailAddress), this.password)
+      LoginPayload.of({
+        mailAddress: MailAddress.try(this.mailAddress).orThrow(),
+        password: this.password,
+      })
     );
   }
 

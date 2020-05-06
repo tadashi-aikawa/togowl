@@ -1,4 +1,4 @@
-import { Entity } from "~/utils/entity";
+import { Entity } from "owlelia";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Project } from "~/domain/timer/entity/Project";
@@ -6,62 +6,67 @@ import { Priority } from "~/domain/task/vo/Priority";
 import { trimBracketContents, trimPrefixEmoji } from "~/utils/string";
 import { DateTime } from "~/domain/common/DateTime";
 
-// FIXME: assign entryProject
-export class Task implements Entity {
-  constructor(
-    public id: TaskId,
-    public title: string,
-    public dayOrder: number,
-    public priority: Priority,
-    public projectId?: ProjectId,
-    public entryProject?: Project,
-    public dueDate?: DateTime
-  ) {}
+interface Props {
+  id: TaskId;
+  title: string;
+  dayOrder: number;
+  priority: Priority;
+  projectId?: ProjectId;
+  entryProject?: Project;
+  dueDate?: DateTime;
+}
 
-  equals(task?: Task): boolean {
-    return this.id.equals(task?.id);
+type Args = Props;
+
+// FIXME: assign entryProject
+export class Task extends Entity<Props> {
+  private _entityTaskTaskBrand!: never;
+
+  static of(args: Args): Task {
+    return new Task(args.id.value, args);
+  }
+
+  get id(): TaskId {
+    return this._props.id;
+  }
+
+  get title(): string {
+    return this._props.title;
+  }
+
+  get dayOrder(): number {
+    return this._props.dayOrder;
+  }
+
+  get priority(): Priority {
+    return this._props.priority;
+  }
+
+  get projectId(): ProjectId | undefined {
+    return this._props.projectId;
+  }
+
+  get entryProject(): Project | undefined {
+    return this._props.entryProject;
+  }
+
+  get dueDate(): DateTime | undefined {
+    return this._props.dueDate;
   }
 
   get titleWithoutDecorated(): string {
-    return trimPrefixEmoji(trimBracketContents(this.title));
+    return trimPrefixEmoji(trimBracketContents(this._props.title));
   }
 
   cloneWith(entryProject?: Project): Task {
-    // TODO: refactoring..
-    return new Task(
-      this.id,
-      this.title,
-      this.dayOrder,
-      this.priority,
-      this.projectId,
-      entryProject,
-      this.dueDate
-    );
+    return Task.of({ ...this._props, entryProject });
   }
 
   cloneWithDayOrder(dayOrder: number): Task {
-    // TODO: refactoring..
-    return new Task(
-      this.id,
-      this.title,
-      dayOrder,
-      this.priority,
-      this.projectId,
-      this.entryProject,
-      this.dueDate
-    );
+    return Task.of({ ...this._props, dayOrder });
   }
 
   cloneWithDueDate(dueDate: DateTime): Task {
-    // TODO: refactoring..
-    return new Task(
-      this.id,
-      this.title,
-      this.dayOrder,
-      this.priority,
-      this.projectId,
-      this.entryProject,
-      dueDate
-    );
+    return Task.of({ ...this._props, dueDate });
   }
 }

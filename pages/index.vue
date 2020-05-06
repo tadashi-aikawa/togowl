@@ -171,8 +171,6 @@ import {
 } from "~/utils/store-accessor";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { TogowlError } from "~/domain/common/TogowlError";
-import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
-import { fold } from "~/node_modules/fp-ts/lib/Either";
 import { ActionStatus } from "~/domain/common/ActionStatus";
 import CurrentTimeEntry from "~/components/CurrentTimeEntry.vue";
 import TimeEntry from "~/components/TimeEntry.vue";
@@ -215,76 +213,69 @@ class Root extends Vue {
 
   async start(entry: Entry) {
     this.waitForBlockedAction = true;
-
-    pipe(
-      await timerStore.startEntry(entry),
-      fold(
-        (_err) => {},
-        async (_entry) => {
-          const err = await notificationStore.notifyStartEvent(entry);
-          if (err) {
-            this.showSnackBar(err.message, true);
-          }
-        }
-      )
-    );
-
+    const entryOrErr = await timerStore.startEntry(entry);
     this.waitForBlockedAction = false;
+
+    if (entryOrErr.isLeft()) {
+      this.showSnackBar(entryOrErr.error.message, true);
+      return;
+    }
+
+    const err = await notificationStore.notifyStartEvent(entry);
+    if (err) {
+      this.showSnackBar(err.message, true);
+    }
   }
 
   async startFromTask(task: Task) {
     this.waitForBlockedAction = true;
-
-    pipe(
-      await timerStore.startEntryByTask(task),
-      fold(
-        (_err) => {},
-        async (entry) => {
-          const err = await notificationStore.notifyStartEvent(entry);
-          if (err) {
-            this.showSnackBar(err.message, true);
-          }
-        }
-      )
-    );
-
+    const entryOrErr = await timerStore.startEntryByTask(task);
     this.waitForBlockedAction = false;
+
+    if (entryOrErr.isLeft()) {
+      this.showSnackBar(entryOrErr.error.message, true);
+      return;
+    }
+
+    const err = await notificationStore.notifyStartEvent(entryOrErr.value);
+    if (err) {
+      this.showSnackBar(err.message, true);
+    }
   }
 
   async complete() {
     this.waitForBlockedAction = true;
-    pipe(
-      await timerStore.completeCurrentEntry(),
-      fold(
-        (_err) => {},
-        async (entry) => {
-          this.selectedEntry = null;
-          const err = await notificationStore.notifyDoneEvent(entry);
-          if (err) {
-            this.showSnackBar(err.message, true);
-          }
-        }
-      )
-    );
+    const entryOrErr = await timerStore.completeCurrentEntry();
     this.waitForBlockedAction = false;
+
+    if (entryOrErr.isLeft()) {
+      this.showSnackBar(entryOrErr.error.message, true);
+      return;
+    }
+
+    this.selectedEntry = null;
+    const err = await notificationStore.notifyDoneEvent(entryOrErr.value);
+    if (err) {
+      this.showSnackBar(err.message, true);
+    }
   }
 
   async pause() {
     this.waitForBlockedAction = true;
-    pipe(
-      await timerStore.pauseCurrentEntry(),
-      fold(
-        (_err) => {},
-        async (entry) => {
-          this.selectedEntry = null;
-          const err = await notificationStore.notifyPauseEvent(entry);
-          if (err) {
-            this.showSnackBar(err.message, true);
-          }
-        }
-      )
-    );
+    const entryOrErr = await timerStore.pauseCurrentEntry();
     this.waitForBlockedAction = false;
+
+    if (entryOrErr.isLeft()) {
+      this.showSnackBar(entryOrErr.error.message, true);
+      return;
+    }
+
+    this.selectedEntry = null;
+
+    const err = await notificationStore.notifyPauseEvent(entryOrErr.value);
+    if (err) {
+      this.showSnackBar(err.message, true);
+    }
   }
 
   async connectPrevious() {
@@ -295,20 +286,19 @@ class Root extends Vue {
 
   async cancel() {
     this.waitForBlockedAction = true;
-    pipe(
-      await timerStore.cancelCurrentEntry(),
-      fold(
-        (_err) => {},
-        async (_entry) => {
-          this.selectedEntry = null;
-          const err = await notificationStore.notifyCancelEvent();
-          if (err) {
-            this.showSnackBar(err.message, true);
-          }
-        }
-      )
-    );
+    const entryOrErr = await timerStore.cancelCurrentEntry();
     this.waitForBlockedAction = false;
+
+    if (entryOrErr.isLeft()) {
+      this.showSnackBar(entryOrErr.error.message, true);
+      return;
+    }
+
+    this.selectedEntry = null;
+    const err = await notificationStore.notifyCancelEvent();
+    if (err) {
+      this.showSnackBar(err.message, true);
+    }
   }
 
   async updateTasksOrder(tasks: Task[]) {

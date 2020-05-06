@@ -1,18 +1,29 @@
-import { PrimitiveValueObject } from "~/utils/vo";
+import { Either, left, PrimitiveValueObject, right } from "owlelia";
 import { TogowlError } from "~/domain/common/TogowlError";
 
-export class ChannelName extends PrimitiveValueObject<string> {
-  static create(value: string): ChannelName {
-    if (!this.isValid(value)) {
-      throw new TogowlError({
-        code: "INVALID_VALUE",
-        message: "Invalid channel name. It must start with #.",
-      });
-    }
-    return new ChannelName(value);
-  }
+export class InvalidChannelNameError extends TogowlError {
+  code = "INVALID_CHANNEL_NAME";
+  name = "Invalid channel name.";
 
-  static isValid(value: string): boolean {
-    return /^#[^#]+/.test(value);
+  static of(args: { invalidValue: string }): InvalidChannelNameError {
+    return new InvalidChannelNameError(
+      `${args.invalidValue} is invalid channel name format. It must start with #.`
+    );
+  }
+}
+
+export class ChannelName extends PrimitiveValueObject<string> {
+  private _voNotificationChannelNameBrand!: never;
+
+  static try(value: string): Either<InvalidChannelNameError, ChannelName> {
+    if (!/^#[^#]+/.test(value)) {
+      return left(
+        InvalidChannelNameError.of({
+          invalidValue: value,
+        })
+      );
+    }
+
+    return right(new ChannelName(value));
   }
 }

@@ -3,8 +3,6 @@ import _, { Dictionary } from "lodash";
 import { UId } from "~/domain/authentication/vo/UId";
 import { TogowlError } from "~/domain/common/TogowlError";
 import { TimerService } from "~/domain/timer/service/TimerService";
-import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
-import { fold } from "~/node_modules/fp-ts/lib/Either";
 import { createTimerService } from "~/utils/service-factory";
 import {
   FirestoreProject,
@@ -65,7 +63,7 @@ class ProjectModule extends VuexModule {
   // FIXME: extract
   get projectByTaskProjectId(): { [taskProjectId: number]: Project } {
     return _(this.projects)
-      .flatMap((pj) => pj.taskProjectIds?.map((tpid) => [tpid.value, pj]) ?? [])
+      .flatMap((pj) => pj.taskProjectIds.map((tpid) => [tpid.value, pj]))
       .fromPairs()
       .value();
   }
@@ -126,20 +124,16 @@ class ProjectModule extends VuexModule {
     }
 
     this.setProjectsStatus("in_progress");
-    pipe(
-      await service.fetchProjects(),
-      fold(
-        (err) => {
-          this.setProjectsError(err);
-          this.setProjectsStatus("error");
-        },
-        (projects) => {
-          this.setProjects(projects);
-          this.setProjectsError(null);
-          this.setProjectsStatus("success");
-        }
-      )
-    );
+    const projectsOrErr = await service.fetchProjects();
+    if (projectsOrErr.isLeft()) {
+      this.setProjectsError(projectsOrErr.error);
+      this.setProjectsStatus("error");
+      return;
+    }
+
+    this.setProjects(projectsOrErr.value);
+    this.setProjectsError(null);
+    this.setProjectsStatus("success");
   }
 
   @Action({ rawError: true })
