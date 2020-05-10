@@ -1,31 +1,9 @@
-import { ValueObject } from "~/utils/vo";
+import { BaseError } from "owlelia";
 
-interface Props {
-  code: string;
-  message: string;
-  detail?: string;
-}
-
-export class TogowlError extends ValueObject<Props> {
-  static create(code: string, message: string, detail?: string): TogowlError {
-    return new TogowlError({ code, message, detail });
-  }
-
-  get code(): string {
-    return this._value.code;
-  }
-
-  get message(): string {
-    return this._value.message;
-  }
-
-  get detail(): string | undefined {
-    return this._value.detail;
-  }
-
+export abstract class TogowlError extends BaseError {
   get messageForLog(): string {
-    return `[${this.code}]: ${this.message}
+    return `[${this.code}]: ${this.name}
     ---
-    ${this.detail}`;
+    ${this.message}`;
   }
 }

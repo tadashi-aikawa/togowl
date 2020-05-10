@@ -11,8 +11,6 @@ import {
   toTaskConfig,
 } from "~/repository/FirebaseCloudRepository";
 import { TaskConfig } from "~/domain/task/vo/TaskConfig";
-import { fold } from "~/node_modules/fp-ts/lib/Either";
-import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
 import { cloudRepository, projectStore } from "~/store/index";
 import { createAction } from "~/utils/firestore-facade";
 import { Project } from "~/domain/task/entity/Project";
@@ -247,20 +245,16 @@ class TaskModule extends VuexModule {
 
     this.setStatus("in_progress");
     await this.commandExecutor.execAll();
-    pipe(
-      await service.fetchTasks(),
-      fold(
-        (err) => {
-          this.setError(err);
-          this.setStatus("error");
-        },
-        (tasks) => {
-          this.setTaskById(_.keyBy(tasks, (x) => x.id.asNumber));
-          this.setError(null);
-          this.setStatus("success");
-        }
-      )
-    );
+    const tasksOrErr = await service.fetchTasks();
+    if (tasksOrErr.isLeft()) {
+      this.setError(tasksOrErr.error);
+      this.setStatus("error");
+      return;
+    }
+
+    this.setTaskById(_.keyBy(tasksOrErr.value, (x) => x.id.asNumber));
+    this.setError(null);
+    this.setStatus("success");
   }
 
   @Action({ rawError: true })
@@ -323,20 +317,16 @@ class TaskModule extends VuexModule {
 
     this.setProjectStatus("in_progress");
     await this.commandExecutor.execAll();
-    pipe(
-      await service.fetchProjects(),
-      fold(
-        (err) => {
-          this.setProjectError(err);
-          this.setProjectStatus("error");
-        },
-        (projects) => {
-          this.setProjectById(_.keyBy(projects, (x) => x.id.asNumber));
-          this.setProjectError(null);
-          this.setProjectStatus("success");
-        }
-      )
-    );
+    const projectsOrErr = await service.fetchProjects();
+    if (projectsOrErr.isLeft()) {
+      this.setProjectError(projectsOrErr.error);
+      this.setProjectStatus("error");
+      return;
+    }
+
+    this.setProjectById(_.keyBy(projectsOrErr.value, (x) => x.id.asNumber));
+    this.setProjectError(null);
+    this.setProjectStatus("success");
   }
 
   @Action({ rawError: true })

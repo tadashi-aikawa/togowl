@@ -1,16 +1,17 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 
 interface Props {
   token?: string;
   syncToken?: string;
 }
 
+type Args = Props;
+
 export class TaskConfig extends ValueObject<Props> {
-  static create(token?: string, syncToken?: string): TaskConfig {
-    return new TaskConfig({
-      token,
-      syncToken,
-    });
+  private _voTaskTaskConfigBrand!: never;
+
+  static of(args: Args): TaskConfig {
+    return new TaskConfig(args);
   }
 
   get token(): string | undefined {

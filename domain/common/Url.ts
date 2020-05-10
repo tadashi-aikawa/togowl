@@ -1,17 +1,28 @@
-import { PrimitiveValueObject } from "~/utils/vo";
+import { Either, left, PrimitiveValueObject, right } from "owlelia";
 import { TogowlError } from "~/domain/common/TogowlError";
 
+export class InvalidUrlError extends TogowlError {
+  code = "INVALID_URL";
+  name = "Invalid URL.";
+
+  static of(args: { invalidValue: string }): InvalidUrlError {
+    return new InvalidUrlError(`${args.invalidValue} is invalid URL format.`);
+  }
+}
+
 export class Url extends PrimitiveValueObject<string> {
-  static create(value: string): Url {
-    if (!this.isValid(value)) {
-      throw new TogowlError({ code: "INVALID_VALUE", message: "Invalid URL!" });
+  private _voCommonUrlBrand!: never;
+
+  static try(value: string): Either<InvalidUrlError, Url> {
+    if (!/^https?:\/\/.+/.test(value)) {
+      return left(
+        InvalidUrlError.of({
+          invalidValue: value,
+        })
+      );
     }
 
-    return new Url(value);
-  }
-
-  static isValid(value: string): boolean {
-    return /^https?:\/\/.+/.test(value);
+    return right(new Url(value));
   }
 
   getProxyAddedValue(proxy?: string): string {

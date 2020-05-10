@@ -94,11 +94,11 @@ class SettingsToggl extends Vue {
   saveTimerConfig() {
     // XXX: currentTaskId?
     timerStore.updateTimerConfig(
-      TimerConfig.create(
-        this.togglApiToken,
-        Number(this.togglWorkSpaceId),
-        this.proxy
-      )
+      TimerConfig.of({
+        token: this.togglApiToken,
+        workspaceId: Number(this.togglWorkSpaceId),
+        proxy: this.proxy,
+      })
     );
   }
 }

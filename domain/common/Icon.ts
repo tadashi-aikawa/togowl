@@ -1,20 +1,19 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 import { Url } from "~/domain/common/Url";
-
-interface Args {
-  url?: string;
-  emoji?: string;
-}
 
 interface Props {
   url?: Url;
   emoji?: string;
 }
 
+type Args = Props;
+
 export class Icon extends ValueObject<Props> {
-  static create(args: Args): Icon {
+  private _voCommonIconBrand!: never;
+
+  static of(args: Args): Icon {
     return new Icon({
-      url: args.url ? Url.create(args.url) : undefined,
+      url: args.url,
       emoji: args.emoji || undefined,
     });
   }

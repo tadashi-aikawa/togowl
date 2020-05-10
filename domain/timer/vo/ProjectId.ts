@@ -1,7 +1,9 @@
-import { PrimitiveValueObject } from "~/utils/vo";
+import { PrimitiveValueObject } from "owlelia";
 
 export class ProjectId extends PrimitiveValueObject<string> {
-  static create(value: number): ProjectId {
+  private _voTaskProjectIdBrand!: never;
+
+  static of(value: number): ProjectId {
     return new ProjectId(String(value));
   }
 

@@ -1,4 +1,4 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 import { ChannelName } from "~/domain/notification/vo/ChannelName";
 import { Url } from "~/domain/common/Url";
 
@@ -8,19 +8,13 @@ interface Props {
   proxy?: string;
 }
 
+type Args = Props;
+
 export class SlackConfig extends ValueObject<Props> {
-  static create(
-    incomingWebHookUrl?: string,
-    notifyTo?: string,
-    proxy?: string
-  ): SlackConfig {
-    return new SlackConfig({
-      incomingWebHookUrl: incomingWebHookUrl
-        ? Url.create(incomingWebHookUrl)
-        : undefined,
-      notifyTo: notifyTo ? ChannelName.create(notifyTo) : undefined,
-      proxy,
-    });
+  private _voNotificationSlackConfigBrand!: never;
+
+  static of(args: Args): SlackConfig {
+    return new SlackConfig(args);
   }
 
   get incomingWebHookUrl(): Url | undefined {

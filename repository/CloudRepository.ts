@@ -1,7 +1,6 @@
+import { Either } from "owlelia";
 import { User } from "~/domain/authentication/vo/User";
 import { LoginPayload } from "~/domain/authentication/vo/LoginPayload";
-import { TogowlError } from "~/domain/common/TogowlError";
-import { Either } from "~/node_modules/fp-ts/lib/Either";
 import { SlackConfig } from "~/domain/notification/vo/SlackConfig";
 import { TimerConfig } from "~/domain/timer/vo/TimerConfig";
 import { ProjectConfig } from "~/domain/timer/vo/ProjectConfig";
@@ -9,31 +8,48 @@ import { ProjectCategoryConfig } from "~/domain/timer/vo/ProjectCategoryConfig";
 import { TaskConfig } from "~/domain/task/vo/TaskConfig";
 import { RecentTask } from "~/domain/common/RecentTask";
 import { UId } from "~/domain/authentication/vo/UId";
+import {
+  LoadProjectCategoryConfigError,
+  LoadProjectConfigError,
+  LoadSlackConfigError,
+  LoadTaskConfigError,
+  LoadTimerConfigError,
+  LoadUserError,
+  LoginError,
+  SaveProjectCategoryConfigError,
+  SaveProjectConfigError,
+  SaveRecentTaskError,
+  SaveSlackConfigError,
+  SaveTaskConfigError,
+  SaveTimerConfigError,
+} from "~/repository/firebase-errors";
 
 interface CloudRepository {
-  login(payload?: LoginPayload): Promise<Either<TogowlError, User>>;
-  loadUser(userId: UId): Promise<Either<TogowlError, User>>;
+  login(payload?: LoginPayload): Promise<Either<LoginError, User>>;
+  loadUser(userId: UId): Promise<Either<LoadUserError, User>>;
   logout(): void;
 
-  saveRecentTask(recentTask: RecentTask): Promise<TogowlError | null>;
+  saveRecentTask(recentTask: RecentTask): Promise<SaveRecentTaskError | null>;
 
-  saveSlackConfig(config: SlackConfig): Promise<TogowlError | null>;
-  loadSlackConfig(): Promise<Either<TogowlError, SlackConfig>>;
+  saveSlackConfig(config: SlackConfig): Promise<SaveSlackConfigError | null>;
+  loadSlackConfig(): Promise<Either<LoadSlackConfigError, SlackConfig>>;
 
-  saveTimerConfig(config: TimerConfig): Promise<TogowlError | null>;
-  loadTimerConfig(): Promise<Either<TogowlError, TimerConfig>>;
+  saveTimerConfig(config: TimerConfig): Promise<SaveTimerConfigError | null>;
+  loadTimerConfig(): Promise<Either<LoadTimerConfigError, TimerConfig>>;
 
-  saveTaskConfig(config: TaskConfig): Promise<TogowlError | null>;
-  loadTaskConfig(): Promise<Either<TogowlError, TaskConfig>>;
+  saveTaskConfig(config: TaskConfig): Promise<SaveTaskConfigError | null>;
+  loadTaskConfig(): Promise<Either<LoadTaskConfigError, TaskConfig>>;
 
-  saveProjectConfig(config: ProjectConfig): Promise<TogowlError | null>;
-  loadProjectConfig(): Promise<Either<TogowlError, ProjectConfig>>;
+  saveProjectConfig(
+    config: ProjectConfig
+  ): Promise<SaveProjectConfigError | null>;
+  loadProjectConfig(): Promise<Either<LoadProjectConfigError, ProjectConfig>>;
 
   saveProjectCategoryConfig(
     config: ProjectCategoryConfig
-  ): Promise<TogowlError | null>;
+  ): Promise<SaveProjectCategoryConfigError | null>;
   loadProjectCategoryConfig(): Promise<
-    Either<TogowlError, ProjectCategoryConfig>
+    Either<LoadProjectCategoryConfigError, ProjectCategoryConfig>
   >;
 }
 

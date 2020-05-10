@@ -1,15 +1,19 @@
+import { ValueObject } from "owlelia";
 import { UserName } from "~/domain/authentication/vo/UserName";
 import { UId } from "~/domain/authentication/vo/UId";
-import { ValueObject } from "~/utils/vo";
 
 interface Props {
   uid: UId;
   name: UserName;
 }
 
+type Args = Props;
+
 export class User extends ValueObject<Props> {
-  static create(uid: UId, name: UserName): User {
-    return new User({ uid, name });
+  private _voAuthenticationUserBrand!: never;
+
+  static of(args: Args): User {
+    return new User(args);
   }
 
   get name(): UserName {

@@ -86,7 +86,7 @@ class SettingsProjectEdit extends Vue {
   showProjects: boolean;
 
   iconUrl: string = "";
-  iconUrlRules = [(v: string) => !v || Url.isValid(v) || "Invalid URL"];
+  iconUrlRules = [(v: string) => !v || Url.try(v).isRight() || "Invalid URL"];
 
   iconEmoji: string = "";
   iconEmojiRules = [
@@ -117,7 +117,7 @@ class SettingsProjectEdit extends Vue {
   save() {
     this.$emit(
       "on-save",
-      Icon.create({ url: this.iconUrl, emoji: this.iconEmoji }),
+      Icon.of({ url: Url.try(this.iconUrl).orThrow(), emoji: this.iconEmoji }),
       this.selectedTaskProjects
     );
   }

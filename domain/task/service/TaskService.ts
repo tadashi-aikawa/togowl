@@ -1,24 +1,33 @@
+import { Either } from "owlelia";
 import { TogowlError } from "~/domain/common/TogowlError";
-import { Either } from "~/node_modules/fp-ts/lib/Either";
 import { Task } from "~/domain/task/entity/Task";
 import { Project } from "~/domain/task/entity/Project";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { DateTime } from "~/domain/common/DateTime";
+import { FetchTasksError } from "~/domain/task/vo/FetchTasksError";
+import { CompleteTaskError } from "~/domain/task/vo/CompleteTaskError";
+import { FetchProjectsError } from "~/domain/task/vo/FetchProjectsError";
+import { UpdateTaskError } from "~/domain/task/vo/UpdateTaskError";
+import { UpdateTasksOrderError } from "~/domain/task/vo/UpdateTasksOrderError";
+import { SubscribeTaskError } from "~/domain/task/vo/SubscribeTaskError";
 
 export interface TaskEventListener {
   onStartSubscribe?(): void;
   onEndSubscribe?(): void;
-  onError?(err: TogowlError): void;
+  onError?(err: SubscribeTaskError): void;
   onSyncNeeded?(clientId?: string): void;
 }
 
 export interface TaskService {
-  fetchTasks(): Promise<Either<TogowlError, Task[]>>;
-  completeTask(taskId: TaskId): Promise<TogowlError | null>;
-  fetchProjects(): Promise<Either<TogowlError, Project[]>>;
-  updateDueDate(taskId: TaskId, date: DateTime): Promise<TogowlError | null>;
+  fetchTasks(): Promise<Either<FetchTasksError, Task[]>>;
+  completeTask(taskId: TaskId): Promise<CompleteTaskError | null>;
+  fetchProjects(): Promise<Either<FetchProjectsError, Project[]>>;
+  updateDueDate(
+    taskId: TaskId,
+    date: DateTime
+  ): Promise<UpdateTaskError | null>;
   updateTasksOrder(taskById: {
     [taskId: string]: Task;
-  }): Promise<TogowlError | null>;
+  }): Promise<UpdateTasksOrderError | null>;
   terminate(): void;
 }

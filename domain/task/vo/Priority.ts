@@ -1,4 +1,16 @@
+import { Either, left, right } from "owlelia";
 import { TogowlError } from "~/domain/common/TogowlError";
+
+export class InvalidPriorityError extends TogowlError {
+  code = "INVALID_PRIORITY";
+  name = "Invalid priority.";
+
+  static of(args: { invalidValue: number }): InvalidPriorityError {
+    return new InvalidPriorityError(
+      `${args.invalidValue} is invalid as a priority. It must be 1 - 4.`
+    );
+  }
+}
 
 export class Priority {
   private static readonly _values: Priority[] = [];
@@ -12,14 +24,12 @@ export class Priority {
     Priority._values.push(this);
   }
 
-  static create(value: number): Priority {
+  static try(value: number): Either<InvalidPriorityError, Priority> {
     const p = Priority._values.find((x) => x.value === value);
     if (!p) {
-      throw TogowlError.create(
-        "INVALID_VALUE",
-        "Invalid priority. It must 1 - 4."
-      );
+      return left(InvalidPriorityError.of({ invalidValue: value }));
     }
-    return p;
+
+    return right(p);
   }
 }

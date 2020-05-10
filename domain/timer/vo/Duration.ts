@@ -1,8 +1,10 @@
-import { PrimitiveValueObject } from "~/utils/vo";
-import { toJapanese, toJapaneseFromSecond } from "~/utils/time";
+import { PrimitiveValueObject } from "owlelia";
+import { toJapaneseFromSecond } from "~/utils/time";
 
 export class Duration extends PrimitiveValueObject<number> {
-  static create(value: number): Duration {
+  private _voTaskDurationBrand!: never;
+
+  static of(value: number): Duration {
     return new Duration(value);
   }
 

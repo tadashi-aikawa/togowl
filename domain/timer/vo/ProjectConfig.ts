@@ -1,26 +1,21 @@
-import { ValueObject } from "~/utils/vo";
 import { Icon } from "~/domain/common/Icon";
 import { ProjectId } from "~/domain/timer/vo/ProjectId";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
+import { ValueObject } from "owlelia";
 
-interface Args {
+interface Props {
   [projectId: string]: {
     icon?: Icon;
     taskProjectIds: TaskProjectId[];
   };
 }
 
-interface Meta {
-  icon?: Icon;
-  taskProjectIds: TaskProjectId[];
-}
-
-interface Props {
-  [projectId: string]: Meta;
-}
+type Args = Props;
 
 export class ProjectConfig extends ValueObject<Props> {
-  static create(args: Args): ProjectConfig {
+  private _voTaskProjectConfigBrand!: never;
+
+  static of(args: Args): ProjectConfig {
     return new ProjectConfig(args);
   }
 
@@ -45,7 +40,7 @@ export class ProjectConfig extends ValueObject<Props> {
     icon?: Icon,
     taskProjectIds?: TaskProjectId[]
   ): ProjectConfig {
-    return ProjectConfig.create({
+    return ProjectConfig.of({
       ...this.value,
       [projectId.value]: {
         icon,

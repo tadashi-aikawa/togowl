@@ -1,12 +1,14 @@
 import dayjs from "dayjs";
 import "dayjs/locale/ja";
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 import { toHHmmss } from "~/utils/time";
 
 dayjs.locale("ja");
 
 export class DateTime extends ValueObject<dayjs.Dayjs> {
-  static create(value: string): DateTime {
+  private _voCommonDateTimeBrand!: never;
+
+  static of(value: string): DateTime {
     return new DateTime(dayjs(value));
   }
 

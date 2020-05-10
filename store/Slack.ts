@@ -11,8 +11,6 @@ import { ActionStatus } from "~/domain/common/ActionStatus";
 import { createAction } from "~/utils/firestore-facade";
 import { NotificationService } from "~/domain/notification/service/NotificationService";
 import { createNotificationService } from "~/utils/service-factory";
-import { pipe } from "~/node_modules/fp-ts/lib/pipeable";
-import { fold } from "~/node_modules/fp-ts/lib/Either";
 import { Entry } from "~/domain/timer/entity/Entry";
 
 let service: NotificationService | null;
@@ -52,16 +50,14 @@ class SlackModule extends VuexModule {
     }
 
     // TODO: extract & integrate?
-    pipe(
-      await createNotificationService(),
-      fold(
-        (err) => this.setUpdateError(err),
-        (s) => {
-          service = s;
-          this.setUpdateStatus("success");
-        }
-      )
-    );
+    const serviceOrErr = await createNotificationService();
+    if (serviceOrErr.isLeft()) {
+      this.setUpdateError(serviceOrErr.error);
+      return;
+    }
+
+    service = serviceOrErr.value;
+    this.setUpdateStatus("success");
   }
 
   @Action
@@ -69,7 +65,7 @@ class SlackModule extends VuexModule {
     const err = await service!.start(entry);
     if (err) {
       console.error(err.messageForLog);
-      return TogowlError.create(err.code, err.message);
+      return err;
     }
   }
 
@@ -78,7 +74,7 @@ class SlackModule extends VuexModule {
     const err = await service!.done(entry);
     if (err) {
       console.error(err.messageForLog);
-      return TogowlError.create(err.code, err.message);
+      return err;
     }
   }
 
@@ -87,7 +83,7 @@ class SlackModule extends VuexModule {
     const err = await service!.pause(entry);
     if (err) {
       console.error(err.messageForLog);
-      return TogowlError.create(err.code, err.message);
+      return err;
     }
   }
 
@@ -96,7 +92,7 @@ class SlackModule extends VuexModule {
     const err = await service!.cancel();
     if (err) {
       console.error(err.messageForLog);
-      return TogowlError.create(err.code, err.message);
+      return err;
     }
   }
 
@@ -104,17 +100,14 @@ class SlackModule extends VuexModule {
   async init(uid: UId) {
     createAction(uid.value, "_slack", "slack")(this.context);
 
-    // TODO: extract & integrate?
-    pipe(
-      await createNotificationService(),
-      fold(
-        (err) => this.setUpdateError(err),
-        (s) => {
-          service = s;
-          this.setUpdateStatus("success");
-        }
-      )
-    );
+    const serviceOrErr = await createNotificationService();
+    if (serviceOrErr.isLeft()) {
+      this.setUpdateError(serviceOrErr.error);
+      return;
+    }
+
+    service = serviceOrErr.value;
+    this.setUpdateStatus("success");
   }
 }
 

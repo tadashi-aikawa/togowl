@@ -74,7 +74,10 @@ class SettingsTodoist extends Vue {
 
   saveTaskConfig() {
     taskStore.updateTaskConfig(
-      TaskConfig.create(this.todoistApiToken, this.todoistWebSocketToken)
+      TaskConfig.of({
+        token: this.todoistApiToken,
+        syncToken: this.todoistWebSocketToken,
+      })
     );
   }
 }

@@ -1,9 +1,9 @@
-import { TogowlError } from "~/domain/common/TogowlError";
 import { Entry } from "~/domain/timer/entity/Entry";
+import { NotifyToSlackError } from "~/domain/notification/vo/NotifyToSlackError";
 
 export interface NotificationService {
-  start(entry: Entry): Promise<TogowlError | null>;
-  done(entry: Entry): Promise<TogowlError | null>;
-  pause(entry: Entry): Promise<TogowlError | null>;
-  cancel(): Promise<TogowlError | null>;
+  start(entry: Entry): Promise<NotifyToSlackError | null>;
+  done(entry: Entry): Promise<NotifyToSlackError | null>;
+  pause(entry: Entry): Promise<NotifyToSlackError | null>;
+  cancel(): Promise<NotifyToSlackError | null>;
 }

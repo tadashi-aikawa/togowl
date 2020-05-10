@@ -70,12 +70,13 @@ class SettingsSlack extends Vue {
   incomingWebHookUrl = "";
   incomingWebHookUrlRules = [
     (v: string) => !!v || "Incoming web hook URL is required",
-    (v: string) => Url.isValid(v) || "Invalid URL",
+    (v: string) => Url.try(v).isRight() || "Invalid URL",
   ];
 
   notifyChannel = "";
   notifyChannelRules = [
-    (v: string) => ChannelName.isValid(v) || 'Channel name must start with "#"',
+    (v: string) =>
+      ChannelName.try(v).isRight() || 'Channel name must start with "#"',
   ];
 
   proxy = "";
@@ -97,11 +98,15 @@ class SettingsSlack extends Vue {
 
   saveSlackConfig() {
     notificationStore.updateSlackConfig(
-      SlackConfig.create(
-        this.incomingWebHookUrl,
-        this.notifyChannel,
-        this.proxy
-      )
+      SlackConfig.of({
+        incomingWebHookUrl: this.incomingWebHookUrl
+          ? Url.try(this.incomingWebHookUrl).orThrow()
+          : undefined,
+        notifyTo: this.notifyChannel
+          ? ChannelName.try(this.notifyChannel).orThrow()
+          : undefined,
+        proxy: this.proxy,
+      })
     );
   }
 }

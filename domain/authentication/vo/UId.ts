@@ -1,7 +1,9 @@
-import { PrimitiveValueObject } from "~/utils/vo";
+import { PrimitiveValueObject } from "owlelia";
 
 export class UId extends PrimitiveValueObject<string> {
-  static create(value: string): UId {
+  private _voAuthenticationUIdBrand!: never;
+
+  static of(value: string): UId {
     return new UId(value);
   }
 }

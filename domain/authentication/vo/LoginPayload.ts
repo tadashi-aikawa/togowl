@@ -1,4 +1,4 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 import { MailAddress } from "~/domain/authentication/vo/MailAddress";
 
 interface Props {
@@ -6,9 +6,13 @@ interface Props {
   password: string;
 }
 
+type Args = Props;
+
 export class LoginPayload extends ValueObject<Props> {
-  static create(mailAddress: MailAddress, password: string): LoginPayload {
-    return new LoginPayload({ mailAddress, password });
+  private _voAuthenticationLoginPayloadBrand!: never;
+
+  static of(args: Args): LoginPayload {
+    return new LoginPayload(args);
   }
 
   get mailAddress(): MailAddress {

@@ -1,4 +1,4 @@
-import { ValueObject } from "~/utils/vo";
+import { ValueObject } from "owlelia";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { EntryId } from "~/domain/timer/vo/EntryId";
 
@@ -7,12 +7,13 @@ interface Props {
   entryId?: EntryId;
 }
 
+type Args = Props;
+
 export class RecentTask extends ValueObject<Props> {
-  static create(taskId?: TaskId, entryId?: EntryId): RecentTask {
-    return new RecentTask({
-      taskId,
-      entryId,
-    });
+  private _voCommonRecentTaskBrand!: never;
+
+  static of(args: Args): RecentTask {
+    return new RecentTask(args);
   }
 
   get taskId(): TaskId | undefined {

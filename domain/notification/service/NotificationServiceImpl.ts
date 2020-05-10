@@ -6,6 +6,7 @@ import * as slack from "~/external/slack";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import { Project } from "~/domain/timer/entity/Project";
+import { NotifyToSlackError } from "~/domain/notification/vo/NotifyToSlackError";
 
 export class NotificationServiceImpl implements NotificationService {
   constructor(
@@ -14,7 +15,9 @@ export class NotificationServiceImpl implements NotificationService {
     public proxy?: string
   ) {}
 
-  private async notifyToSlack(message: string): Promise<TogowlError | null> {
+  private async notifyToSlack(
+    message: string
+  ): Promise<NotifyToSlackError | null> {
     try {
       const ret = await slack.send(
         this.incomingWebHookUrl.getProxyAddedValue(this.proxy),
@@ -25,37 +28,37 @@ export class NotificationServiceImpl implements NotificationService {
       );
       return ret === "ok"
         ? null
-        : TogowlError.create(
-            "FAIL_INCOMING_WEB_HOOK",
-            `Fail to notify slack! detail: ${ret}`
-          );
+        : NotifyToSlackError.of({ channelName: this.channel });
     } catch (e) {
-      return TogowlError.create("FAIL_INCOMING_WEB_HOOK", e.message);
+      return NotifyToSlackError.of({
+        channelName: this.channel,
+        stack: e.stack,
+      });
     }
   }
 
-  start(entry: Entry): Promise<TogowlError | null> {
+  start(entry: Entry): Promise<NotifyToSlackError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
       `:togowl_play: \`開始\`  *${entry!.description}*    ${footer}`
     );
   }
 
-  done(entry: Entry): Promise<TogowlError | null> {
+  done(entry: Entry): Promise<NotifyToSlackError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
       `:togowl_complete: \`完了\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`
     );
   }
 
-  pause(entry: Entry): Promise<TogowlError | null> {
+  pause(entry: Entry): Promise<NotifyToSlackError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
       `:togowl_pause: \`中断\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`
     );
   }
 
-  cancel(): Promise<TogowlError | null> {
+  cancel(): Promise<NotifyToSlackError | null> {
     return this.notifyToSlack(`:unitychan_ng: \`やっぱナシ\``);
   }
 

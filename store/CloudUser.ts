@@ -18,7 +18,10 @@ class CloudUserModule extends VuexModule {
 
   get user(): User | null {
     return this._user
-      ? User.create(UId.create(this._user.id), UserName.create(this._user.name))
+      ? User.of({
+          uid: UId.of(this._user.id),
+          name: UserName.of(this._user.name),
+        })
       : null;
   }
 
