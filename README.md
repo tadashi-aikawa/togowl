@@ -1,4 +1,5 @@
-# togowl-next
+togowl-next
+===========
 
 <img src="./static/icon.png" width="240" />
 
@@ -12,16 +13,18 @@ It integrates with Toggl, Todoist and Slack.
   <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" />
 </div>
 
-## For developers
 
-### Clone
+✅ For all
+----------
 
-Clone this repository.
+`node.js` is required.
 
-### Install dependencies
+### Clone and install dependencies
 
-```bash
-$ npm install
+```
+git clone https://github.com/tadashi-aikawa/togowl-next.git
+cd togowl-next
+npm install
 ```
 
 ### Create your app on firebase
@@ -35,6 +38,31 @@ Create togowl app on firebase as different name (ex: yourtogowl)
 Please copy `.firebase.config.sample.json` and edit it.
 
 You can see in `Project Overview > Settings`
+
+
+💃 Use as your service
+----------------------
+
+### Deploy
+
+Before deploy, you need to login with your firebase account.
+
+Ex.
+
+```
+npm install -g firebase-tools
+firebase login
+```
+
+Then
+
+```
+npm run deploy
+```
+
+
+💻 For developers
+-----------------
 
 ### Serve with hot reload at localhost:3000
 
@@ -55,19 +83,11 @@ npm run build
 npm run start
 ```
 
-### Deploy
+### Release (Only for )
 
-Before deploy, you need to login with your firebase account.
-
-Ex.
-
-```
-npm install -g firebase-tools
-firebase login
-```
-
-Then
+Before release, you need to be able to deploy.  
+If you can, then...
 
 ```
-npm run release
+make release version=x.y.z
 ```
