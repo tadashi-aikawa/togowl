@@ -10,6 +10,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {

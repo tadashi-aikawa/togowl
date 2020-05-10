@@ -47,6 +47,16 @@
             <v-list-item-title>Logout</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <div
+          style="
+            font-size: 90%;
+            color: darkgrey;
+            padding: 15px;
+            text-align: center;
+          "
+        >
+          v{{ appVersion }}
+        </div>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
@@ -90,6 +100,7 @@
 import { Component, Vue } from "~/node_modules/nuxt-property-decorator";
 import Login from "~/layouts/login.vue";
 import { authenticationStore, userStore } from "~/utils/store-accessor";
+import { appVersion } from "~/utils/package";
 
 @Component({
   components: { Login },
@@ -136,6 +147,10 @@ export default class extends Vue {
 
   get hasLogin(): boolean {
     return authenticationStore.status === "login";
+  }
+
+  get appVersion(): string {
+    return appVersion();
   }
 }
 </script>
