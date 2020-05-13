@@ -25,6 +25,10 @@ export class Project extends Entity<Props> {
     return this._props.name;
   }
 
+  get indexForSearch(): string {
+    return `${this.id.value}${this.name.value}`;
+  }
+
   get nameWithoutBracket(): string {
     return trimBracketContents(this._props.name.value);
   }

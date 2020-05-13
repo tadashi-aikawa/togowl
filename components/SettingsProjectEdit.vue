@@ -28,7 +28,7 @@
             v-model="selectedTaskProjects"
             :items="candidatedTaskProjects"
             :menu-props="{ maxHeight: 220 }"
-            item-text="hash"
+            item-text="indexForSearch"
             label="Task projects"
             chips
             clearable
