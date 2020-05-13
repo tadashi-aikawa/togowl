@@ -26,6 +26,7 @@
           <v-autocomplete
             v-if="showProjects"
             v-model="selectedTaskProjects"
+            :search-input.sync="inputText"
             :items="candidatedTaskProjects"
             :menu-props="{ maxHeight: 220 }"
             item-text="indexForSearch"
@@ -34,6 +35,7 @@
             clearable
             multiple
             return-object
+            @change="inputText = ''"
           >
             <template #selection="data">
               <v-chip>
@@ -85,6 +87,7 @@ class SettingsProjectEdit extends Vue {
   @Prop()
   showProjects: boolean;
 
+  inputText = "";
   iconUrl: string = "";
   iconUrlRules = [(v: string) => !v || Url.try(v).isRight() || "Invalid URL"];
 
