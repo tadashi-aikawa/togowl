@@ -98,7 +98,7 @@ class SlackModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    createAction(uid.value, "_slack", "slack")(this.context);
+    createAction(uid.unwrap(), "_slack", "slack")(this.context);
 
     const serviceOrErr = await createNotificationService();
     if (serviceOrErr.isLeft()) {

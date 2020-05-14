@@ -2,7 +2,7 @@
   <v-slide-y-transition group tag="v-list">
     <template v-for="entry in entries">
       <v-lazy
-        :key="entry.id.value"
+        :key="entry.id.unwrap()"
         transition="fade-transition"
         :options="{
           threshold: 0.5,

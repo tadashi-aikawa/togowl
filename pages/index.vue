@@ -88,7 +88,7 @@
 
             <swiper :options="subActionSwiperOption" style="height: 83px;">
               <template v-for="entry in latest5Entries">
-                <swiper-slide :key="entry.id.value">
+                <swiper-slide :key="entry.id.unwrap()">
                   <TimeEntry :entry="entry" @on-click-start="start" />
                 </swiper-slide>
               </template>
@@ -383,8 +383,10 @@ class Root extends Vue {
 
   customFilter(item: Entry, queryText: string): boolean {
     const description = item.description.toLowerCase();
-    const projectName = item.project?.name.value.toLowerCase();
-    const projectCategoryName = item.projectCategory?.name.value.toLowerCase();
+    const projectName = item.project?.name.unwrap().toLowerCase();
+    const projectCategoryName = item.projectCategory?.name
+      .unwrap()
+      .toLowerCase();
 
     return queryText
       .toLowerCase()

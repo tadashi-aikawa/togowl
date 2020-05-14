@@ -1,5 +1,5 @@
 <template>
-  <v-list-item :key="task.id.value" two-line style="padding: 0 5px 0 0;">
+  <v-list-item :key="task.id.unwrap()" two-line style="padding: 0 5px 0 0;">
     <v-icon
       class="drag-and-drop-handler no-swiping-class"
       style="cursor: move; color: grey;"

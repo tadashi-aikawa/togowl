@@ -39,12 +39,12 @@
           >
             <template #selection="data">
               <v-chip>
-                {{ data.item.name.value }}
+                {{ data.item.name.unwrap() }}
               </v-chip>
             </template>
             <template #item="data">
               <v-chip>
-                {{ data.item.name.value }}
+                {{ data.item.name.unwrap() }}
               </v-chip>
             </template>
           </v-autocomplete>

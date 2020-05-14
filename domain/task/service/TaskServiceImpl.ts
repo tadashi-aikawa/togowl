@@ -180,7 +180,7 @@ export class TaskServiceImpl implements TaskService {
     date: DateTime
   ): Promise<UpdateTaskError | null> {
     logger.put(`TaskService.updateDueDate: ${this.shortTodoistSyncToken}`);
-    const task = this.taskById[taskId.value]!;
+    const task = this.taskById[taskId.unwrap()]!;
     const due = { ...task.due, date: date.displayDate };
     try {
       const res = (

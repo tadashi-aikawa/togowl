@@ -8,6 +8,6 @@ export class ProjectId extends PrimitiveValueObject<string> {
   }
 
   get asNumber(): number {
-    return Number(this.value);
+    return Number(this.unwrap());
   }
 }

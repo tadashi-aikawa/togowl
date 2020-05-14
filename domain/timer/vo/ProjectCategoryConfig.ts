@@ -21,12 +21,12 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     return new ProjectCategoryConfig({});
   }
 
-  get value(): Props {
+  unwrap(): Props {
     return this._value;
   }
 
   getIcon(projectCategoryId: ProjectCategoryId): Icon | undefined {
-    return this._value?.[projectCategoryId.value]?.icon;
+    return this._value?.[projectCategoryId.unwrap()]?.icon;
   }
 
   cloneWith(
@@ -34,8 +34,8 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     icon?: Icon
   ): ProjectCategoryConfig {
     return ProjectCategoryConfig.of({
-      ...this.value,
-      [projectCategoryId.value]: { icon },
+      ...this.unwrap(),
+      [projectCategoryId.unwrap()]: { icon },
     });
   }
 }

@@ -24,7 +24,7 @@ export class NotificationServiceImpl implements NotificationService {
         message,
         "Togowl",
         ":togowl:",
-        this.channel?.value
+        this.channel?.unwrap()
       );
       return ret === "ok"
         ? null

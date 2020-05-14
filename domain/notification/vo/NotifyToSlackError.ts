@@ -10,7 +10,7 @@ export class NotifyToSlackError extends TogowlError {
     stack?: string;
   }): NotifyToSlackError {
     return new NotifyToSlackError(
-      `Fail notifying to ${args.channelName?.value ?? "default channel"}.`,
+      `Fail notifying to ${args.channelName?.unwrap() ?? "default channel"}.`,
       args.stack
     );
   }

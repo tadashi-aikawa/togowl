@@ -32,6 +32,7 @@ export default {
    */
   plugins: [
     "@/plugins/firebase.js",
+    "@/plugins/composition-api",
     { src: "~/plugins/vue-awesome-swiper", ssr: false },
   ],
   /*

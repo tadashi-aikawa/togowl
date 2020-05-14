@@ -356,7 +356,7 @@ class TaskModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    createAction(uid.value, "_taskConfig", "task")(this.context);
+    createAction(uid.unwrap(), "_taskConfig", "task")(this.context);
     this.commandExecutor = new CommandExecutor({
       onSyncNeeded: this.fetchTasks.bind(this),
     });

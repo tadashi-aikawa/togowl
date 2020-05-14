@@ -20,7 +20,7 @@ export class Project extends Entity<Props> {
   private _entityTimerProjectBrand!: never;
 
   static of(args: Args): Project {
-    return new Project(args.id.value, args);
+    return new Project(args.id.unwrap(), args);
   }
 
   get id(): ProjectId {
@@ -44,7 +44,7 @@ export class Project extends Entity<Props> {
   }
 
   get nameWithoutBracket(): string {
-    return trimBracketContents(this._props.name.value);
+    return trimBracketContents(this._props.name.unwrap());
   }
 
   cloneWith(

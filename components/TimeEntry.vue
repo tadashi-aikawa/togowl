@@ -1,5 +1,5 @@
 <template>
-  <v-list-item :key="entry.id.value">
+  <v-list-item :key="entry.id.unwrap()">
     <v-list-item-content>
       <v-list-item-title>
         <EntrySummary :entry="entry" style="padding-bottom: 5px;" />

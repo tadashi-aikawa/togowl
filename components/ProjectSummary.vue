@@ -13,29 +13,33 @@
     <span v-text="projectName" />
   </div>
 </template>
+
 <script lang="ts">
-import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { computed, defineComponent } from "@vue/composition-api";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";
 import { Project } from "~/domain/timer/entity/Project";
 
-@Component({ components: { ProjectIcon, ProjectCategoryIcon } })
-class ProjectSummary extends Vue {
-  @Prop()
-  project: Project;
-
-  @Prop()
-  width: string;
-
-  get projectName(): string {
-    return this.project.nameWithoutBracket ?? "";
-  }
-
-  get projectCategoryName(): string {
-    return this.project.category?.nameWithoutBracket ?? "";
-  }
-}
-export default ProjectSummary;
+export default defineComponent({
+  components: {
+    ProjectIcon,
+    ProjectCategoryIcon,
+  },
+  props: {
+    project: {
+      type: Object as () => Project,
+      required: true,
+    },
+  },
+  setup({ project }) {
+    return {
+      projectName: computed((): string => project.nameWithoutBracket ?? ""),
+      projectCategoryName: computed(
+        (): string => project.category?.nameWithoutBracket ?? ""
+      ),
+    };
+  },
+});
 </script>
 
 <style scoped>

@@ -250,7 +250,7 @@ export class TimerServiceImpl implements TimerService {
             x,
             _(clients)
               .map(this.transformProjectCategory)
-              .keyBy((x) => x.id.value)
+              .keyBy((x) => x.id.unwrap())
               .value()
           )
         )
@@ -284,7 +284,7 @@ export class TimerServiceImpl implements TimerService {
       pid: entry.project?.id.asNumber,
       start: entry.start?.rfc3339,
       stop: entry.stop?.rfc3339,
-      duration: entry.duration?.value,
+      duration: entry.duration?.unwrap(),
       description: entry.description,
     };
   }

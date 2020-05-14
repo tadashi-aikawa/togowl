@@ -369,8 +369,8 @@ class TimerModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    createAction(uid.value, "_timer", "timer")(this.context);
-    createAction(uid.value, "_recentTask", "recentTask")(this.context);
+    createAction(uid.unwrap(), "_timer", "timer")(this.context);
+    createAction(uid.unwrap(), "_recentTask", "recentTask")(this.context);
     await this.updateService();
   }
 }
