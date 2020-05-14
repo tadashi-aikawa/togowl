@@ -24,25 +24,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { defineComponent } from "@vue/composition-api";
 import TaskSummary from "~/components/TaskSummary.vue";
 import { Task } from "~/domain/task/entity/Task";
 
-@Component({
+export default defineComponent({
   components: { TaskSummary },
-})
-class TaskEntry extends Vue {
-  @Prop()
-  task: Task;
-
-  @Prop({ default: false })
-  disabled: boolean;
-
-  handleClickStartButton() {
-    this.$emit("on-click-start-button", this.task);
-  }
-}
-export default TaskEntry;
+  props: {
+    task: { type: Object as () => Task, required: true },
+    disabled: { type: Boolean },
+  },
+  setup(props, { emit }) {
+    return {
+      handleClickStartButton() {
+        emit("on-click-start-button", props.task);
+      },
+    };
+  },
+});
 </script>
 
 <style scoped>

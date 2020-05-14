@@ -72,14 +72,14 @@ export default defineComponent({
       type: Boolean,
     },
   },
-  setup({ currentEntry }) {
+  setup(props) {
     const state = reactive({
       currentEntryTime: "",
       timerSubscriberId: -1,
     });
 
     const countUp = () => {
-      state.currentEntryTime = currentEntry.start.displayDiffFromNow();
+      state.currentEntryTime = props.currentEntry.start.displayDiffFromNow();
     };
     watchEffect(countUp);
     state.timerSubscriberId = window.setInterval(countUp, 1000);
@@ -90,19 +90,19 @@ export default defineComponent({
     return {
       state,
       displayEntry: computed(
-        () => currentEntry.description ?? "What are you doing?"
+        () => props.currentEntry.description ?? "What are you doing?"
       ),
       displayProjectCategory: computed(
-        () => currentEntry?.projectCategory?.nameWithoutBracket
+        () => props.currentEntry?.projectCategory?.nameWithoutBracket
       ),
       displayProject: computed(() => {
-        if (!currentEntry) {
+        if (!props.currentEntry) {
           return undefined;
         }
-        if (!currentEntry.project) {
+        if (!props.currentEntry.project) {
           return "No project";
         }
-        return currentEntry.project.nameWithoutBracket;
+        return props.currentEntry.project.nameWithoutBracket;
       }),
     };
   },
