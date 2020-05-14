@@ -22,7 +22,7 @@ export class Entry extends Entity<Props> {
   private _entityTimerEntryBrand!: never;
 
   static of(args: Args): Entry {
-    return new Entry(args.id.value, args);
+    return new Entry(args.id.unwrap(), args);
   }
 
   get id(): EntryId {
@@ -30,7 +30,9 @@ export class Entry extends Entity<Props> {
   }
 
   get hashAsTask(): string {
-    return `${this._props.description}${this._props.project?.id.value}${this.projectCategory?.id.value}`;
+    return `${
+      this._props.description
+    }${this._props.project?.id.unwrap()}${this.projectCategory?.id.unwrap()}`;
   }
 
   get description(): string {

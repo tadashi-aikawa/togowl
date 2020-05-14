@@ -2,28 +2,34 @@
   <img :src="src" />
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { computed, defineComponent } from "@vue/composition-api";
 import { Project } from "~/domain/timer/entity/Project";
 
-@Component({})
-class ProjectIcon extends Vue {
-  @Prop()
-  project: Project;
+export default defineComponent({
+  props: {
+    project: {
+      type: Object as () => Project,
+      required: true,
+    },
+    projectCategoryAsDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  setup({ project, projectCategoryAsDefault }) {
+    return {
+      src: computed((): string => {
+        if (project.icon?.url) {
+          return project.icon.url;
+        }
 
-  @Prop({ default: false })
-  projectCategoryAsDefault: boolean;
+        if (projectCategoryAsDefault && project.category?.icon?.url) {
+          return project.category.icon.url;
+        }
 
-  get src(): string {
-    if (this.project.icon?.url) {
-      return this.project.icon.url;
-    }
-
-    if (this.projectCategoryAsDefault && this.project.category?.icon?.url) {
-      return this.project.category.icon.url;
-    }
-
-    return "https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png";
-  }
-}
-export default ProjectIcon;
+        return "https://a.slack-edge.com/production-standard-emoji-assets/10.2/google-medium/1f5c2-fe0f.png";
+      }),
+    };
+  },
+});
 </script>

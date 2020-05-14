@@ -6,7 +6,7 @@
           <img v-if="hasIconUrl(item)" :src="item.node.icon.url" />
           <v-icon v-else small color="grey">mdi-help-circle-outline</v-icon>
         </v-avatar>
-        <span v-text="item.node.name.value" />
+        <span v-text="item.node.name.unwrap()" />
         <v-btn
           icon
           style="margin-left: 5px;"
@@ -73,11 +73,11 @@ class SettingsProject extends Vue {
       .map(
         (pjs) =>
           ({
-            key: pjs[0].category!.id.value,
+            key: pjs[0].category!.id.unwrap(),
             type: "project_category",
             node: pjs[0].category!,
             children: pjs.map((p) => ({
-              key: p.id.value,
+              key: p.id.unwrap(),
               type: "project",
               node: p,
             })),

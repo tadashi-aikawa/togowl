@@ -14,7 +14,7 @@
       <transition-group type="transition" :name="!drag ? 'flip-list' : null">
         <v-lazy
           v-for="task in tasks"
-          :key="task.id.value"
+          :key="task.id.unwrap()"
           transition="fade-transition"
           :options="{
             threshold: 0.5,

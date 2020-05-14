@@ -14,7 +14,7 @@ export class Project extends Entity<Props> {
   private _entityTaskProjectBrand!: never;
 
   static of(args: Args): Project {
-    return new Project(args.id.value, args);
+    return new Project(args.id.unwrap(), args);
   }
 
   get id(): ProjectId {
@@ -26,10 +26,10 @@ export class Project extends Entity<Props> {
   }
 
   get indexForSearch(): string {
-    return `${this.id.value}${this.name.value}`;
+    return `${this.id.unwrap()}${this.name.unwrap()}`;
   }
 
   get nameWithoutBracket(): string {
-    return trimBracketContents(this._props.name.value);
+    return trimBracketContents(this._props.name.unwrap());
   }
 }

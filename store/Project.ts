@@ -56,14 +56,14 @@ class ProjectModule extends VuexModule {
   get projectsGroupByCategory(): Dictionary<Project[]> {
     return _(this.projects)
       .reject((p) => !p.category)
-      .groupBy((p) => p.category?.id.value)
+      .groupBy((p) => p.category?.id.unwrap())
       .value();
   }
 
   // FIXME: extract
   get projectByTaskProjectId(): { [taskProjectId: number]: Project } {
     return _(this.projects)
-      .flatMap((pj) => pj.taskProjectIds.map((tpid) => [tpid.value, pj]))
+      .flatMap((pj) => pj.taskProjectIds.map((tpid) => [tpid.unwrap(), pj]))
       .fromPairs()
       .value();
   }
@@ -159,9 +159,9 @@ class ProjectModule extends VuexModule {
 
   @Action({ rawError: true })
   async init(uid: UId) {
-    createAction(uid.value, "_project", "projects")(this.context);
+    createAction(uid.unwrap(), "_project", "projects")(this.context);
     createAction(
-      uid.value,
+      uid.unwrap(),
       "_projectCategory",
       "projectCategories"
     )(this.context);

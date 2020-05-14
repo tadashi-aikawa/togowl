@@ -9,6 +9,6 @@ export class Duration extends PrimitiveValueObject<number> {
   }
 
   get asJapanese(): string {
-    return toJapaneseFromSecond(this.value);
+    return toJapaneseFromSecond(this.unwrap());
   }
 }

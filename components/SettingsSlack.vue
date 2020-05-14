@@ -83,8 +83,9 @@ class SettingsSlack extends Vue {
 
   mounted() {
     this.incomingWebHookUrl =
-      notificationStore.slackConfig?.incomingWebHookUrl?.value ?? "";
-    this.notifyChannel = notificationStore.slackConfig?.notifyTo?.value ?? "";
+      notificationStore.slackConfig?.incomingWebHookUrl?.unwrap() ?? "";
+    this.notifyChannel =
+      notificationStore.slackConfig?.notifyTo?.unwrap() ?? "";
     this.proxy = notificationStore.slackConfig?.proxy ?? "";
   }
 

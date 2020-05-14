@@ -23,7 +23,7 @@ export class Task extends Entity<Props> {
   private _entityTaskTaskBrand!: never;
 
   static of(args: Args): Task {
-    return new Task(args.id.value, args);
+    return new Task(args.id.unwrap(), args);
   }
 
   get id(): TaskId {

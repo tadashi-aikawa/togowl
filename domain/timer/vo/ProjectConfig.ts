@@ -1,7 +1,7 @@
+import { ValueObject } from "owlelia";
 import { Icon } from "~/domain/common/Icon";
 import { ProjectId } from "~/domain/timer/vo/ProjectId";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
-import { ValueObject } from "owlelia";
 
 interface Props {
   [projectId: string]: {
@@ -23,16 +23,16 @@ export class ProjectConfig extends ValueObject<Props> {
     return new ProjectConfig({});
   }
 
-  get value(): Props {
+  unwrap(): Props {
     return this._value;
   }
 
   getIcon(projectId: ProjectId): Icon | undefined {
-    return this._value?.[projectId.value]?.icon;
+    return this._value?.[projectId.unwrap()]?.icon;
   }
 
   getTaskProjectIds(projectId: ProjectId): TaskProjectId[] {
-    return this._value?.[projectId.value]?.taskProjectIds ?? [];
+    return this._value?.[projectId.unwrap()]?.taskProjectIds ?? [];
   }
 
   cloneWith(
@@ -41,11 +41,11 @@ export class ProjectConfig extends ValueObject<Props> {
     taskProjectIds?: TaskProjectId[]
   ): ProjectConfig {
     return ProjectConfig.of({
-      ...this.value,
-      [projectId.value]: {
+      ...this.unwrap(),
+      [projectId.unwrap()]: {
         icon,
         taskProjectIds:
-          taskProjectIds ?? this.value[projectId.value].taskProjectIds,
+          taskProjectIds ?? this.unwrap()[projectId.unwrap()].taskProjectIds,
       },
     });
   }

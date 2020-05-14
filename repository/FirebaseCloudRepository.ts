@@ -86,8 +86,8 @@ export function toRecentTask(data: FirestoreRecentTask): RecentTask {
 
 export function fromRecentTask(recentTask: RecentTask): FirestoreRecentTask {
   return {
-    taskId: recentTask.taskId?.value ?? "",
-    entryId: recentTask.entryId?.value ?? "",
+    taskId: recentTask.taskId?.unwrap() ?? "",
+    entryId: recentTask.entryId?.unwrap() ?? "",
   };
 }
 
@@ -142,12 +142,12 @@ export function toProjectConfig(data: FirestoreProject): ProjectConfig {
 }
 
 export function fromProjectConfig(config: ProjectConfig): FirestoreProject {
-  return _.mapValues(config.value, (meta) => ({
+  return _.mapValues(config.unwrap(), (meta) => ({
     icon: {
       url: meta.icon?.url ?? "",
       emoji: meta.icon?.emoji ?? "",
     },
-    taskProjectIds: meta.taskProjectIds.map((x) => x.value),
+    taskProjectIds: meta.taskProjectIds.map((x) => x.unwrap()),
   }));
 }
 
@@ -169,7 +169,7 @@ export function toProjectCategoryConfig(
 export function fromProjectCategoryConfig(
   config: ProjectCategoryConfig
 ): FirestoreProjectCategory {
-  return _.mapValues(config.value, (meta) => ({
+  return _.mapValues(config.unwrap(), (meta) => ({
     icon: {
       url: meta.icon?.url ?? "",
       emoji: meta.icon?.emoji ?? "",
@@ -187,7 +187,7 @@ class FirebaseCloudRepository implements CloudRepository {
             await firebase
               .auth()
               .signInWithEmailAndPassword(
-                payload.mailAddress.value,
+                payload.mailAddress.unwrap(),
                 payload.password
               )
           ).user
@@ -196,7 +196,7 @@ class FirebaseCloudRepository implements CloudRepository {
       if (!user) {
         return left(
           LoginError.of({
-            detail: `No user matched with email-address, ${payload?.mailAddress?.value}`,
+            detail: `No user matched with email-address, ${payload?.mailAddress?.unwrap()}`,
           })
         );
       }
@@ -221,7 +221,7 @@ class FirebaseCloudRepository implements CloudRepository {
 
   async loadUser(userId: UId): Promise<Either<LoadUserError, User>> {
     try {
-      this.uid = userId.value;
+      this.uid = userId.unwrap();
       const userDoc = await store.collection("users").doc(this.uid).get();
       // Databaseにユーザ登録をしていないと、userDoc.data()はnullになる
       return right(
@@ -245,8 +245,8 @@ class FirebaseCloudRepository implements CloudRepository {
 
   saveSlackConfig(config: SlackConfig): Promise<SaveSlackConfigError | null> {
     const document: FirestoreSlack = {
-      incomingWebHookUrl: config.incomingWebHookUrl?.value,
-      notifyTo: config.notifyTo?.value,
+      incomingWebHookUrl: config.incomingWebHookUrl?.unwrap(),
+      notifyTo: config.notifyTo?.unwrap(),
       proxy: config.proxy,
     };
     return store

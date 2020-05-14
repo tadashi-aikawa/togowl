@@ -27,7 +27,7 @@ class CloudUserModule extends VuexModule {
 
   @Action({ rawError: true })
   init(uid: UId) {
-    createAction(uid.value, "_user", "users")(this.context);
+    createAction(uid.unwrap(), "_user", "users")(this.context);
   }
 }
 

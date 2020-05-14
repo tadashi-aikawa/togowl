@@ -16,7 +16,7 @@ export class ProjectCategory extends Entity<Props> {
   private _entityTimerProjectCategoryBrand!: never;
 
   static of(args: Args): ProjectCategory {
-    return new ProjectCategory(args.id.value, args);
+    return new ProjectCategory(args.id.unwrap(), args);
   }
 
   get id(): ProjectCategoryId {
@@ -32,7 +32,7 @@ export class ProjectCategory extends Entity<Props> {
   }
 
   get nameWithoutBracket(): string {
-    return trimBracketContents(this._props.name.value);
+    return trimBracketContents(this._props.name.unwrap());
   }
 
   cloneWith(icon?: Icon): ProjectCategory {

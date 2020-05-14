@@ -30,14 +30,14 @@
         <v-icon>mdi-timer</v-icon>
         <span
           :class="{ 'rainbow-loading': loading }"
-          v-text="currentEntryTime"
+          v-text="state.currentEntryTime"
         />
       </div>
       <div v-else class="timer" style="color: grey;">
         <v-icon color="grey">mdi-timer</v-icon>
         <span
           :class="{ 'rainbow-loading': loading }"
-          v-text="currentEntryTime"
+          v-text="state.currentEntryTime"
         />
       </div>
     </v-row>
@@ -45,62 +45,68 @@
 </template>
 <script lang="ts">
 import {
-  Component,
-  Prop,
-  Vue,
-  Watch,
-} from "~/node_modules/nuxt-property-decorator";
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  reactive,
+  watchEffect,
+} from "@vue/composition-api";
 import { Entry } from "~/domain/timer/entity/Entry";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";
 
-@Component({ components: { ProjectIcon, ProjectCategoryIcon } })
-class CurrentTimeEntry extends Vue {
-  @Prop()
-  currentEntry: Entry;
+export default defineComponent({
+  components: {
+    ProjectIcon,
+    ProjectCategoryIcon,
+  },
+  props: {
+    currentEntry: {
+      type: Object as () => Entry,
+      required: true,
+    },
+    disabled: {
+      type: Boolean,
+    },
+    loading: {
+      type: Boolean,
+    },
+  },
+  setup(props) {
+    const state = reactive({
+      currentEntryTime: "",
+      timerSubscriberId: -1,
+    });
 
-  @Prop()
-  disabled: boolean;
+    const countUp = () => {
+      state.currentEntryTime = props.currentEntry.start.displayDiffFromNow();
+    };
+    watchEffect(countUp);
+    state.timerSubscriberId = window.setInterval(countUp, 1000);
+    onBeforeUnmount(() => {
+      window.clearInterval(state.timerSubscriberId);
+    });
 
-  @Prop()
-  loading: boolean;
-
-  currentEntryTime = "";
-  timerSubscriberId: number;
-
-  @Watch("currentEntry")
-  countUp() {
-    this.currentEntryTime = this.currentEntry.start.displayDiffFromNow();
-  }
-
-  created() {
-    this.countUp();
-    this.timerSubscriberId = window.setInterval(this.countUp, 1000);
-  }
-
-  beforeDestroy(): void {
-    window.clearInterval(this.timerSubscriberId);
-  }
-
-  get displayEntry(): string {
-    return this.currentEntry.description ?? "What are you doing?";
-  }
-
-  get displayProjectCategory(): string | undefined {
-    return this.currentEntry?.projectCategory?.nameWithoutBracket;
-  }
-
-  get displayProject(): string | undefined {
-    if (!this.currentEntry) {
-      return undefined;
-    }
-    if (!this.currentEntry.project) {
-      return "No project";
-    }
-    return this.currentEntry.project.nameWithoutBracket;
-  }
-}
-export default CurrentTimeEntry;
+    return {
+      state,
+      displayEntry: computed(
+        () => props.currentEntry.description ?? "What are you doing?"
+      ),
+      displayProjectCategory: computed(
+        () => props.currentEntry?.projectCategory?.nameWithoutBracket
+      ),
+      displayProject: computed(() => {
+        if (!props.currentEntry) {
+          return undefined;
+        }
+        if (!props.currentEntry.project) {
+          return "No project";
+        }
+        return props.currentEntry.project.nameWithoutBracket;
+      }),
+    };
+  },
+});
 </script>
 <style scoped>
 .timer {
