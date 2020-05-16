@@ -18,7 +18,7 @@
     </v-treeview>
     <v-bottom-sheet v-if="currentItem" v-model="bottomSheet">
       <SettingsProjectEdit
-        :name="currentItem.node.name.value"
+        :name="currentItem.node.name.unwrap()"
         :icon="currentItem.node.icon"
         :task-project-ids="currentItem.node.taskProjectIds"
         :show-projects="isProject"

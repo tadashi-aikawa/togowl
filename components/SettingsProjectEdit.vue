@@ -1,23 +1,23 @@
 <template>
   <v-list style="padding: 10px;">
     <v-avatar tile size="24px" style="margin-right: 5px;">
-      <img v-if="iconUrl" :src="iconUrl" />
+      <img v-if="state.iconUrl" :src="state.iconUrl" />
       <v-icon v-else small color="grey">mdi-help-circle-outline</v-icon>
     </v-avatar>
     <span v-text="name" />
-    <v-form ref="form" v-model="isValid">
+    <v-form ref="form" v-model="state.isValid">
       <v-row align="center" justify="center">
         <v-col cols="10">
           <v-text-field
-            v-model="iconUrl"
-            :rules="iconUrlRules"
+            v-model="state.iconUrl"
+            :rules="rules.iconUrl"
             label="Icon URL"
             placeholder="https://your/favorite/image.png"
             clearable
           />
           <v-text-field
-            v-model="iconEmoji"
-            :rules="iconEmojiRules"
+            v-model="state.iconEmoji"
+            :rules="rules.iconEmoji"
             label="Icon Emoji"
             placeholder="smile"
             clearable
@@ -25,9 +25,9 @@
 
           <v-autocomplete
             v-if="showProjects"
-            v-model="selectedTaskProjects"
-            :search-input.sync="inputText"
-            :items="candidatedTaskProjects"
+            v-model="state.selectedTaskProjects"
+            :search-input.sync="state.inputText"
+            :items="state.candidatedTaskProjects"
             :menu-props="{ maxHeight: 220 }"
             item-text="indexForSearch"
             label="Task projects"
@@ -35,7 +35,7 @@
             clearable
             multiple
             return-object
-            @change="inputText = ''"
+            @change="state.inputText = ''"
           >
             <template #selection="data">
               <v-chip>
@@ -53,7 +53,12 @@
     </v-form>
 
     <v-row align="center" justify="center">
-      <v-btn :disabled="!isValid" color="success" class="mr-4" @click="save">
+      <v-btn
+        :disabled="!state.isValid"
+        color="success"
+        class="mr-4"
+        @click="save"
+      >
         Save
       </v-btn>
     </v-row>
@@ -62,73 +67,71 @@
 
 <script lang="ts">
 import {
-  Component,
-  Prop,
-  Vue,
-  Watch,
-} from "~/node_modules/nuxt-property-decorator";
+  computed,
+  defineComponent,
+  reactive,
+  watch,
+  watchEffect,
+} from "@vue/composition-api";
 import { Icon } from "~/domain/common/Icon";
 import { Url } from "~/domain/common/Url";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
 import { taskStore } from "~/utils/store-accessor";
 import { Project as TaskProject } from "~/domain/task/entity/Project";
 
-@Component({})
-class SettingsProjectEdit extends Vue {
-  @Prop()
-  name: string;
+export default defineComponent({
+  props: {
+    name: { type: String, required: true },
+    icon: { type: Object as () => Icon },
+    taskProjectIds: { type: Array as () => TaskProjectId[] },
+    showProjects: { type: Boolean },
+  },
+  setup(props, { emit }) {
+    const state = reactive({
+      inputText: "",
+      iconUrl: "",
+      iconEmoji: "",
+      selectedTaskProjects: [] as TaskProject[],
+      isValid: false,
+      candidatedTaskProjects: computed(() => taskStore.projects),
+    });
 
-  @Prop()
-  icon?: Icon;
+    const rules = reactive({
+      iconUrl: [(v: string) => !v || Url.try(v).isRight() || "Invalid URL"],
+      iconEmoji: [
+        (v: string) => !v || !v.includes(":") || "Can not contain colons",
+      ],
+    });
 
-  @Prop()
-  taskProjectIds?: TaskProjectId[];
-
-  @Prop()
-  showProjects: boolean;
-
-  inputText = "";
-  iconUrl: string = "";
-  iconUrlRules = [(v: string) => !v || Url.try(v).isRight() || "Invalid URL"];
-
-  iconEmoji: string = "";
-  iconEmojiRules = [
-    (v: string) => !v || !v.includes(":") || "Can not contain colons",
-  ];
-
-  selectedTaskProjects: TaskProject[] = [];
-
-  isValid = false;
-
-  get candidatedTaskProjects(): TaskProject[] {
-    return taskStore.projects;
-  }
-
-  @Watch("icon", { immediate: true })
-  updateFormValues() {
-    this.iconUrl = this.icon?.url ?? "";
-    this.iconEmoji = this.icon?.emoji ?? "";
-  }
-
-  @Watch("taskProjectIds", { immediate: true })
-  onUpdateTaskProjectIds() {
-    this.selectedTaskProjects = this.candidatedTaskProjects.filter(
-      (x) => this.taskProjectIds?.some((id) => x.id.equals(id)) ?? false
+    watchEffect(() => {
+      state.iconUrl = props.icon?.url ?? "";
+      state.iconEmoji = props.icon?.emoji ?? "";
+    });
+    watch(
+      () => props.taskProjectIds,
+      (ids) => {
+        state.selectedTaskProjects = state.candidatedTaskProjects.filter(
+          (x) => ids?.some((id) => x.id.equals(id)) ?? false
+        );
+      }
     );
-  }
 
-  save() {
-    this.$emit(
-      "on-save",
-      Icon.of({
-        url: Url.try(this.iconUrl).orUndefined(),
-        emoji: this.iconEmoji,
-      }),
-      this.selectedTaskProjects
-    );
-  }
-}
-export default SettingsProjectEdit;
+    return {
+      state,
+      rules,
+      save() {
+        emit(
+          "on-save",
+          Icon.of({
+            url: Url.try(state.iconUrl).orUndefined(),
+            emoji: state.iconEmoji,
+          }),
+          state.selectedTaskProjects
+        );
+      },
+    };
+  },
+});
 </script>
 
 <style scoped></style>
