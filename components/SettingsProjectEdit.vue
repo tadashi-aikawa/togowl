@@ -120,7 +120,10 @@ class SettingsProjectEdit extends Vue {
   save() {
     this.$emit(
       "on-save",
-      Icon.of({ url: Url.try(this.iconUrl).orThrow(), emoji: this.iconEmoji }),
+      Icon.of({
+        url: Url.try(this.iconUrl).orUndefined(),
+        emoji: this.iconEmoji,
+      }),
       this.selectedTaskProjects
     );
   }
