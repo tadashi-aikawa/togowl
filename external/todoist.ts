@@ -6,11 +6,27 @@ import { Dictionary } from "lodash";
 const uuidv4 = require("uuid/v4");
 
 export namespace SyncApi {
-  export type ResourceType = "all" | "items" | "day_orders" | "projects";
+  export type ResourceType =
+    | "all"
+    | "items"
+    | "day_orders"
+    | "projects"
+    | "notes";
   export interface Command {
     type: "item_update" | "item_update_day_orders" | "item_close";
     uuid: string;
     args: { [key: string]: any };
+  }
+
+  export interface Note {
+    id: number;
+    item_id: number;
+    project_id: number;
+    content: string;
+    /** "2020-05-17T03:58:17Z` */
+    posted: string;
+    /** 0: exists, 1: removed */
+    is_deleted: number;
   }
 
   export interface Project {
@@ -48,6 +64,7 @@ export namespace SyncApi {
     sync_token: string;
     items?: Task[];
     projects?: Project[];
+    notes?: Note[];
     day_orders?: Dictionary<number>;
   }
 
@@ -56,6 +73,7 @@ export namespace SyncApi {
       "items",
       "day_orders",
       "projects",
+      "notes",
     ];
 
     private readonly baseUrl: string;
@@ -164,7 +182,7 @@ export namespace SocketApi {
     static use(token: string, listener: EventListener): ApiClient {
       const socket = new WebSocket(`wss://ws.todoist.com/ws?token=${token}`);
 
-      const onOpenListener = (ev: WebSocketEventMap["open"]) =>
+      const onOpenListener = (_ev: WebSocketEventMap["open"]) =>
         listener.onOpen?.();
       const onCloseListener = (ev: WebSocketEventMap["close"]) =>
         listener.onClose?.(ev);

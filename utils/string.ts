@@ -1,3 +1,4 @@
+import marked from "marked";
 const joypixels = require("emoji-toolkit") as any;
 
 export const trimBracketContents = (text: string): string =>
@@ -11,3 +12,8 @@ export const trimPrefixEmoji = (text: string): string =>
 
 export const toEmojiString: (text: string) => string =
   joypixels.shortnameToImage;
+
+export const toMarkdown = (text: string): string =>
+  marked(text, {
+    breaks: true,
+  });

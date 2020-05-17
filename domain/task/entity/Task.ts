@@ -5,6 +5,7 @@ import { Project } from "~/domain/timer/entity/Project";
 import { Priority } from "~/domain/task/vo/Priority";
 import { trimBracketContents, trimPrefixEmoji } from "~/utils/string";
 import { DateTime } from "~/domain/common/DateTime";
+import { Note } from "~/domain/task/entity/Note";
 
 interface Props {
   id: TaskId;
@@ -14,6 +15,7 @@ interface Props {
   projectId?: ProjectId;
   entryProject?: Project;
   dueDate?: DateTime;
+  notes?: Note[];
 }
 
 type Args = Props;
@@ -52,6 +54,10 @@ export class Task extends Entity<Props> {
 
   get dueDate(): DateTime | undefined {
     return this._props.dueDate;
+  }
+
+  get notes(): Note[] {
+    return this._props.notes ?? [];
   }
 
   get titleWithoutDecorated(): string {

@@ -48,6 +48,11 @@ class TimerModule extends VuexModule {
       : null;
   }
 
+  get taskRelatedToCurrentEntry(): Task | null {
+    const id = this.recentTask?.taskId?.asNumber;
+    return id ? taskStore.taskById[id] : null;
+  }
+
   get entries(): Entry[] {
     return (
       Object.values(this._entryById).map((e) =>

@@ -1,5 +1,6 @@
 import _, { Dictionary } from "lodash";
 import { Either, left, right } from "owlelia";
+import { LazyGetter } from "lazy-get-decorator";
 import logger from "~/utils/global-logger";
 import * as todoist from "~/external/todoist";
 import { SyncApi } from "~/external/todoist";
@@ -20,6 +21,10 @@ import { CompleteTaskError } from "~/domain/task/vo/CompleteTaskError";
 import { UpdateTaskError } from "~/domain/task/vo/UpdateTaskError";
 import { UpdateTasksOrderError } from "~/domain/task/vo/UpdateTasksOrderError";
 import { FetchProjectsError } from "~/domain/task/vo/FetchProjectsError";
+import { Note } from "~/domain/task/entity/Note";
+import { NoteId } from "~/domain/task/vo/NoteId";
+
+const notesMemoize = LazyGetter();
 
 export class TaskServiceImpl implements TaskService {
   private syncClient: todoist.SyncApi.SyncClient;
@@ -28,6 +33,12 @@ export class TaskServiceImpl implements TaskService {
   private todoistSyncToken: string = "*";
   private taskById: Dictionary<todoist.SyncApi.Task>;
   private projectById: Dictionary<todoist.SyncApi.Project>;
+  private notesById: Dictionary<todoist.SyncApi.Note>;
+
+  @notesMemoize
+  private get notesByTaskId(): Dictionary<todoist.SyncApi.Note[]> {
+    return _.groupBy(this.notesById, (x) => x.item_id);
+  }
 
   private get shortTodoistSyncToken(): string {
     return this.todoistSyncToken.slice(0, 7);
@@ -70,7 +81,15 @@ export class TaskServiceImpl implements TaskService {
     this.socketClient.terminate();
   }
 
-  private static toTask(task: todoist.SyncApi.Task): Task {
+  private static toNote(note: todoist.SyncApi.Note): Note {
+    return Note.of({
+      id: NoteId.of(note.id),
+      body: note.content,
+      createdAt: DateTime.of(note.posted),
+    });
+  }
+
+  private toTask(task: todoist.SyncApi.Task): Task {
     return Task.of({
       id: TaskId.of(task.id),
       title: task.content,
@@ -78,6 +97,7 @@ export class TaskServiceImpl implements TaskService {
       priority: Priority.try(task.priority).orThrow(),
       projectId: task.project_id ? ProjectId.of(task.project_id) : undefined,
       dueDate: task.due ? DateTime.of(task.due.date) : undefined,
+      notes: this.notesByTaskId[task.id]?.map(TaskServiceImpl.toNote),
     });
   }
 
@@ -103,6 +123,16 @@ export class TaskServiceImpl implements TaskService {
       this.projectById = {
         ...this.projectById,
         ..._.keyBy(res.projects, (x) => x.id),
+      };
+    }
+
+    notesMemoize.reset(this);
+    if (res.full_sync) {
+      this.notesById = _.keyBy(res.notes, (x) => x.id);
+    } else {
+      this.notesById = {
+        ...this.notesById,
+        ..._.keyBy(res.notes, (x) => x.id),
       };
     }
 
@@ -132,7 +162,7 @@ export class TaskServiceImpl implements TaskService {
           .values()
           .reject((x) => x.is_deleted === 1)
           .reject((x) => x.checked === 1)
-          .map((x) => TaskServiceImpl.toTask(x))
+          .map((x) => this.toTask(x))
           .value()
       );
     } catch (err) {

@@ -135,15 +135,18 @@ class TaskModule extends VuexModule {
     return this._taskConfig ? toTaskConfig(this._taskConfig) : null;
   }
 
-  get tasks(): Task[] {
-    // FIXME: refactoring extract
-    return Object.values(this._taskById).map((x) =>
+  get taskById(): { [taskId: number]: Task } {
+    return _.mapValues(this._taskById, (x) =>
       x.cloneWith(
         x.projectId
           ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
           : undefined
       )
     );
+  }
+
+  get tasks(): Task[] {
+    return Object.values(this.taskById);
   }
 
   get tasksOrderAsDay(): Task[] {
