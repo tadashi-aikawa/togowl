@@ -2,6 +2,7 @@
   <div v-if="notes">
     <template v-for="note in notes">
       <v-card :key="note.idAsNumber" class="card">
+        <!--eslint-disable-next-line-->
         <div v-html="note.bodyAsMarkdown" />
       </v-card>
     </template>
