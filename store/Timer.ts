@@ -212,7 +212,7 @@ class TimerModule extends VuexModule {
   }
 
   @Action
-  completeCurrentEntry(): Promise<Either<TogowlError, Entry>> {
+  async completeCurrentEntry(): Promise<Either<TogowlError, Entry>> {
     // TODO: Complete Todoist task and Add complete tag to toggl entry
     if (!this.currentEntry) {
       return Promise.resolve(
@@ -224,22 +224,30 @@ class TimerModule extends VuexModule {
       );
     }
 
-    return service!.stopEntry(this.currentEntry).then((e) =>
-      e.mapRight((entry) => {
-        this.setCurrentEntry(null);
-        if (
-          this.recentTask?.taskId &&
-          this.recentTask?.entryId?.equals(entry.id)
-        ) {
-          taskStore.completeTask(this.recentTask?.taskId);
-        }
-        return addMetaToEntry(entry, projectStore.projectById);
-      })
-    );
+    const entryOrErr = await service!.stopEntry(this.currentEntry);
+    if (entryOrErr.isLeft()) {
+      return left(entryOrErr.error);
+    }
+
+    this.setCurrentEntry(null);
+    if (
+      this.recentTask?.taskId &&
+      this.recentTask?.entryId?.equals(entryOrErr.value.id)
+    ) {
+      await taskStore.completeTask(this.recentTask?.taskId);
+    }
+
+    // TODO: Move to service
+    const err = await cloudRepository.saveRecentTask(RecentTask.empty());
+    if (err) {
+      return left(err);
+    }
+
+    return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
 
   @Action
-  pauseCurrentEntry(): Promise<Either<TogowlError, Entry>> {
+  async pauseCurrentEntry(): Promise<Either<TogowlError, Entry>> {
     // XXX: This action is similar to completeCurrentEntry but not same
     if (!this.currentEntry) {
       return Promise.resolve(
@@ -251,16 +259,22 @@ class TimerModule extends VuexModule {
       );
     }
 
-    return service!.stopEntry(this.currentEntry).then((e) =>
-      e.mapRight((entry) => {
-        this.setCurrentEntry(null);
-        return addMetaToEntry(entry, projectStore.projectById);
-      })
-    );
+    const entryOrErr = await service!.stopEntry(this.currentEntry);
+    if (entryOrErr.isLeft()) {
+      return left(entryOrErr.error);
+    }
+
+    this.setCurrentEntry(null);
+    const err = await cloudRepository.saveRecentTask(RecentTask.empty());
+    if (err) {
+      return left(err);
+    }
+
+    return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
 
   @Action
-  cancelCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
+  async cancelCurrentEntry(): Promise<Either<TogowlError, Entry | null>> {
     // XXX: This action is similar to completeCurrentEntry but not same
     if (!this.currentEntry) {
       return Promise.resolve(
@@ -272,13 +286,18 @@ class TimerModule extends VuexModule {
       );
     }
 
-    return service!.deleteEntry(this.currentEntry).then((e) =>
-      e.mapRight(() => {
-        const entry = this.currentEntry!;
-        this.setCurrentEntry(null);
-        return addMetaToEntry(entry, projectStore.projectById);
-      })
-    );
+    const entryOrErr = await service!.deleteEntry(this.currentEntry);
+    if (entryOrErr.isLeft()) {
+      return left(entryOrErr.error);
+    }
+
+    this.setCurrentEntry(null);
+    const err = await cloudRepository.saveRecentTask(RecentTask.empty());
+    if (err) {
+      return left(err);
+    }
+
+    return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
 
   @Action

@@ -16,6 +16,10 @@ export class RecentTask extends ValueObject<Props> {
     return new RecentTask(args);
   }
 
+  static empty(): RecentTask {
+    return RecentTask.of({});
+  }
+
   get taskId(): TaskId | undefined {
     return this._value.taskId;
   }
