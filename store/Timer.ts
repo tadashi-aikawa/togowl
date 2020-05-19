@@ -201,13 +201,15 @@ class TimerModule extends VuexModule {
     }
 
     this.setCurrentEntry(entryOrErr.value);
-    // TODO: Move to service
-    await cloudRepository.saveRecentTask(
-      RecentTask.of({
-        taskId: task.id,
-        entryId: entryOrErr.value.id,
-      })
-    );
+    // Not use await because prioritize speed over certainty
+    cloudRepository
+      .saveRecentTask(
+        RecentTask.of({
+          taskId: task.id,
+          entryId: entryOrErr.value.id,
+        })
+      )
+      .then((e) => e && console.error(e));
     return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
 
@@ -234,14 +236,14 @@ class TimerModule extends VuexModule {
       this.recentTask?.taskId &&
       this.recentTask?.entryId?.equals(entryOrErr.value.id)
     ) {
-      await taskStore.completeTask(this.recentTask?.taskId);
+      // Not use await because prioritize speed over certainty
+      taskStore.completeTask(this.recentTask?.taskId);
     }
 
-    // TODO: Move to service
-    const err = await cloudRepository.saveRecentTask(RecentTask.empty());
-    if (err) {
-      return left(err);
-    }
+    // Not use await because prioritize speed over certainty
+    cloudRepository
+      .saveRecentTask(RecentTask.empty())
+      .then((e) => e && console.error(e));
 
     return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
@@ -265,10 +267,10 @@ class TimerModule extends VuexModule {
     }
 
     this.setCurrentEntry(null);
-    const err = await cloudRepository.saveRecentTask(RecentTask.empty());
-    if (err) {
-      return left(err);
-    }
+    // Not use await because prioritize speed over certainty
+    cloudRepository
+      .saveRecentTask(RecentTask.empty())
+      .then((e) => e && console.log(e));
 
     return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
@@ -292,10 +294,10 @@ class TimerModule extends VuexModule {
     }
 
     this.setCurrentEntry(null);
-    const err = await cloudRepository.saveRecentTask(RecentTask.empty());
-    if (err) {
-      return left(err);
-    }
+    // Not use await because prioritize speed over certainty
+    cloudRepository
+      .saveRecentTask(RecentTask.empty())
+      .then((e) => e && console.error(e));
 
     return right(addMetaToEntry(entryOrErr.value, projectStore.projectById));
   }
