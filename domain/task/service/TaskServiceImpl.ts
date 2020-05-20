@@ -37,7 +37,11 @@ export class TaskServiceImpl implements TaskService {
 
   @notesMemoize
   private get notesByTaskId(): Dictionary<todoist.SyncApi.Note[]> {
-    return _.groupBy(this.notesById, (x) => x.item_id);
+    return _(this.notesById)
+      .values()
+      .reject((x) => x.is_deleted === 1)
+      .groupBy((x) => x.item_id)
+      .value();
   }
 
   private get shortTodoistSyncToken(): string {
