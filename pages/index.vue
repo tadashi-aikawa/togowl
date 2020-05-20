@@ -436,13 +436,15 @@ class Root extends Vue {
 export default Root;
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$current-entry-height: 12px + 220px + 12px;
+
 .task-area {
   margin: 10px;
   padding: 5px;
   width: 100%;
   max-width: 650px;
-  height: calc(100vh - 80px - 220px - 56px - 10px);
+  height: calc(#{$contents-height} - #{$current-entry-height} - 3px);
   overflow-y: scroll;
 }
 
@@ -454,7 +456,8 @@ export default Root;
 .right-detail-area {
   margin-left: 20px;
   padding: 10px;
-  height: calc(100vh - 80px - 56px);
+  height: calc(#{$contents-height} - 18px);
   background-color: #333333;
+  overflow-y: scroll;
 }
 </style>

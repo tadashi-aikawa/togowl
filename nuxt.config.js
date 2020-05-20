@@ -43,6 +43,7 @@ export default {
     // Doc: https://github.com/nuxt-community/eslint-module
     "@nuxtjs/eslint-module",
     "@nuxtjs/vuetify",
+    "@nuxtjs/style-resources",
     "@nuxt/typescript-build",
   ],
   /*
@@ -78,6 +79,10 @@ export default {
         },
       },
     },
+  },
+  /* style-resources */
+  styleResources: {
+    scss: ["./assets/vars/layout.scss"],
   },
   /*
    ** Build configuration
