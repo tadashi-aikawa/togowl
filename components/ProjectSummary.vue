@@ -1,8 +1,8 @@
 <template>
   <div class="root">
-    <template v-if="project.category">
+    <template v-if="projectCategory">
       <v-avatar tile size="14px">
-        <ProjectCategoryIcon :project-category="project.category" />
+        <ProjectCategoryIcon :project-category="projectCategory" />
       </v-avatar>
       <span v-text="projectCategoryName" />
       <span style="margin: 0 2px;">></span>
@@ -19,6 +19,7 @@ import { computed, defineComponent } from "@vue/composition-api";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";
 import { Project } from "~/domain/timer/entity/Project";
+import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 
 export default defineComponent({
   components: {
@@ -31,11 +32,16 @@ export default defineComponent({
       required: true,
     },
   },
-  setup({ project }) {
+  setup(props) {
     return {
-      projectName: computed((): string => project.nameWithoutBracket ?? ""),
+      projectCategory: computed(
+        (): ProjectCategory | undefined => props.project.category
+      ),
+      projectName: computed(
+        (): string => props.project.nameWithoutBracket ?? ""
+      ),
       projectCategoryName: computed(
-        (): string => project.category?.nameWithoutBracket ?? ""
+        (): string => props.project.category?.nameWithoutBracket ?? ""
       ),
     };
   },
