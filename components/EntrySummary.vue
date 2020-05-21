@@ -1,27 +1,30 @@
 <template>
   <div>
-    <div class="entry" :style="{ width: width }" v-text="title" />
-    <ProjectSummary v-if="entry.project" :project="entry.project" />
+    <div class="entry" v-text="title" />
+    <ProjectSummary v-if="project" :project="project" />
   </div>
 </template>
+
 <script lang="ts">
-import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { computed, defineComponent } from "@vue/composition-api";
 import { Entry } from "~/domain/timer/entity/Entry";
 import ProjectSummary from "~/components/ProjectSummary.vue";
+import { Project } from "~/domain/timer/entity/Project";
 
-@Component({ components: { ProjectSummary } })
-class EntrySummary extends Vue {
-  @Prop()
-  entry: Entry;
-
-  @Prop()
-  width: string;
-
-  get title(): string {
-    return this.entry.description;
-  }
-}
-export default EntrySummary;
+export default defineComponent({
+  components: {
+    ProjectSummary,
+  },
+  props: {
+    entry: { type: Object as () => Entry, required: true },
+  },
+  setup(props) {
+    return {
+      title: computed((): string => props.entry.description),
+      project: computed((): Project | undefined => props.entry.project),
+    };
+  },
+});
 </script>
 
 <style scoped>
