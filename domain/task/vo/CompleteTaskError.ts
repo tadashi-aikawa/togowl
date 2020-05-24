@@ -5,10 +5,9 @@ export class CompleteTaskError extends TogowlError {
   code = "COMPLETE_TASK";
   name = "Fail to complete task.";
 
-  static of(args: { taskId: TaskId; stack?: string }): CompleteTaskError {
+  static of(args: { taskId: TaskId }): CompleteTaskError {
     return new CompleteTaskError(
-      `Fail to complete a task. id: ${args.taskId.asNumber}`,
-      args.stack
+      `Fail to complete a task. id: ${args.taskId.asNumber}`
     );
   }
 }

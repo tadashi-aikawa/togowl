@@ -21,11 +21,9 @@ export class CreateServiceError extends TogowlError {
   static of(args: {
     serviceName?: string;
     reason?: string;
-    stack?: string;
   }): CreateServiceError {
     return new CreateServiceError(
-      `Fail to create ${args.serviceName} because ${args.reason}`,
-      args.stack
+      `Fail to create ${args.serviceName} because ${args.reason}`
     );
   }
 }
@@ -61,7 +59,6 @@ export async function createNotificationService(): Promise<
       CreateServiceError.of({
         serviceName: "NotificationService",
         reason: configOrErr.error.message,
-        stack: configOrErr.error.stack,
       })
     );
   }

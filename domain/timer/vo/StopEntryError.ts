@@ -5,16 +5,11 @@ export class StopEntryError extends TogowlError {
   code = "STOP_ENTRY";
   name = "Fail to stop a entry.";
 
-  static of(args: {
-    title: string;
-    project?: Project;
-    stack?: string;
-  }): StopEntryError {
+  static of(args: { title: string; project?: Project }): StopEntryError {
     return new StopEntryError(
       `Fail to stop a entry, ${args.title}(${
         args.project?.name ?? "No Project"
-      }).`,
-      args.stack
+      }).`
     );
   }
 }

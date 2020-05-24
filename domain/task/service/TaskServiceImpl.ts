@@ -67,11 +67,7 @@ export class TaskServiceImpl implements TaskService {
       },
       onError: (event) => {
         logger.put("TaskService.onError");
-        listener.onError?.(
-          SubscribeTaskError.of({
-            stack: event.reason,
-          })
-        );
+        listener.onError?.(SubscribeTaskError.of({ message: event.reason }));
       },
       onSyncNeeded: (clientId?: string) => {
         logger.put("TaskService.onSyncNeeded");
@@ -174,7 +170,7 @@ export class TaskServiceImpl implements TaskService {
       logger.put(`TaskService.fetchTasks.error: ${this.shortTodoistSyncToken}`);
       return left(
         FetchTasksError.of({
-          stack: err.stack,
+          message: err.message,
         })
       );
     }
@@ -204,7 +200,6 @@ export class TaskServiceImpl implements TaskService {
       );
       return CompleteTaskError.of({
         taskId,
-        stack: err.stack,
       });
     }
   }
@@ -240,7 +235,6 @@ export class TaskServiceImpl implements TaskService {
       return UpdateTaskError.of({
         taskId,
         detail: "Can't update due date on Todoist",
-        stack: err.stack,
       });
     }
   }
@@ -269,9 +263,7 @@ export class TaskServiceImpl implements TaskService {
       logger.put(
         `TaskService.updateTaskOrder.error: ${this.shortTodoistSyncToken}`
       );
-      return UpdateTasksOrderError.of({
-        stack: err.stack,
-      });
+      return UpdateTasksOrderError.of();
     }
   }
 
@@ -299,11 +291,7 @@ export class TaskServiceImpl implements TaskService {
       logger.put(
         `TaskService.fetchProjects.error: ${this.shortTodoistSyncToken}`
       );
-      return left(
-        FetchProjectsError.of({
-          stack: err.stack,
-        })
-      );
+      return left(FetchProjectsError.of());
     }
   }
 }

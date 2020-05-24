@@ -5,16 +5,11 @@ export class StartEntryError extends TogowlError {
   code = "START_ENTRY";
   name = "Fail to start a entry.";
 
-  static of(args: {
-    title: string;
-    project?: Project;
-    stack?: string;
-  }): StartEntryError {
+  static of(args: { title: string; project?: Project }): StartEntryError {
     return new StartEntryError(
       `Fail to start a entry, ${args.title}(${
         args.project?.name ?? "No Project"
-      }).`,
-      args.stack
+      }).`
     );
   }
 }

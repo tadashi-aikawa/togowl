@@ -4,10 +4,7 @@ export class SubscribeTimerError extends TogowlError {
   code = "SUBSCRIBE_TIMER";
   name = "Fail to subscribe timer events.";
 
-  static of(args: { stack?: string }): SubscribeTimerError {
-    return new SubscribeTimerError(
-      `Fail to subscribe timer events.`,
-      args.stack
-    );
+  static of(args: { message?: string }): SubscribeTimerError {
+    return new SubscribeTimerError(args.message);
   }
 }

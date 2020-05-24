@@ -32,7 +32,6 @@ export class NotificationServiceImpl implements NotificationService {
     } catch (e) {
       return NotifyToSlackError.of({
         channelName: this.channel,
-        stack: e.stack,
       });
     }
   }

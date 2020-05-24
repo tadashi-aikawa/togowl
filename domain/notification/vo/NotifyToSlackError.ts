@@ -5,13 +5,9 @@ export class NotifyToSlackError extends TogowlError {
   code = "NOTIFY_TO_SLACK";
   name = "Fail notifying to slack.";
 
-  static of(args: {
-    channelName?: ChannelName;
-    stack?: string;
-  }): NotifyToSlackError {
+  static of(args: { channelName?: ChannelName }): NotifyToSlackError {
     return new NotifyToSlackError(
-      `Fail notifying to ${args.channelName?.unwrap() ?? "default channel"}.`,
-      args.stack
+      `Fail notifying to ${args.channelName?.unwrap() ?? "default channel"}.`
     );
   }
 }

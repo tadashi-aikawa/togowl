@@ -28,7 +28,7 @@
     "lazy-get-decorator": "^2.2.0",
     "marked": "^1.1.0",
     "nuxt": "^2.0.0",
-    "owlelia": "^0.8.0",
+    "owlelia": "^0.9.0",
     "query-string": "^6.10.1",
     "shallow-equal-object": "^1.1.1",
     "type-fest": "^0.13.1",

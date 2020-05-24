@@ -54,7 +54,7 @@ export class TimerServiceImpl implements TimerService {
         logger.put("TimerService.onError");
         listener.onError?.(
           SubscribeTimerError.of({
-            stack: event.reason,
+            message: event.reason,
           })
         );
       },
@@ -105,11 +105,7 @@ export class TimerServiceImpl implements TimerService {
     } catch (err) {
       logger.put("TimerService.fetchCurrentEntry.err");
       logger.put(err.message);
-      return left(
-        FetchCurrentEntryError.of({
-          stack: err.stack,
-        })
-      );
+      return left(FetchCurrentEntryError.of());
     }
   }
 
@@ -140,7 +136,6 @@ export class TimerServiceImpl implements TimerService {
         StartEntryError.of({
           title: description,
           project,
-          stack: err.stack,
         })
       );
     }
@@ -166,7 +161,6 @@ export class TimerServiceImpl implements TimerService {
         UpdateEntryError.of({
           title: entry.description,
           project: entry.project,
-          stack: err.stack,
         })
       );
     }
@@ -186,7 +180,6 @@ export class TimerServiceImpl implements TimerService {
         StopEntryError.of({
           title: entry.description,
           project: entry.project,
-          stack: err.stack,
         })
       );
     }
@@ -204,7 +197,6 @@ export class TimerServiceImpl implements TimerService {
         DeleteEntryError.of({
           title: entry.description,
           project: entry.project,
-          stack: err.stack,
         })
       );
     }
@@ -223,7 +215,6 @@ export class TimerServiceImpl implements TimerService {
       return left(
         FetchEntriesError.of({
           detail: `since ${since.displayDateTime}.`,
-          stack: err.stack,
         })
       );
     }
@@ -258,11 +249,7 @@ export class TimerServiceImpl implements TimerService {
     } catch (err) {
       logger.put("TimerService.fetchProjects.err");
       logger.put(err.message);
-      return left(
-        FetchProjectsError.of({
-          stack: err.stack,
-        })
-      );
+      return left(FetchProjectsError.of());
     }
   }
 

@@ -213,7 +213,7 @@ class FirebaseCloudRepository implements CloudRepository {
     } catch (e) {
       return left(
         LoginError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
+          detail: `${e.code}: ${e.message}`,
         })
       );
     }
@@ -233,7 +233,7 @@ class FirebaseCloudRepository implements CloudRepository {
     } catch (e) {
       return left(
         LoadUserError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
+          detail: `${e.code}: ${e.message}`,
         })
       );
     }
@@ -258,8 +258,7 @@ class FirebaseCloudRepository implements CloudRepository {
       })
       .catch((e) =>
         SaveSlackConfigError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
-          stack: e.stack,
+          detail: `${e.code}: ${e.message}`,
         })
       );
   }
@@ -282,8 +281,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch((e) =>
         left(
           LoadSlackConfigError.of({
-            detail: `${e.code}: ${e.message}, ${e.stack}`,
-            stack: e.stack,
+            detail: `${e.code}: ${e.message}`,
           })
         )
       );
@@ -299,8 +297,7 @@ class FirebaseCloudRepository implements CloudRepository {
       })
       .catch((e) =>
         SaveRecentTaskError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
-          stack: e.stack,
+          detail: `${e.code}: ${e.message}`,
         })
       );
   }
@@ -320,8 +317,7 @@ class FirebaseCloudRepository implements CloudRepository {
       })
       .catch((e) =>
         SaveTimerConfigError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
-          stack: e.stack,
+          detail: `${e.code}: ${e.message}`,
         })
       );
   }
@@ -344,8 +340,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch((e) =>
         left(
           LoadTimerConfigError.of({
-            detail: `${e.code}: ${e.message}, ${e.stack}`,
-            stack: e.stack,
+            detail: `${e.code}: ${e.message}`,
           })
         )
       );
@@ -361,8 +356,7 @@ class FirebaseCloudRepository implements CloudRepository {
       })
       .catch((e) =>
         SaveTaskConfigError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
-          stack: e.stack,
+          detail: `${e.code}: ${e.message}`,
         })
       );
   }
@@ -385,8 +379,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch((e) =>
         left(
           LoadTaskConfigError.of({
-            detail: `${e.code}: ${e.message}, ${e.stack}`,
-            stack: e.stack,
+            detail: `${e.code}: ${e.message}`,
           })
         )
       );
@@ -404,8 +397,7 @@ class FirebaseCloudRepository implements CloudRepository {
       })
       .catch((e) =>
         SaveProjectConfigError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
-          stack: e.stack,
+          detail: `${e.code}: ${e.message}`,
         })
       );
   }
@@ -428,8 +420,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch((e) =>
         left(
           LoadProjectConfigError.of({
-            detail: `${e.code}: ${e.message}, ${e.stack}`,
-            stack: e.stack,
+            detail: `${e.code}: ${e.message}`,
           })
         )
       );
@@ -447,8 +438,7 @@ class FirebaseCloudRepository implements CloudRepository {
       })
       .catch((e) =>
         SaveProjectCategoryConfigError.of({
-          detail: `${e.code}: ${e.message}, ${e.stack}`,
-          stack: e.stack,
+          detail: `${e.code}: ${e.message}`,
         })
       );
   }
@@ -475,8 +465,7 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch((e) =>
         left(
           LoadProjectCategoryConfigError.of({
-            detail: `${e.code}: ${e.message}, ${e.stack}`,
-            stack: e.stack,
+            detail: `${e.code}: ${e.message}`,
           })
         )
       );
