@@ -5,7 +5,7 @@ MAKEFLAGS += --warn-undefined-variables
 #------
 
 guard-%:
-	powershell if ( '$($*)' -eq '' ) {\
+	@powershell if ( '$($*)' -eq '' ) {\
 		echo '[ERROR] $* is required!!';\
 		exit 1;\
 	}
