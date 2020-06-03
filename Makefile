@@ -1,17 +1,12 @@
 MAKEFLAGS += --warn-undefined-variables
 
-
 #------
 
-.PHONY: help
-help: ## Help
-	@"C:\Program Files\Git\usr\bin\awk" 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9][a-zA-Z0-9_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-
 guard-%:
-	@if [ "${${*}}" = "" ]; then \
-	    echo "[ERROR] $* is required!!"; \
-	    exit 1; \
-	fi
+	powershell if ( '$($*)' -eq '' ) {\
+		echo '[ERROR] $* is required!!';\
+		exit 1;\
+	}
 
 .PHONY: build
 build: ## Build
