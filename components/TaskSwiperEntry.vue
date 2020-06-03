@@ -49,8 +49,7 @@
   </swiper>
 </template>
 <script lang="ts">
-  import {defineComponent, computed, reactive, ref, onMounted} from "@vue/composition-api";
-import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import { defineComponent, reactive, ref } from "@vue/composition-api";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntry from "~/components/TaskEntry.vue";
 import { taskStore } from "~/utils/store-accessor";
