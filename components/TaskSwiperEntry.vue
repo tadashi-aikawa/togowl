@@ -1,5 +1,5 @@
 <template>
-  <swiper ref="mySwiper" :options="swiperOption">
+  <swiper ref="mySwiper" :options="state.swiperOption">
     <swiper-slide class="swiper-close-area">
       <v-row align="center" justify="center" style="height: 100%;">
         <v-icon color="white">mdi-checkbox-marked-circle-outline</v-icon>
@@ -49,74 +49,72 @@
   </swiper>
 </template>
 <script lang="ts">
+  import {defineComponent, computed, reactive, ref, onMounted} from "@vue/composition-api";
 import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntry from "~/components/TaskEntry.vue";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
 
-@Component({
+export default defineComponent({
   components: { TaskEntry },
-})
-class TaskSwiperEntry extends Vue {
-  @Prop()
-  task: Task;
+  props: {
+    task: { type: Object as () => Task, required: true },
+    disabledStart: { type: Boolean },
+  },
+  setup(props, { emit }) {
+    const mySwiper = ref<any>();
 
-  @Prop({ default: false })
-  disabledStart: boolean;
+    const revertSwiperStateAsDefault = () => {
+      mySwiper.value.swiper.slideTo(1);
+    };
 
-  swiperOption = {};
+    const completeTask = async () => {
+      revertSwiperStateAsDefault();
+      await taskStore.completeTask(props.task.id);
+    };
+    const updateToToday = async () => {
+      revertSwiperStateAsDefault();
+      await taskStore.updateDueDate({
+        taskId: props.task.id,
+        dueDate: DateTime.now(),
+      });
+    };
+    const updateToTomorrow = async () => {
+      revertSwiperStateAsDefault();
+      await taskStore.updateDueDate({
+        taskId: props.task.id,
+        dueDate: DateTime.tomorrow(),
+      });
+    };
 
-  created() {
-    const self = this;
-    this.swiperOption = {
-      initialSlide: 1,
-      loop: false,
-      noSwipingClass: "no-swiping-class",
-      on: {
-        transitionEnd(this: { activeIndex: number }) {
-          if (this.activeIndex === 0) {
-            self.completeTask();
-          }
+    const state = reactive({
+      swiperOption: {
+        initialSlide: 1,
+        loop: false,
+        noSwipingClass: "no-swiping-class",
+        on: {
+          transitionEnd(this: { activeIndex: number }) {
+            if (this.activeIndex === 0) {
+              completeTask();
+            }
+          },
         },
       },
+    });
+
+    return {
+      state,
+      mySwiper,
+      completeTask,
+      updateToToday,
+      updateToTomorrow,
+      handleClickStartButton() {
+        emit("on-click-start-button", props.task);
+      },
     };
-  }
-
-  get swiper(): any {
-    return (this.$refs.mySwiper as any).swiper;
-  }
-
-  revertSwiperStateAsDefault() {
-    this.swiper.slideTo(1);
-  }
-
-  async completeTask() {
-    this.revertSwiperStateAsDefault();
-    await taskStore.completeTask(this.task.id);
-  }
-
-  async updateToToday() {
-    this.revertSwiperStateAsDefault();
-    await taskStore.updateDueDate({
-      taskId: this.task.id,
-      dueDate: DateTime.now(),
-    });
-  }
-
-  async updateToTomorrow() {
-    this.revertSwiperStateAsDefault();
-    await taskStore.updateDueDate({
-      taskId: this.task.id,
-      dueDate: DateTime.tomorrow(),
-    });
-  }
-
-  handleClickStartButton() {
-    this.$emit("on-click-start-button", this.task);
-  }
-}
-export default TaskSwiperEntry;
+  },
+});
 </script>
 
 <style scoped>
