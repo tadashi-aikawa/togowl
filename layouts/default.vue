@@ -3,10 +3,7 @@
     <v-row class="fill-height" align-content="center" justify="center">
       <v-col cols="12">
         <v-row align-content="center" justify="center">
-          <v-img
-            src="https://github.com/tadashi-aikawa/togowl/raw/master/public/icon.png"
-            max-width="96"
-          />
+          <v-img src="icon.png" max-width="96" />
         </v-row>
       </v-col>
       <v-col class="subtitle-1 text-center" cols="12">
