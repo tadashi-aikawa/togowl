@@ -1,5 +1,5 @@
-togowl-next
-===========
+togowl
+======
 
 <img src="./static/icon.png" width="240" />
 
@@ -22,8 +22,8 @@ It integrates with Toggl, Todoist and Slack.
 ### Clone and install dependencies
 
 ```
-git clone https://github.com/tadashi-aikawa/togowl-next.git
-cd togowl-next
+git clone https://github.com/tadashi-aikawa/togowl.git
+cd togowl
 npm install
 ```
 
