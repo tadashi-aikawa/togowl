@@ -1,4 +1,6 @@
+.SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --warn-undefined-variables
+
 
 #------
 
