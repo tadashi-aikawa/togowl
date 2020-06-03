@@ -5,25 +5,29 @@
       handle=".drag-and-drop-handler"
       ghost-class="ghost"
       drag-class="drag"
-      :list="_tasks"
+      :list="state._tasks"
       :animation="150"
       @sort="onMove"
       @start="onDragStart"
       @end="onDragEnd"
     >
-      <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+      <transition-group
+        type="transition"
+        :name="!state.drag ? 'flip-list' : null"
+      >
         <v-lazy
-          v-for="task in tasks"
+          v-for="task in state._tasks"
           :key="task.id.unwrap()"
           transition="fade-transition"
           :options="{
             threshold: 0.5,
           }"
-          min-height="60"
+          min-height="30"
         >
           <TaskSwiperEntry
             :task="task"
             :disabled-start="disabledStart"
+            :compact="compact"
             @on-click-start-button="handleClickStartButton"
           />
         </v-lazy>
@@ -37,55 +41,48 @@
 <script lang="ts">
 // @ts-ignore
 import draggable from "vuedraggable";
-import {
-  Component,
-  Prop,
-  Vue,
-  Watch,
-} from "~/node_modules/nuxt-property-decorator";
+import { defineComponent, reactive, watchEffect } from "@vue/composition-api";
 import { Task } from "~/domain/task/entity/Task";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
 
-@Component({
+export default defineComponent({
   components: { TaskSwiperEntry, draggable },
-})
-class TaskEntryList extends Vue {
-  @Prop()
-  tasks: Task[];
+  props: {
+    tasks: { type: Array as () => Task[], required: true },
+    loading: { type: Boolean },
+    disabledStart: { type: Boolean },
+    compact: { type: Boolean },
+  },
+  setup(props, { emit }) {
+    const state = reactive({
+      drag: false,
+      _tasks: props.tasks as Task[],
+    });
 
-  @Prop({ default: false })
-  loading: boolean;
+    const updateTasks = () => {
+      state._tasks = props.tasks;
+    };
+    watchEffect(updateTasks);
 
-  @Prop({ default: false })
-  disabledStart: boolean;
-
-  drag = false;
-  _tasks: Task[] = [];
-
-  @Watch("tasks", { immediate: true })
-  updateTasks() {
-    this._tasks = this.tasks;
-  }
-
-  handleClickStartButton(task: Task) {
-    this.$emit("on-click-start", task);
-  }
-
-  onMove() {
-    this.$emit("on-change-order", this._tasks);
-  }
-
-  onDragStart() {
-    this.drag = true;
-  }
-
-  onDragEnd() {
-    setTimeout(() => {
-      this.drag = false;
-    }, 500);
-  }
-}
-export default TaskEntryList;
+    return {
+      state,
+      handleClickStartButton(task: Task) {
+        emit("on-click-start", task);
+      },
+      onMove() {
+        emit("on-change-order", state._tasks);
+      },
+      onDragStart() {
+        state.drag = true;
+      },
+      onDragEnd() {
+        setTimeout(() => {
+          state.drag = false;
+        }, 500);
+      },
+    };
+  },
+});
 </script>
 
 <style scoped>

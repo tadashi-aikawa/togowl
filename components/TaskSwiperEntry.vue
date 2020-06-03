@@ -1,20 +1,23 @@
 <template>
   <swiper ref="mySwiper" :options="state.swiperOption">
-    <swiper-slide class="swiper-close-area">
+    <swiper-slide :class="{ 'swiper-close-area': true, compact }">
       <v-row align="center" justify="center" style="height: 100%;">
-        <v-icon color="white">mdi-checkbox-marked-circle-outline</v-icon>
-        <span style="padding-left: 5px;">Complete</span>
+        <v-icon color="white" :small="compact"
+          >mdi-checkbox-marked-circle-outline</v-icon
+        >
+        <span :class="{ complete: true, compact }">Complete</span>
       </v-row>
     </swiper-slide>
-    <swiper-slide>
+    <swiper-slide :class="{ 'swiper-main-area': true, compact }">
       <TaskEntry
         :task="task"
         :disabled="disabledStart"
+        :compact="compact"
         @on-click-start-button="handleClickStartButton"
         @on-click-complete-button="completeTask"
       />
     </swiper-slide>
-    <swiper-slide class="swiper-extra-menu-area">
+    <swiper-slide :class="{ 'swiper-extra-menu-area': true, compact }">
       <v-list-item>
         <v-container>
           <v-row align="center" justify="center">
@@ -23,7 +26,8 @@
                 outlined
                 class="mx-2"
                 fab
-                small
+                :small="!compact"
+                :x-small="compact"
                 dark
                 @click="updateToToday"
               >
@@ -35,7 +39,8 @@
                 outlined
                 class="mx-2"
                 fab
-                small
+                :small="!compact"
+                :x-small="compact"
                 dark
                 @click="updateToTomorrow"
               >
@@ -60,6 +65,7 @@ export default defineComponent({
   props: {
     task: { type: Object as () => Task, required: true },
     disabledStart: { type: Boolean },
+    compact: { type: Boolean },
   },
   setup(props, { emit }) {
     const mySwiper = ref<any>();
@@ -116,15 +122,37 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .swiper-close-area {
   height: auto;
   opacity: 0.8;
   background-color: darkslategrey;
+
+  &.compact {
+    height: 35px;
+  }
 }
+
+.swiper-main-area {
+  &.compact {
+    height: 35px;
+  }
+}
+
 .swiper-extra-menu-area {
   height: auto;
   opacity: 0.8;
   background-color: dimgrey;
+
+  &.compact {
+    height: 35px;
+  }
+}
+
+.complete {
+  padding-left: 5px;
+  &.compact {
+    font-size: 75%;
+  }
 }
 </style>

@@ -20,12 +20,12 @@ export class Priority {
   static readonly HIGHER = new Priority(3, "higher");
   static readonly HIGHEST = new Priority(4, "highest");
 
-  private constructor(readonly value: number, readonly name: string) {
+  private constructor(readonly number: number, readonly name: string) {
     Priority._values.push(this);
   }
 
   static try(value: number): Either<InvalidPriorityError, Priority> {
-    const p = Priority._values.find((x) => x.value === value);
+    const p = Priority._values.find((x) => x.number === value);
     if (!p) {
       return left(InvalidPriorityError.of({ invalidValue: value }));
     }

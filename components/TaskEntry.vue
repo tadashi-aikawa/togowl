@@ -1,5 +1,10 @@
 <template>
-  <v-list-item :key="task.id.unwrap()" two-line style="padding: 0 5px 0 0;">
+  <v-list-item
+    :key="task.id.unwrap()"
+    :dense="compact"
+    :two-line="!compact"
+    style="padding: 0 5px 0 0;"
+  >
     <v-icon
       class="drag-and-drop-handler no-swiping-class"
       style="cursor: move; color: grey;"
@@ -7,10 +12,14 @@
     >
     <v-list-item-content>
       <v-list-item-title>
-        <TaskSummary :task="task" style="padding-bottom: 5px;" />
+        <TaskSummary
+          :task="task"
+          style="padding-bottom: 5px;"
+          :compact="compact"
+        />
       </v-list-item-title>
     </v-list-item-content>
-    <v-list-item-action style="margin-left: 5px;">
+    <v-list-item-action v-if="!compact" style="margin-left: 5px;">
       <v-btn
         icon
         class="no-swiping-class"
@@ -33,6 +42,7 @@ export default defineComponent({
   props: {
     task: { type: Object as () => Task, required: true },
     disabled: { type: Boolean },
+    compact: { type: Boolean },
   },
   setup(props, { emit }) {
     return {

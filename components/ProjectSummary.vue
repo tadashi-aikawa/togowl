@@ -4,13 +4,13 @@
       <v-avatar tile size="14px">
         <ProjectCategoryIcon :project-category="projectCategory" />
       </v-avatar>
-      <span v-text="projectCategoryName" />
+      <span v-if="!iconOnly" v-text="projectCategoryName" />
       <span style="margin: 0 2px;">></span>
     </template>
     <v-avatar tile size="14px">
       <ProjectIcon :project="project" />
     </v-avatar>
-    <span v-text="projectName" />
+    <span v-if="!iconOnly" v-text="projectName" />
   </div>
 </template>
 
@@ -27,10 +27,8 @@ export default defineComponent({
     ProjectCategoryIcon,
   },
   props: {
-    project: {
-      type: Object as () => Project,
-      required: true,
-    },
+    project: { type: Object as () => Project, required: true },
+    iconOnly: { type: Boolean },
   },
   setup(props) {
     return {

@@ -1,8 +1,13 @@
 <template>
   <div>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div class="task" :style="{ width: width }" v-html="title" />
-    <ProjectSummary v-if="task.entryProject" :project="task.entryProject" />
+    <div :class="styleClass" :style="{ width: width }" v-html="title" />
+    <ProjectSummary
+      v-if="task.entryProject"
+      :project="task.entryProject"
+      :icon-only="compact"
+      :style="projectStyle"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -16,12 +21,21 @@ export default defineComponent({
   props: {
     task: { type: Object as () => Task, required: true },
     width: { type: String },
+    compact: { type: Boolean },
   },
   setup(props) {
     const title = computed(() => toEmojiString(props.task.title));
+    const styleClass = computed(() =>
+      props.compact ? "task-compact" : "task"
+    );
+    const projectStyle = computed(() =>
+      props.compact ? "display: inline;" : ""
+    );
 
     return {
       title,
+      styleClass,
+      projectStyle,
     };
   },
 });
@@ -33,5 +47,12 @@ export default defineComponent({
   color: white;
   padding-bottom: 3px;
   white-space: initial;
+}
+
+.task-compact {
+  color: white;
+  padding-bottom: 3px;
+  white-space: initial;
+  display: inline;
 }
 </style>

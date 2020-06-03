@@ -169,6 +169,16 @@
       </div>
     </template>
 
+    <template v-else-if="activeViewIndex === 2">
+      <div class="scheduler-area">
+        <Scheduler
+          :tasks="tasks"
+          :loading="isTasksLoading"
+          @on-change-order="updateTasksOrder"
+        />
+      </div>
+    </template>
+
     <v-bottom-navigation
       v-model="activeViewIndex"
       grow
@@ -184,6 +194,10 @@
       <v-btn>
         <span>Calendar</span>
         <v-icon>mdi-calendar</v-icon>
+      </v-btn>
+      <v-btn>
+        <span>Scheduler</span>
+        <v-icon>mdi-pen</v-icon>
       </v-btn>
     </v-bottom-navigation>
   </v-layout>
@@ -207,6 +221,7 @@ import TimeEntries from "~/components/TimeEntries.vue";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntryList from "~/components/TaskEntryList.vue";
 import TaskDetail from "~/components/TaskDetail.vue";
+import Scheduler from "~/components/Scheduler.vue";
 
 @Component({
   components: {
@@ -217,6 +232,7 @@ import TaskDetail from "~/components/TaskDetail.vue";
     EntryCalendar,
     EntrySummary,
     TaskDetail,
+    Scheduler,
   },
 })
 class Root extends Vue {
@@ -451,6 +467,15 @@ $current-entry-height: 12px + 220px + 12px;
 .calendar-area {
   padding: 5px;
   width: 100%;
+}
+
+.scheduler-area {
+  margin: 10px;
+  padding: 5px;
+  width: 100%;
+  max-width: 650px;
+  height: calc(#{$contents-height} - 25px);
+  overflow-y: scroll;
 }
 
 .right-detail-area {
