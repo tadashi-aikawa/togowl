@@ -1,9 +1,7 @@
 import {
-  toEmojiString,
   trimBracketContents,
   trimBracketDate,
   trimBracketTime,
-  trimPrefixEmoji,
 } from "./string";
 
 describe.each`
@@ -57,27 +55,3 @@ describe.each`
   test(`${str} -> ${expected}`, () =>
     expect(trimBracketDate(str)).toBe(expected));
 });
-
-describe.each`
-  str                       | expected
-  ${"hoge"}                 | ${"hoge"}
-  ${":emoji: hoge"}         | ${"hoge"}
-  ${" :emoji: hoge"}        | ${"hoge"}
-  ${":emoji:hoge"}          | ${"hoge"}
-  ${":emoji: hoge :emoji:"} | ${"hoge :emoji:"}
-`("trimPrefixEmoji", ({ str, expected }) => {
-  test(`${str} -> ${expected}`, () =>
-    expect(trimPrefixEmoji(str)).toBe(expected));
-});
-
-describe.each`
-  str                    | expectedPattern
-  ${":smile: good :+1:"} | ${/<img .+smile.+\/> good <img .+thumbsup.+\/>/}
-`(
-  "toEmojiString",
-  ({ str, expectedPattern }: { str: string; expectedPattern: string }) => {
-    test(`toEmojiString(${str}) match ${expectedPattern}`, () => {
-      expect(toEmojiString(str)).toMatch(expectedPattern);
-    });
-  }
-);

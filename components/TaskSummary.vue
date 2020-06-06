@@ -14,7 +14,6 @@
 import { computed, defineComponent } from "@vue/composition-api";
 import ProjectSummary from "~/components/ProjectSummary.vue";
 import { Task } from "~/domain/task/entity/Task";
-import { toEmojiString } from "~/utils/string";
 
 export default defineComponent({
   components: { ProjectSummary },
@@ -24,7 +23,7 @@ export default defineComponent({
     compact: { type: Boolean },
   },
   setup(props) {
-    const title = computed(() => toEmojiString(props.task.title));
+    const title = computed(() => props.task.title);
     const styleClass = computed(() =>
       props.compact ? "task-compact" : "task"
     );

@@ -3,7 +3,7 @@ import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Project } from "~/domain/timer/entity/Project";
 import { Priority } from "~/domain/task/vo/Priority";
-import { trimBracketContents, trimPrefixEmoji } from "~/utils/string";
+import { trimBracketContents } from "~/utils/string";
 import { DateTime } from "~/domain/common/DateTime";
 import { Note } from "~/domain/task/entity/Note";
 
@@ -61,7 +61,7 @@ export class Task extends Entity<Props> {
   }
 
   get titleWithoutDecorated(): string {
-    return trimPrefixEmoji(trimBracketContents(this._props.title));
+    return trimBracketContents(this._props.title);
   }
 
   cloneWith(entryProject?: Project): Task {
