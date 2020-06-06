@@ -23,7 +23,8 @@
                 :project-category-as-default="true"
               />
             </v-avatar>
-            {{ event.name }}
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <span class="markdown" v-html="event.nameAsHtml" />
           </div>
         </template>
       </v-calendar>
@@ -118,7 +119,7 @@ class EntryCalendar extends Vue {
   get events(): any[] {
     return this.entries
       ? this.entries.map((x) => ({
-          name: x.description,
+          nameAsHtml: x.descriptionAsMarkdown,
           start: x.start.displayDateTimeWithoutSeconds,
           end: x.stop?.displayDateTimeWithoutSeconds,
           entry: x,

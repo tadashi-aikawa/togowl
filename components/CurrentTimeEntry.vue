@@ -2,7 +2,10 @@
   <div>
     <v-row align="center" justify="center">
       <div style="padding: 15px 15px 0; font-size: 110%;">
-        <span :class="{ 'rainbow-loading': loading }" v-text="displayEntry" />
+        <span
+          :class="{ 'rainbow-loading': loading, markdown: true }"
+          v-html="displayEntryHtml"
+        />
       </div>
     </v-row>
     <v-row align="center" justify="center" style="margin-top: 5px;">
@@ -89,8 +92,8 @@ export default defineComponent({
 
     return {
       state,
-      displayEntry: computed(
-        () => props.currentEntry.description ?? "What are you doing?"
+      displayEntryHtml: computed(
+        () => props.currentEntry.descriptionAsMarkdown ?? "What are you doing?"
       ),
       displayProjectCategory: computed(
         () => props.currentEntry?.projectCategory?.nameWithoutBracket

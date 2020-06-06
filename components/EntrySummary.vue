@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="entry" v-text="title" />
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <div class="entry markdown" v-html="titleHtml" />
     <ProjectSummary v-if="project" :project="project" />
   </div>
 </template>
@@ -20,7 +21,7 @@ export default defineComponent({
   },
   setup(props) {
     return {
-      title: computed((): string => props.entry.description),
+      titleHtml: computed((): string => props.entry.descriptionAsMarkdown),
       project: computed((): Project | undefined => props.entry.project),
     };
   },

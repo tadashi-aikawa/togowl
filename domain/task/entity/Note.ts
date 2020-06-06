@@ -1,7 +1,8 @@
 import { Entity } from "owlelia";
 import { DateTime } from "~/domain/common/DateTime";
 import { NoteId } from "~/domain/task/vo/NoteId";
-import { toMarkdown } from "~/utils/string";
+import { toHTML } from "~/utils/string";
+import { HtmlString } from "~/domain/common/HtmlString";
 
 interface Props {
   id: NoteId;
@@ -22,7 +23,7 @@ export class Note extends Entity<Props> {
     return this._props.id.asNumber;
   }
 
-  get bodyAsMarkdown(): string {
-    return toMarkdown(this._props.body);
+  get bodyAsMarkdown(): HtmlString {
+    return toHTML(this._props.body);
   }
 }

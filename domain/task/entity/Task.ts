@@ -3,9 +3,10 @@ import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Project } from "~/domain/timer/entity/Project";
 import { Priority } from "~/domain/task/vo/Priority";
-import { trimBracketContents } from "~/utils/string";
+import { toHTML, trimBracketContents } from "~/utils/string";
 import { DateTime } from "~/domain/common/DateTime";
 import { Note } from "~/domain/task/entity/Note";
+import { HtmlString } from "~/domain/common/HtmlString";
 
 interface Props {
   id: TaskId;
@@ -60,8 +61,16 @@ export class Task extends Entity<Props> {
     return this._props.notes ?? [];
   }
 
+  get titleAsMarkdown(): HtmlString {
+    return toHTML(this._props.title, true);
+  }
+
   get titleWithoutDecorated(): string {
     return trimBracketContents(this._props.title);
+  }
+
+  get titleAsMarkdownWithoutDecorated(): HtmlString {
+    return toHTML(trimBracketContents(this._props.title));
   }
 
   cloneWith(entryProject?: Project): Task {

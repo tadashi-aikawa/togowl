@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div :class="styleClass" :style="{ width: width }" v-html="title" />
+    <div :class="styleClass" :style="{ width: width }" v-html="titleHtml" />
     <ProjectSummary
       v-if="task.entryProject"
       :project="task.entryProject"
@@ -23,16 +23,17 @@ export default defineComponent({
     compact: { type: Boolean },
   },
   setup(props) {
-    const title = computed(() => props.task.title);
-    const styleClass = computed(() =>
-      props.compact ? "task-compact" : "task"
-    );
+    const titleHtml = computed(() => props.task.titleAsMarkdown);
+    const styleClass = computed(() => [
+      props.compact ? "task-compact" : "task",
+      "markdown",
+    ]);
     const projectStyle = computed(() =>
       props.compact ? "display: inline;" : ""
     );
 
     return {
-      title,
+      titleHtml,
       styleClass,
       projectStyle,
     };

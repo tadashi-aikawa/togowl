@@ -1,0 +1,66 @@
+/* Markdown */
+.markdown {
+  h1 {
+    margin: 0.67em 0;
+  }
+
+  h1, h2 {
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid dimgrey;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  a {
+    color: lightskyblue !important;
+  }
+
+  table {
+    margin: 16px 0;
+    display: block;
+    width: 100%;
+    overflow: auto;
+    border-spacing: 0;
+    border-collapse: collapse;
+
+    th {
+      font-weight: 600;
+      padding: 5px 9px;
+      background-color: dimgrey;
+      border: 1px solid #333333;
+    }
+
+    td {
+      padding: 5px 9px;
+      border: 1px solid #333333;
+    }
+
+    tr {
+      border: 1px solid #333333;
+    }
+  }
+
+  pre {
+    display: block !important;;
+    font-family: monospace !important;;
+    white-space: pre !important;;
+    margin: 1em 0 !important;;
+  }
+
+  code {
+    color: lightgrey !important;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace !important;
+    font-size: 85% !important;
+    font-weight: bolder !important;
+    background-color: #555555 !important;
+    border-radius: 3px !important;
+    padding: 16px !important;
+    overflow: auto !important;
+    line-height: 1.45 !important;
+  }
+}

@@ -7,6 +7,7 @@ import { Entry } from "~/domain/timer/entity/Entry";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import { Project } from "~/domain/timer/entity/Project";
 import { NotifyToSlackError } from "~/domain/notification/vo/NotifyToSlackError";
+import { markdownToSlack } from "~/utils/string";
 
 export class NotificationServiceImpl implements NotificationService {
   constructor(
@@ -39,21 +40,27 @@ export class NotificationServiceImpl implements NotificationService {
   start(entry: Entry): Promise<NotifyToSlackError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
-      `:togowl_play: \`開始\`  *${entry!.description}*    ${footer}`
+      `:togowl_play: \`開始\`  *${markdownToSlack(
+        entry.description
+      )}*    ${footer}`
     );
   }
 
   done(entry: Entry): Promise<NotifyToSlackError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
-      `:togowl_complete: \`完了\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`
+      `:togowl_complete: \`完了\` \`⏱${
+        entry.duration.asJapanese
+      }\` *${markdownToSlack(entry.description)}*    ${footer}`
     );
   }
 
   pause(entry: Entry): Promise<NotifyToSlackError | null> {
     const footer = this.createFooter(entry.project, entry.projectCategory);
     return this.notifyToSlack(
-      `:togowl_pause: \`中断\` \`⏱${entry.duration.asJapanese}\` *${entry.description}*    ${footer}`
+      `:togowl_pause: \`中断\` \`⏱${
+        entry.duration.asJapanese
+      }\` *${markdownToSlack(entry.description)}*    ${footer}`
     );
   }
 

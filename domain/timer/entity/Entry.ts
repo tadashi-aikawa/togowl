@@ -5,6 +5,8 @@ import { Duration } from "~/domain/timer/vo/Duration";
 import { Project } from "~/domain/timer/entity/Project";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import { ProjectId } from "~/domain/timer/vo/ProjectId";
+import { toHTML } from "~/utils/string";
+import { HtmlString } from "~/domain/common/HtmlString";
 
 interface Props {
   id: EntryId;
@@ -37,6 +39,10 @@ export class Entry extends Entity<Props> {
 
   get description(): string {
     return this._props.description;
+  }
+
+  get descriptionAsMarkdown(): HtmlString {
+    return toHTML(this.description, true);
   }
 
   get start(): DateTime {
