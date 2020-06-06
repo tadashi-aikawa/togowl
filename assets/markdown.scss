@@ -45,22 +45,26 @@
     }
   }
 
+  code {
+    color: lightgrey !important;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace !important;
+    font-weight: bolder !important;
+    background-color: #555555 !important;
+    border-radius: 3px !important;
+  }
+
   pre {
     display: block !important;;
     font-family: monospace !important;;
     white-space: pre !important;;
     margin: 1em 0 !important;;
-  }
 
-  code {
-    color: lightgrey !important;
-    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace !important;
-    font-size: 85% !important;
-    font-weight: bolder !important;
-    background-color: #555555 !important;
-    border-radius: 3px !important;
-    padding: 16px !important;
-    overflow: auto !important;
-    line-height: 1.45 !important;
+    code {
+      @extend code;
+      font-size: 85% !important;
+      padding: 8px !important;
+      overflow: auto !important;
+      line-height: 1.45 !important;
+    }
   }
 }
