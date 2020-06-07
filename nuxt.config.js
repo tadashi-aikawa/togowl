@@ -88,7 +88,6 @@ export default {
    ** Build configuration
    */
   build: {
-    vendor: ["vue-awesome-swiper"],
     /*
      ** You can extend webpack config here
      */
