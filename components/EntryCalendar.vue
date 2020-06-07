@@ -2,7 +2,7 @@
   <div>
     <v-sheet :height="height">
       <v-calendar
-        ref="calendar"
+        ref="calendarRef"
         type="day"
         dark
         :start="start"
@@ -10,7 +10,7 @@
         event-color="rgba(0, 255, 0, 0.5)"
         :event-overlap-threshold="10"
         interval-minutes="60"
-        :interval-height="intervalHeight"
+        :interval-height="state.intervalHeight"
         interval-count="24"
         interval-width="35"
         :interval-format="(d) => d.time"
@@ -30,7 +30,7 @@
       </v-calendar>
 
       <v-btn
-        v-if="zoomUp"
+        v-if="state.zoomUp"
         fixed
         dark
         small
@@ -95,72 +95,81 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "~/node_modules/nuxt-property-decorator";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+} from "@vue/composition-api";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { DateTime } from "~/domain/common/DateTime";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 
-@Component({ components: { ProjectIcon } })
-class EntryCalendar extends Vue {
-  @Prop()
-  entries: Entry[];
+export default defineComponent({
+  components: { ProjectIcon },
+  props: {
+    entries: { type: Array as () => Entry[], required: true },
+    height: { type: String, required: true },
+  },
+  setup(props) {
+    const calendarRef = ref<any>();
 
-  @Prop()
-  height: string;
+    const state = reactive({
+      currentDate: DateTime.now(),
+      zoomUp: false,
+      intervalHeight: 64,
+    });
 
-  currentDate = DateTime.now();
-  zoomUp = false;
-  intervalHeight = 64;
-
-  mounted() {
-    this.moveToNow();
-  }
-
-  get events(): any[] {
-    return this.entries
-      ? this.entries.map((x) => ({
-          nameAsHtml: x.descriptionAsMarkdown,
-          start: x.start.displayDateTimeWithoutSeconds,
-          end: x.stop?.displayDateTimeWithoutSeconds,
-          entry: x,
-        }))
-      : [];
-  }
-
-  get start(): string {
-    return this.currentDate.displayDateTimeWithoutSeconds;
-  }
-
-  moveToNow() {
-    const calendarRef: any = this.$refs.calendar;
-    calendarRef.scrollToTime(
-      DateTime.now().minusMinutes(240).displayTimeWithoutSeconds
+    const start = computed(
+      () => state.currentDate.displayDateTimeWithoutSeconds
     );
-  }
+    const events = computed(() =>
+      props.entries
+        ? props.entries.map((x) => ({
+            nameAsHtml: x.descriptionAsMarkdown,
+            start: x.start.displayDateTimeWithoutSeconds,
+            end: x.stop?.displayDateTimeWithoutSeconds,
+            entry: x,
+          }))
+        : []
+    );
 
-  handleClickMoveToNow() {
-    this.moveToNow();
-  }
+    const moveToNow = () => {
+      calendarRef.value.scrollToTime(
+        DateTime.now().minusMinutes(240).displayTimeWithoutSeconds
+      );
+    };
 
-  handleClickPrevious() {
-    this.currentDate = this.currentDate.minusDays(1);
-  }
+    onMounted(() => {
+      moveToNow();
+    });
 
-  handleClickNext() {
-    this.currentDate = this.currentDate.plusDays(1);
-  }
-
-  handleClickZoomUp() {
-    this.zoomUp = true;
-    this.intervalHeight = 96;
-  }
-
-  handleClickZoomDown() {
-    this.zoomUp = false;
-    this.intervalHeight = 64;
-  }
-}
-export default EntryCalendar;
+    return {
+      state,
+      calendarRef,
+      start,
+      events,
+      handleClickMoveToNow() {
+        moveToNow();
+      },
+      handleClickPrevious() {
+        state.currentDate = state.currentDate.minusDays(1);
+      },
+      handleClickNext() {
+        state.currentDate = state.currentDate.plusDays(1);
+      },
+      handleClickZoomUp() {
+        state.zoomUp = true;
+        state.intervalHeight = 96;
+      },
+      handleClickZoomDown() {
+        state.zoomUp = false;
+        state.intervalHeight = 64;
+      },
+    };
+  },
+});
 </script>
 
 <style scoped></style>
