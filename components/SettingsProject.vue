@@ -8,8 +8,11 @@
         </v-avatar>
         <span v-text="item.node.name.unwrap()" />
         <v-btn
-          icon
           style="margin-left: 5px;"
+          :color="getColor(item)"
+          x-small
+          depressed
+          fab
           @click="(e) => onClickEditButton(e, item)"
         >
           <v-icon small>mdi-pencil</v-icon>
@@ -20,7 +23,9 @@
       <SettingsProjectEdit
         :name="currentItem.node.name.unwrap()"
         :icon="currentItem.node.icon"
+        :color="currentItem.node.color"
         :task-project-ids="currentItem.node.taskProjectIds"
+        :show-color="!isProject"
         :show-projects="isProject"
         @on-save="saveItem"
       />
@@ -37,6 +42,7 @@ import { Project as TaskProject } from "~/domain/task/entity/Project";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import SettingsProjectEdit from "~/components/SettingsProjectEdit.vue";
 import { Icon } from "~/domain/common/Icon";
+import { Color } from "~/domain/common/Color";
 
 interface ProjectItem {
   key: string;
@@ -92,7 +98,7 @@ class SettingsProject extends Vue {
     this.bottomSheet = true;
   }
 
-  saveItem(icon: Icon, taskProjects: TaskProject[]) {
+  saveItem(icon: Icon, color: Color, taskProjects: TaskProject[]) {
     switch (this.currentItem?.type) {
       case "project":
         projectStore.updateProject(
@@ -105,7 +111,7 @@ class SettingsProject extends Vue {
         break;
       case "project_category":
         projectStore.updateProjectCategory(
-          this.currentItem.node.cloneWith(icon)
+          this.currentItem.node.cloneWith({ icon, color })
         );
         break;
     }
@@ -115,6 +121,15 @@ class SettingsProject extends Vue {
 
   hasIconUrl(item: Item): boolean {
     return !!item.node.icon?.url;
+  }
+
+  getColor(item: Item): string {
+    switch (item.type) {
+      case "project_category":
+        return item.node.color?.unwrap() ?? "#FFF0";
+      default:
+        return "#FFF0";
+    }
   }
 }
 export default SettingsProject;

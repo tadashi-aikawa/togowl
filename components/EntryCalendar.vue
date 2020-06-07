@@ -7,7 +7,7 @@
         dark
         :start="start"
         :events="events"
-        event-color="rgba(0, 255, 0, 0.5)"
+        :event-color="getEventColor"
         :event-overlap-threshold="10"
         interval-minutes="60"
         :interval-height="state.intervalHeight"
@@ -150,6 +150,9 @@ export default defineComponent({
       calendarRef,
       start,
       events,
+      getEventColor({ entry }: { entry: Entry }): string {
+        return entry.projectCategory?.color?.unwrap() ?? "#7C3A";
+      },
       handleClickMoveToNow() {
         moveToNow();
       },

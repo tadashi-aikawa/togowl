@@ -35,6 +35,7 @@ import {
   SaveTaskConfigError,
   SaveTimerConfigError,
 } from "~/repository/firebase-errors";
+import { Color } from "~/domain/common/Color";
 
 export interface FirestoreRecentTask {
   taskId?: string;
@@ -74,6 +75,7 @@ export interface FirestoreProjectCategory {
       url?: string;
       emoji?: string;
     };
+    color?: string;
   };
 }
 
@@ -162,6 +164,7 @@ export function toProjectCategoryConfig(
             emoji: meta.icon.emoji,
           })
         : undefined,
+      color: meta.color ? Color.of(meta.color) : undefined,
     }))
   );
 }
@@ -174,6 +177,7 @@ export function fromProjectCategoryConfig(
       url: meta.icon?.url ?? "",
       emoji: meta.icon?.emoji ?? "",
     },
+    color: meta.color?.unwrap() ?? "",
   }));
 }
 

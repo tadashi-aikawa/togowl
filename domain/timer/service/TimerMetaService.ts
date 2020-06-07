@@ -8,9 +8,10 @@ export function addMetaToProjectCategory(
   projectCategory: ProjectCategory,
   projectCategoryConfig: ProjectCategoryConfig | null
 ): ProjectCategory {
-  return projectCategory.cloneWith(
-    projectCategoryConfig?.getIcon(projectCategory.id)
-  );
+  return projectCategory.cloneWith({
+    icon: projectCategoryConfig?.getIcon(projectCategory.id),
+    color: projectCategoryConfig?.getColor(projectCategory.id),
+  });
 }
 
 export function addMetaToProject(

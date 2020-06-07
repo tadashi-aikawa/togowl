@@ -22,6 +22,14 @@
             placeholder="smile"
             clearable
           />
+          <v-text-field
+            v-if="showColor"
+            v-model="state.color"
+            label="Color"
+            :background-color="previewColor"
+            placeholder="Ex: #77AA33, rgba(255,0,0,0.5), red"
+            clearable
+          />
 
           <v-autocomplete
             v-if="showProjects"
@@ -71,19 +79,21 @@ import {
   defineComponent,
   reactive,
   watch,
-  watchEffect,
 } from "@vue/composition-api";
 import { Icon } from "~/domain/common/Icon";
 import { Url } from "~/domain/common/Url";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
 import { taskStore } from "~/utils/store-accessor";
 import { Project as TaskProject } from "~/domain/task/entity/Project";
+import { Color } from "~/domain/common/Color";
 
 export default defineComponent({
   props: {
     name: { type: String, required: true },
     icon: { type: Object as () => Icon },
+    color: { type: Object as () => Color },
     taskProjectIds: { type: Array as () => TaskProjectId[] },
+    showColor: { type: Boolean },
     showProjects: { type: Boolean },
   },
   setup(props, { emit }) {
@@ -91,6 +101,7 @@ export default defineComponent({
       inputText: "",
       iconUrl: "",
       iconEmoji: "",
+      color: "",
       selectedTaskProjects: [] as TaskProject[],
       isValid: false,
       candidatedTaskProjects: computed(() => taskStore.projects),
@@ -103,22 +114,23 @@ export default defineComponent({
       ],
     });
 
-    watchEffect(() => {
-      state.iconUrl = props.icon?.url ?? "";
-      state.iconEmoji = props.icon?.emoji ?? "";
-    });
     watch(
-      () => props.taskProjectIds,
-      (ids) => {
+      () => props,
+      (props) => {
+        state.iconUrl = props.icon?.url ?? "";
+        state.iconEmoji = props.icon?.emoji ?? "";
+        state.color = props.color?.unwrap() ?? "";
         state.selectedTaskProjects = state.candidatedTaskProjects.filter(
-          (x) => ids?.some((id) => x.id.equals(id)) ?? false
+          (x) => props.taskProjectIds?.some((id) => x.id.equals(id)) ?? false
         );
-      }
+      },
+      { deep: true }
     );
 
     return {
       state,
       rules,
+      previewColor: computed(() => state.color),
       save() {
         emit(
           "on-save",
@@ -126,6 +138,7 @@ export default defineComponent({
             url: Url.try(state.iconUrl).orUndefined(),
             emoji: state.iconEmoji,
           }),
+          Color.of(state.color),
           state.selectedTaskProjects
         );
       },

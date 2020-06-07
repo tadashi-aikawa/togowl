@@ -106,10 +106,10 @@ class ProjectModule extends VuexModule {
   async updateProjectCategory(projectCategory: ProjectCategory) {
     // TODO: status
     const err = await cloudRepository.saveProjectCategoryConfig(
-      this.projectCategoryConfig.cloneWith(
-        projectCategory.id,
-        projectCategory.icon
-      )
+      this.projectCategoryConfig.cloneWith(projectCategory.id, {
+        icon: projectCategory.icon,
+        color: projectCategory.color,
+      })
     );
     if (err) {
       // TODO: Show on UI

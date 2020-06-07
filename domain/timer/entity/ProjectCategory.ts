@@ -3,11 +3,13 @@ import { trimBracketContents } from "~/utils/string";
 import { ProjectCategoryId } from "~/domain/timer/vo/ProjectCategoryId";
 import { ProjectCategoryName } from "~/domain/timer/vo/ProjectCategoryName";
 import { Icon } from "~/domain/common/Icon";
+import { Color } from "~/domain/common/Color";
 
 interface Props {
   id: ProjectCategoryId;
   name: ProjectCategoryName;
   icon?: Icon;
+  color?: Color;
 }
 
 type Args = Props;
@@ -31,11 +33,15 @@ export class ProjectCategory extends Entity<Props> {
     return this._props.icon;
   }
 
+  get color(): Color | undefined {
+    return this._props.color;
+  }
+
   get nameWithoutBracket(): string {
     return trimBracketContents(this._props.name.unwrap());
   }
 
-  cloneWith(icon?: Icon): ProjectCategory {
-    return ProjectCategory.of({ ...this._props, icon });
+  cloneWith(partial: Partial<ProjectCategory>): ProjectCategory {
+    return ProjectCategory.of({ ...this._props, ...partial });
   }
 }

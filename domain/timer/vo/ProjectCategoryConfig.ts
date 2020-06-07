@@ -1,11 +1,15 @@
 import { ValueObject } from "owlelia";
 import { Icon } from "~/domain/common/Icon";
 import { ProjectCategoryId } from "~/domain/timer/vo/ProjectCategoryId";
+import { Color } from "~/domain/common/Color";
+
+interface Prop {
+  icon?: Icon;
+  color?: Color;
+}
 
 interface Props {
-  [projectCategoryId: string]: {
-    icon?: Icon;
-  };
+  [projectCategoryId: string]: Prop;
 }
 
 type Args = Props;
@@ -29,13 +33,17 @@ export class ProjectCategoryConfig extends ValueObject<Props> {
     return this._value?.[projectCategoryId.unwrap()]?.icon;
   }
 
+  getColor(projectCategoryId: ProjectCategoryId): Color | undefined {
+    return this._value?.[projectCategoryId.unwrap()]?.color;
+  }
+
   cloneWith(
     projectCategoryId: ProjectCategoryId,
-    icon?: Icon
+    prop: Prop
   ): ProjectCategoryConfig {
     return ProjectCategoryConfig.of({
       ...this.unwrap(),
-      [projectCategoryId.unwrap()]: { icon },
+      [projectCategoryId.unwrap()]: prop,
     });
   }
 }
