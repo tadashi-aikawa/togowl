@@ -1,9 +1,9 @@
 <template>
   <v-list-item
     :key="task.id.unwrap()"
+    :class="[itemClass, { compact: compact }]"
     :dense="compact"
     :two-line="!compact"
-    style="padding: 0 5px 0 0;"
   >
     <v-icon
       class="drag-and-drop-handler no-swiping-class"
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "@vue/composition-api";
 import TaskSummary from "~/components/TaskSummary.vue";
 import { Task } from "~/domain/task/entity/Task";
 
@@ -45,7 +45,11 @@ export default defineComponent({
     compact: { type: Boolean },
   },
   setup(props, { emit }) {
+    const itemClass = computed((): string =>
+      props.task.titleWithoutDecorated.startsWith("⏲") ? "divider" : "task"
+    );
     return {
+      itemClass,
       handleClickStartButton() {
         emit("on-click-start-button", props.task);
       },
@@ -54,9 +58,23 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .sub-title {
   font-size: 75%;
   color: darkgrey;
+}
+
+.task {
+  padding: 0 5px 0 0;
+}
+
+.divider {
+  padding: 0 5px 0 0;
+
+  &.compact {
+    padding: 0 35px 0 0;
+    background-color: #303030;
+    text-align: center;
+  }
 }
 </style>

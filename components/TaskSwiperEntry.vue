@@ -22,10 +22,24 @@
         <template v-if="compact">
           <v-container style="padding-top: 0;">
             <v-row justify="center">
-              <v-btn outlined fab class="mx-2" x-small height="28" @click="updateToToday">
+              <v-btn
+                outlined
+                fab
+                class="mx-2"
+                x-small
+                height="28"
+                @click="updateToToday"
+              >
                 <v-icon>mdi-calendar-today</v-icon>
               </v-btn>
-              <v-btn outlined fab class="mx-2" x-small height="28" @click="updateToTomorrow">
+              <v-btn
+                outlined
+                fab
+                class="mx-2"
+                x-small
+                height="28"
+                @click="updateToTomorrow"
+              >
                 <v-icon>mdi-calendar-arrow-right</v-icon>
               </v-btn>
             </v-row>
