@@ -1,5 +1,6 @@
 import { Either } from "owlelia";
-import { TogowlError } from "~/domain/common/TogowlError";
+import { FetchLabelsError } from "../vo/FetchLabelsError";
+import { Label } from "../entity/Label";
 import { Task } from "~/domain/task/entity/Task";
 import { Project } from "~/domain/task/entity/Project";
 import { TaskId } from "~/domain/task/vo/TaskId";
@@ -22,6 +23,7 @@ export interface TaskService {
   fetchTasks(): Promise<Either<FetchTasksError, Task[]>>;
   completeTask(taskId: TaskId): Promise<CompleteTaskError | null>;
   fetchProjects(): Promise<Either<FetchProjectsError, Project[]>>;
+  fetchLabels(): Promise<Either<FetchLabelsError, Label[]>>;
   updateDueDate(
     taskId: TaskId,
     date: DateTime

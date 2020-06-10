@@ -16,6 +16,7 @@ import { createAction } from "~/utils/firestore-facade";
 import { Project } from "~/domain/task/entity/Project";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { DateTime } from "~/domain/common/DateTime";
+import { Label } from "~/domain/task/entity/Label";
 
 let service: TaskService | null;
 
@@ -137,11 +138,14 @@ class TaskModule extends VuexModule {
 
   get taskById(): { [taskId: number]: Task } {
     return _.mapValues(this._taskById, (x) =>
-      x.cloneWith(
-        x.projectId
+      x.cloneWith({
+        entryProject: x.projectId
           ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
-          : undefined
-      )
+          : undefined,
+        labels: x.labelIds
+          .map((id) => this._labelById[id.asNumber])
+          .filter((x) => x),
+      })
     );
   }
 
@@ -204,6 +208,24 @@ class TaskModule extends VuexModule {
   @Mutation
   setProjectError(error: TogowlError | null) {
     this.projectError = error;
+  }
+
+  private _labelById: { [labelId: number]: Label } = {};
+  @Mutation
+  setLabelById(labelById: { [labelId: number]: Label }) {
+    this._labelById = labelById;
+  }
+
+  labelStatus: ActionStatus = "init";
+  @Mutation
+  setLabelStatus(status: ActionStatus) {
+    this.labelStatus = status;
+  }
+
+  labelError: TogowlError | null = null;
+  @Mutation
+  setLabelError(error: TogowlError | null) {
+    this.labelError = error;
   }
 
   configStatus: ActionStatus = "init";
@@ -278,9 +300,7 @@ class TaskModule extends VuexModule {
     // TODO: Illegal case
     this.setTaskById({
       ...this._taskById,
-      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWithDueDate(
-        dueDate
-      ),
+      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWith({ dueDate }),
     });
     await this.commandExecutor
       .add(
@@ -296,7 +316,11 @@ class TaskModule extends VuexModule {
   @Action({ rawError: true })
   async updateTasksOrder(tasks: Task[]): Promise<void> {
     const orderedTasks = _(tasks)
-      .map((v, idx) => v.cloneWithDayOrder(idx + 1))
+      .map((v, idx) =>
+        v.cloneWith({
+          dayOrder: idx + 1,
+        })
+      )
       .keyBy((x) => x.id.asNumber)
       .value();
     this.setTaskById(orderedTasks);
@@ -319,7 +343,8 @@ class TaskModule extends VuexModule {
     }
 
     this.setProjectStatus("in_progress");
-    await this.commandExecutor.execAll();
+    // なぜかデッドロックっぽい挙動になるので消す...
+    // await this.commandExecutor.execAll();
     const projectsOrErr = await service.fetchProjects();
     if (projectsOrErr.isLeft()) {
       this.setProjectError(projectsOrErr.error);
@@ -330,6 +355,27 @@ class TaskModule extends VuexModule {
     this.setProjectById(_.keyBy(projectsOrErr.value, (x) => x.id.asNumber));
     this.setProjectError(null);
     this.setProjectStatus("success");
+  }
+
+  @Action({ rawError: true })
+  async fetchLabels(): Promise<void> {
+    if (!service) {
+      return;
+    }
+
+    this.setLabelStatus("in_progress");
+    // なぜかデッドロックっぽい挙動になるので消す...
+    // await this.commandExecutor.execAll();
+    const labelsOrErr = await service.fetchLabels();
+    if (labelsOrErr.isLeft()) {
+      this.setLabelError(labelsOrErr.error);
+      this.setLabelStatus("error");
+      return;
+    }
+
+    this.setLabelById(_.keyBy(labelsOrErr.value, (x) => x.idAsNumber));
+    this.setLabelError(null);
+    this.setLabelStatus("success");
   }
 
   @Action({ rawError: true })
@@ -353,6 +399,8 @@ class TaskModule extends VuexModule {
       },
     });
 
+    // TODO: retry when labels are updated.
+    this.fetchLabels();
     // Show quickly as well as we can
     this.fetchTasks();
   }

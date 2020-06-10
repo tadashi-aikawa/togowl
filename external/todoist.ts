@@ -11,11 +11,23 @@ export namespace SyncApi {
     | "items"
     | "day_orders"
     | "projects"
-    | "notes";
+    | "notes"
+    | "labels";
   export interface Command {
     type: "item_update" | "item_update_day_orders" | "item_close";
     uuid: string;
     args: { [key: string]: any };
+  }
+
+  export interface Label {
+    id: number;
+    name: string;
+    color: number;
+    item_order: number;
+    /** 0: not favorite, 1: favorite */
+    is_favorite: number;
+    /** 0: exists, 1: removed */
+    is_deleted: number;
   }
 
   export interface Note {
@@ -50,6 +62,7 @@ export namespace SyncApi {
     day_order: number;
     parent_id: number | null;
     project_id: number | null;
+    labels: number[];
     due: Due | null;
     /** 0: 通常 ～ 4: 緊急 */
     priority: number;
@@ -64,6 +77,7 @@ export namespace SyncApi {
     sync_token: string;
     items?: Task[];
     projects?: Project[];
+    labels?: Label[];
     notes?: Note[];
     day_orders?: Dictionary<number>;
   }
@@ -73,6 +87,7 @@ export namespace SyncApi {
       "items",
       "day_orders",
       "projects",
+      "labels",
       "notes",
     ];
 

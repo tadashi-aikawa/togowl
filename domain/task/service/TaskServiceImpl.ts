@@ -1,6 +1,8 @@
 import _, { Dictionary } from "lodash";
 import { Either, left, right } from "owlelia";
 import { LazyGetter } from "lazy-get-decorator";
+import { Label } from "../entity/Label";
+import { FetchLabelsError } from "../vo/FetchLabelsError";
 import logger from "~/utils/global-logger";
 import * as todoist from "~/external/todoist";
 import { SyncApi } from "~/external/todoist";
@@ -23,6 +25,7 @@ import { UpdateTasksOrderError } from "~/domain/task/vo/UpdateTasksOrderError";
 import { FetchProjectsError } from "~/domain/task/vo/FetchProjectsError";
 import { Note } from "~/domain/task/entity/Note";
 import { NoteId } from "~/domain/task/vo/NoteId";
+import { LabelId } from "~/domain/task/vo/LabelId";
 
 const notesMemoize = LazyGetter();
 
@@ -33,6 +36,7 @@ export class TaskServiceImpl implements TaskService {
   private todoistSyncToken: string = "*";
   private taskById: Dictionary<todoist.SyncApi.Task>;
   private projectById: Dictionary<todoist.SyncApi.Project>;
+  private labelsById: Dictionary<todoist.SyncApi.Label>;
   private notesById: Dictionary<todoist.SyncApi.Note>;
 
   @notesMemoize
@@ -96,6 +100,7 @@ export class TaskServiceImpl implements TaskService {
       dayOrder: task.day_order,
       priority: Priority.try(task.priority).orThrow(),
       projectId: task.project_id ? ProjectId.of(task.project_id) : undefined,
+      labelIds: task.labels.map(LabelId.of),
       dueDate: task.due ? DateTime.of(task.due.date) : undefined,
       notes: this.notesByTaskId[task.id]?.map(TaskServiceImpl.toNote),
     });
@@ -105,6 +110,13 @@ export class TaskServiceImpl implements TaskService {
     return Project.of({
       id: ProjectId.of(project.id),
       name: ProjectName.of(project.name),
+    });
+  }
+
+  private static toLabel(label: todoist.SyncApi.Label): Label {
+    return Label.of({
+      id: LabelId.of(label.id),
+      name: label.name,
     });
   }
 
@@ -123,6 +135,15 @@ export class TaskServiceImpl implements TaskService {
       this.projectById = {
         ...this.projectById,
         ..._.keyBy(res.projects, (x) => x.id),
+      };
+    }
+
+    if (res.full_sync) {
+      this.labelsById = _.keyBy(res.labels, (x) => x.id);
+    } else {
+      this.labelsById = {
+        ...this.labelsById,
+        ..._.keyBy(res.labels, (x) => x.id),
       };
     }
 
@@ -292,6 +313,34 @@ export class TaskServiceImpl implements TaskService {
         `TaskService.fetchProjects.error: ${this.shortTodoistSyncToken}`
       );
       return left(FetchProjectsError.of());
+    }
+  }
+
+  async fetchLabels(): Promise<Either<FetchLabelsError, Label[]>> {
+    logger.put(`TaskService.fetchLabels: ${this.shortTodoistSyncToken}`);
+    try {
+      const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;
+      logger.put(
+        `TaskService.fetchLabels.success: ${this.shortTodoistSyncToken}`
+      );
+      this.syncCloudToInstance(res);
+      logger.put(
+        `TaskService.fetchLabels.success (sync to local): ${this.shortTodoistSyncToken}`
+      );
+
+      return right(
+        _(this.labelsById)
+          .values()
+          .reject((x) => x.is_deleted === 1)
+          .map((x) => TaskServiceImpl.toLabel(x))
+          .value()
+      );
+    } catch (err) {
+      console.error(err);
+      logger.put(
+        `TaskService.fetchLabels.error: ${this.shortTodoistSyncToken}`
+      );
+      return left(FetchLabelsError.of());
     }
   }
 }

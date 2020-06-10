@@ -6,8 +6,18 @@
       v-if="task.entryProject"
       :project="task.entryProject"
       :icon-only="compact"
-      :style="projectStyle"
+      style="display: inline; white-space: initial;"
     />
+    <v-chip
+      v-for="label of labels"
+      :key="label"
+      class="ma-1"
+      x-small
+      dark
+      style="white-space: initial;"
+    >
+      {{ label }}
+    </v-chip>
   </div>
 </template>
 <script lang="ts">
@@ -28,14 +38,12 @@ export default defineComponent({
       props.compact ? "task-compact" : "task",
       "markdown",
     ]);
-    const projectStyle = computed(() =>
-      props.compact ? "display: inline;" : ""
-    );
+    const labels = computed(() => props.task.labels.map((x) => x.name));
 
     return {
       titleHtml,
       styleClass,
-      projectStyle,
+      labels,
     };
   },
 });

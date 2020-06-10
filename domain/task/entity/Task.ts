@@ -1,4 +1,6 @@
 import { Entity } from "owlelia";
+import { LabelId } from "../vo/LabelId";
+import { Label } from "./Label";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Project } from "~/domain/timer/entity/Project";
@@ -15,6 +17,8 @@ interface Props {
   priority: Priority;
   projectId?: ProjectId;
   entryProject?: Project;
+  labelIds: LabelId[];
+  labels?: Label[];
   dueDate?: DateTime;
   notes?: Note[];
 }
@@ -53,6 +57,14 @@ export class Task extends Entity<Props> {
     return this._props.entryProject;
   }
 
+  get labelIds(): LabelId[] {
+    return this._props.labelIds;
+  }
+
+  get labels(): Label[] {
+    return this._props.labels ?? [];
+  }
+
   get dueDate(): DateTime | undefined {
     return this._props.dueDate;
   }
@@ -73,15 +85,7 @@ export class Task extends Entity<Props> {
     return toHTML(trimBracketContents(this._props.title));
   }
 
-  cloneWith(entryProject?: Project): Task {
-    return Task.of({ ...this._props, entryProject });
-  }
-
-  cloneWithDayOrder(dayOrder: number): Task {
-    return Task.of({ ...this._props, dayOrder });
-  }
-
-  cloneWithDueDate(dueDate: DateTime): Task {
-    return Task.of({ ...this._props, dueDate });
+  cloneWith(partial: Partial<Task>): Task {
+    return Task.of({ ...this._props, ...partial });
   }
 }
