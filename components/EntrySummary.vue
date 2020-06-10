@@ -11,6 +11,7 @@ import { computed, defineComponent } from "@vue/composition-api";
 import { Entry } from "~/domain/timer/entity/Entry";
 import ProjectSummary from "~/components/ProjectSummary.vue";
 import { Project } from "~/domain/timer/entity/Project";
+import { HtmlString } from "~/domain/common/HtmlString";
 
 export default defineComponent({
   components: {
@@ -21,7 +22,7 @@ export default defineComponent({
   },
   setup(props) {
     return {
-      titleHtml: computed((): string => props.entry.descriptionAsMarkdown),
+      titleHtml: computed((): HtmlString => props.entry.descriptionAsMarkdown),
       project: computed((): Project | undefined => props.entry.project),
     };
   },

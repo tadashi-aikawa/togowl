@@ -19,36 +19,44 @@
     </swiper-slide>
     <swiper-slide :class="{ 'swiper-extra-menu-area': true, compact }">
       <v-list-item>
-        <v-container>
-          <v-row align="center" justify="center">
-            <div align="center">
+        <template v-if="compact">
+          <v-container style="padding-top: 0;">
+            <v-row justify="center">
+              <v-btn outlined fab class="mx-2" x-small height="28" @click="updateToToday">
+                <v-icon>mdi-calendar-today</v-icon>
+              </v-btn>
+              <v-btn outlined fab class="mx-2" x-small height="28" @click="updateToTomorrow">
+                <v-icon>mdi-calendar-arrow-right</v-icon>
+              </v-btn>
+            </v-row>
+          </v-container>
+        </template>
+        <template v-else>
+          <v-container>
+            <v-row align="center" justify="center">
               <v-btn
                 outlined
                 class="mx-2"
                 fab
-                :small="!compact"
-                :x-small="compact"
+                small
                 dark
                 @click="updateToToday"
               >
                 <v-icon>mdi-calendar-today</v-icon>
               </v-btn>
-            </div>
-            <div align="center">
               <v-btn
                 outlined
                 class="mx-2"
                 fab
-                :small="!compact"
-                :x-small="compact"
+                small
                 dark
                 @click="updateToTomorrow"
               >
                 <v-icon>mdi-calendar-arrow-right</v-icon>
               </v-btn>
-            </div>
-          </v-row>
-        </v-container>
+            </v-row>
+          </v-container>
+        </template>
       </v-list-item>
     </swiper-slide>
   </swiper>
