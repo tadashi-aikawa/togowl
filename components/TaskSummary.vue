@@ -1,23 +1,29 @@
 <template>
   <div>
     <!-- eslint-disable-next-line vue/no-v-html -->
-    <div :class="styleClass" :style="{ width: width }" v-html="titleHtml" />
+    <div
+      :style="{ width: width }"
+      :class="['task', 'markdown', { compact: compact }]"
+      v-html="titleHtml"
+    />
     <ProjectSummary
       v-if="task.entryProject"
       :project="task.entryProject"
       :icon-only="compact"
-      style="display: inline; white-space: initial;"
+      class="project"
     />
-    <v-chip
-      v-for="label of labels"
-      :key="label"
-      class="ma-1"
-      x-small
-      dark
-      style="white-space: initial;"
-    >
-      {{ label }}
-    </v-chip>
+
+    <div :class="['label', { compact: compact }]">
+      <v-chip
+        v-for="label of labels"
+        :key="label"
+        :class="{ 'ma-1': !compact }"
+        x-small
+        dark
+      >
+        {{ label }}
+      </v-chip>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -34,33 +40,45 @@ export default defineComponent({
   },
   setup(props) {
     const titleHtml = computed(() => props.task.titleAsMarkdown);
-    const styleClass = computed(() => [
-      props.compact ? "task-compact" : "task",
-      "markdown",
-    ]);
     const labels = computed(() => props.task.labels.map((x) => x.name));
 
     return {
       titleHtml,
-      styleClass,
       labels,
     };
   },
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .task {
   font-size: 95% !important;
   color: white;
   padding-bottom: 3px;
   white-space: initial;
+
+  &.compact {
+    display: inline;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
-.task-compact {
-  color: white;
-  padding-bottom: 3px;
-  white-space: initial;
+.label {
   display: inline;
+  white-space: initial;
+
+  &.compact {
+    position: absolute;
+    right: 5px;
+    top: 7px;
+    opacity: 0.8;
+  }
+}
+
+.project {
+  display: inline;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
