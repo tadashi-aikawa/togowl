@@ -25,6 +25,9 @@ module.exports = {
     "no-empty-function": "off",
     "no-unreachable": "warn",
 
+    // Allow v-html
+    "vue/no-v-html": "off",
+
     // Prettier should not be error
     "prettier/prettier": "warn",
   },

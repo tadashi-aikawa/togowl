@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- eslint-disable-next-line vue/no-v-html -->
     <div class="entry markdown" v-html="titleHtml" />
     <ProjectSummary v-if="project" :project="project" />
   </div>

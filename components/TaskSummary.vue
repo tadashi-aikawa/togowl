@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- eslint-disable-next-line vue/no-v-html -->
     <div
       :style="{ width: width }"
       :class="['task', 'markdown', { compact: compact }]"

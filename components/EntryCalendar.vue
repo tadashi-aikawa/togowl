@@ -23,7 +23,6 @@
                 :project-category-as-default="true"
               />
             </v-avatar>
-            <!-- eslint-disable-next-line vue/no-v-html -->
             <span class="markdown" v-html="event.nameAsHtml" />
           </div>
         </template>
