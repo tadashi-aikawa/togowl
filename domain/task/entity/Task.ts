@@ -9,12 +9,14 @@ import { toHTML, trimBracketContents } from "~/utils/string";
 import { DateTime } from "~/domain/common/DateTime";
 import { Note } from "~/domain/task/entity/Note";
 import { HtmlString } from "~/domain/common/HtmlString";
+import { Url } from "~/domain/common/Url";
 
 interface Props {
   id: TaskId;
   title: string;
   dayOrder: number;
   priority: Priority;
+  editableUrl: Url;
   projectId?: ProjectId;
   entryProject?: Project;
   labelIds: LabelId[];
@@ -47,6 +49,10 @@ export class Task extends Entity<Props> {
 
   get priority(): Priority {
     return this._props.priority;
+  }
+
+  get editableUrl(): Url {
+    return this._props.editableUrl;
   }
 
   get projectId(): ProjectId | undefined {

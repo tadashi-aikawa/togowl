@@ -26,6 +26,7 @@ import { FetchProjectsError } from "~/domain/task/vo/FetchProjectsError";
 import { Note } from "~/domain/task/entity/Note";
 import { NoteId } from "~/domain/task/vo/NoteId";
 import { LabelId } from "~/domain/task/vo/LabelId";
+import { Url } from "~/domain/common/Url";
 
 const notesMemoize = LazyGetter();
 
@@ -99,6 +100,9 @@ export class TaskServiceImpl implements TaskService {
       title: task.content,
       dayOrder: task.day_order,
       priority: Priority.try(task.priority).orThrow(),
+      editableUrl: Url.try(
+        `https://todoist.com/app?#task%2F${task.id}`
+      ).orThrow(),
       projectId: task.project_id ? ProjectId.of(task.project_id) : undefined,
       labelIds: task.labels.map(LabelId.of),
       dueDate: task.due ? DateTime.of(task.due.date) : undefined,

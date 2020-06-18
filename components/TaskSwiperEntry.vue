@@ -42,6 +42,17 @@
               >
                 <v-icon>mdi-calendar-arrow-right</v-icon>
               </v-btn>
+              <v-btn
+                outlined
+                fab
+                class="mx-2"
+                x-small
+                height="28"
+                :href="editableUrl"
+                target="_blank"
+              >
+                <v-icon>mdi-pencil-box-multiple</v-icon>
+              </v-btn>
             </v-row>
           </v-container>
         </template>
@@ -68,6 +79,17 @@
               >
                 <v-icon>mdi-calendar-arrow-right</v-icon>
               </v-btn>
+              <v-btn
+                outlined
+                class="mx-2"
+                fab
+                small
+                dark
+                :href="editableUrl"
+                target="_blank"
+              >
+                <v-icon>mdi-pencil-box-multiple</v-icon>
+              </v-btn>
             </v-row>
           </v-container>
         </template>
@@ -76,7 +98,7 @@
   </swiper>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from "@vue/composition-api";
+import { computed, defineComponent, reactive, ref } from "@vue/composition-api";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntry from "~/components/TaskEntry.vue";
 import { taskStore } from "~/utils/store-accessor";
@@ -95,6 +117,8 @@ export default defineComponent({
     const revertSwiperStateAsDefault = () => {
       mySwiper.value.swiper.slideTo(1);
     };
+
+    const editableUrl = computed(() => props.task.editableUrl.unwrap());
 
     const completeTask = async () => {
       revertSwiperStateAsDefault();
@@ -132,6 +156,7 @@ export default defineComponent({
 
     return {
       state,
+      editableUrl,
       mySwiper,
       completeTask,
       updateToToday,
