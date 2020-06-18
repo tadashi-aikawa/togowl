@@ -3,17 +3,19 @@
     <v-sheet :height="height">
       <v-calendar
         ref="calendarRef"
-        type="day"
         dark
+        color="teal"
+        :type="zoomOption.type"
         :start="start"
         :events="events"
         :event-color="getEventColor"
         :event-overlap-threshold="10"
         interval-minutes="60"
-        :interval-height="state.intervalHeight"
+        :interval-height="zoomOption.intervalHeight"
         interval-count="24"
         interval-width="35"
         :interval-format="(d) => d.time"
+        :now="state.currentDate.displayDateTimeWithoutSeconds"
       >
         <template #event="{ event }">
           <div style="height: 100%; padding: 2px;">
@@ -29,30 +31,30 @@
       </v-calendar>
 
       <v-btn
-        v-if="state.zoomUp"
         fixed
         dark
         small
         bottom
         right
         fab
-        style="margin: 0 168px 48px 0;"
-        @click="handleClickZoomDown"
-      >
-        <v-icon>mdi-magnify-minus</v-icon>
-      </v-btn>
-      <v-btn
-        v-else
-        fixed
-        dark
-        small
-        bottom
-        right
-        fab
-        style="margin: 0 168px 48px 0;"
+        style="margin: 0 224px 48px 0;"
+        :disabled="isZoomUpDisabled"
         @click="handleClickZoomUp"
       >
         <v-icon>mdi-magnify-plus</v-icon>
+      </v-btn>
+      <v-btn
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin: 0 168px 48px 0;"
+        :disabled="isZoomDownDisabled"
+        @click="handleClickZoomDown"
+      >
+        <v-icon>mdi-magnify-minus</v-icon>
       </v-btn>
       <v-btn
         fixed
@@ -105,6 +107,22 @@ import { Entry } from "~/domain/timer/entity/Entry";
 import { DateTime } from "~/domain/common/DateTime";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 
+interface ZoomOption {
+  type: "month" | "week" | "4day" | "day";
+  intervalHeight: number;
+}
+
+const zoomOptions: ZoomOption[] = [
+  { type: "month", intervalHeight: 64 },
+  { type: "week", intervalHeight: 64 },
+  { type: "week", intervalHeight: 96 },
+  { type: "4day", intervalHeight: 64 },
+  { type: "4day", intervalHeight: 96 },
+  { type: "day", intervalHeight: 64 },
+  { type: "day", intervalHeight: 96 },
+  { type: "day", intervalHeight: 128 },
+];
+
 export default defineComponent({
   components: { ProjectIcon },
   props: {
@@ -116,8 +134,7 @@ export default defineComponent({
 
     const state = reactive({
       currentDate: DateTime.now(),
-      zoomUp: false,
-      intervalHeight: 64,
+      zoomLevel: 1,
     });
 
     const start = computed(
@@ -133,6 +150,11 @@ export default defineComponent({
           }))
         : []
     );
+    const zoomOption = computed<ZoomOption>(() => zoomOptions[state.zoomLevel]);
+    const isZoomUpDisabled = computed(
+      () => state.zoomLevel >= zoomOptions.length - 1
+    );
+    const isZoomDownDisabled = computed(() => state.zoomLevel <= 0);
 
     const moveToNow = () => {
       calendarRef.value.scrollToTime(
@@ -149,6 +171,9 @@ export default defineComponent({
       calendarRef,
       start,
       events,
+      zoomOption,
+      isZoomUpDisabled,
+      isZoomDownDisabled,
       getEventColor({ entry }: { entry: Entry }): string {
         return entry.projectCategory?.color?.unwrap() ?? "#7C3A";
       },
@@ -162,12 +187,10 @@ export default defineComponent({
         state.currentDate = state.currentDate.plusDays(1);
       },
       handleClickZoomUp() {
-        state.zoomUp = true;
-        state.intervalHeight = 96;
+        state.zoomLevel++;
       },
       handleClickZoomDown() {
-        state.zoomUp = false;
-        state.intervalHeight = 64;
+        state.zoomLevel--;
       },
     };
   },
