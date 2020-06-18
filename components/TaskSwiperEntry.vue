@@ -117,7 +117,7 @@ export default defineComponent({
     const mySwiper = ref<any>();
 
     const revertSwiperStateAsDefault = () => {
-      mySwiper.value.swiper.slideTo(1);
+      mySwiper.value.$swiper.slideTo(1);
     };
 
     const editableUrl = computed(() => props.task.editableUrl.unwrap());

@@ -205,6 +205,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
+import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import {
   notificationStore,
   taskStore,
@@ -223,6 +224,8 @@ import TaskEntryList from "~/components/TaskEntryList.vue";
 import TaskDetail from "~/components/TaskDetail.vue";
 import Scheduler from "~/components/Scheduler.vue";
 
+import "swiper/css/swiper.css";
+
 @Component({
   components: {
     CurrentTimeEntry,
@@ -233,6 +236,8 @@ import Scheduler from "~/components/Scheduler.vue";
     EntrySummary,
     TaskDetail,
     Scheduler,
+    Swiper,
+    SwiperSlide,
   },
 })
 class Root extends Vue {
