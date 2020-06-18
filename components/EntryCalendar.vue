@@ -134,7 +134,7 @@ export default defineComponent({
 
     const state = reactive({
       currentDate: DateTime.now(),
-      zoomLevel: 1,
+      zoomLevel: 5,
     });
 
     const start = computed(
