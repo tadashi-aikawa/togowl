@@ -124,7 +124,7 @@ export default defineComponent({
           (x) => props.taskProjectIds?.some((id) => x.id.equals(id)) ?? false
         );
       },
-      { deep: true }
+      { deep: true, immediate: true }
     );
 
     return {
