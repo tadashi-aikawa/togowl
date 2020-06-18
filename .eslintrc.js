@@ -24,6 +24,7 @@ module.exports = {
     "no-undef": "off",
     "no-empty-function": "off",
     "no-unreachable": "warn",
+    "no-console": "off",
 
     // Allow v-html
     "vue/no-v-html": "off",

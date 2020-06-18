@@ -2,7 +2,6 @@ import _ from "lodash";
 import { Either, left, right } from "owlelia";
 import { User } from "~/domain/authentication/vo/User";
 import { LoginPayload } from "~/domain/authentication/vo/LoginPayload";
-import { TogowlError } from "~/domain/common/TogowlError";
 import CloudRepository from "~/repository/CloudRepository";
 import firebase from "~/plugins/firebase";
 import { UId } from "~/domain/authentication/vo/UId";

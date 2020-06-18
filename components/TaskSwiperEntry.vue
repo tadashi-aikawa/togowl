@@ -99,13 +99,15 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from "@vue/composition-api";
+import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntry from "~/components/TaskEntry.vue";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
+import "swiper/css/swiper.css";
 
 export default defineComponent({
-  components: { TaskEntry },
+  components: { TaskEntry, Swiper, SwiperSlide },
   props: {
     task: { type: Object as () => Task, required: true },
     disabledStart: { type: Boolean },

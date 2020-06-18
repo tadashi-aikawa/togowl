@@ -3,7 +3,7 @@ import Axios, { AxiosPromise } from "axios";
 import { stringify } from "query-string";
 import { Dictionary } from "lodash";
 
-const uuidv4 = require("uuid/v4");
+const { v4: uuidv4 } = require("uuid");
 
 export namespace SyncApi {
   export type ResourceType =

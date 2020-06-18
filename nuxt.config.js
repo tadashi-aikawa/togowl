@@ -26,7 +26,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: ["./assets/app.scss", "swiper/dist/css/swiper.css"],
+  css: ["./assets/app.scss"],
 
   /*
    ** Plugins to load before mounting the App
@@ -88,6 +88,19 @@ export default {
    ** Build configuration
    */
   build: {
+    babel: {
+      // envName: server, client, modern
+      presets({ envName }) {
+        return [
+          [
+            "@nuxt/babel-preset-app",
+            {
+              corejs: { version: 3 },
+            },
+          ],
+        ];
+      },
+    },
     /*
      ** You can extend webpack config here
      */

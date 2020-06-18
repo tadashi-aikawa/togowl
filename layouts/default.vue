@@ -61,11 +61,11 @@
       <v-toolbar-title v-text="title" />
       <v-spacer />
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-container>
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
     <v-dialog v-model="logoutConfirmDialog" max-width="290">
       <v-card>
         <v-card-title class="headline">Confirm</v-card-title>

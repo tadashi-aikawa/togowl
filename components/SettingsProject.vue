@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-treeview :items="projectCategories" item-key="key" open-on-click>
-      <template #prepend="{ item, open }">
+      <template #prepend="{ item }">
         <v-avatar tile size="14px" style="margin-right: 5px;">
           <img v-if="hasIconUrl(item)" :src="item.node.icon.url" />
           <v-icon v-else small color="grey">mdi-help-circle-outline</v-icon>

@@ -1,5 +1,4 @@
 import { ChannelName } from "~/domain/notification/vo/ChannelName";
-import { TogowlError } from "~/domain/common/TogowlError";
 import { Url } from "~/domain/common/Url";
 import { NotificationService } from "~/domain/notification/service/NotificationService";
 import * as slack from "~/external/slack";

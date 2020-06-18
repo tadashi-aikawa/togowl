@@ -78,7 +78,7 @@ export namespace SocketApi {
     static use(token: string, listener: EventListener): ApiClient {
       const socket = new WebSocket("wss://stream.toggl.com/ws");
 
-      const onOpenListener = (ev: WebSocketEventMap["open"]) => {
+      const onOpenListener = (_ev: WebSocketEventMap["open"]) => {
         const authentication = JSON.stringify({
           type: "authenticate",
           api_token: token,

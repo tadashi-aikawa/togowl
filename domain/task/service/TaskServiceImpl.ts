@@ -5,7 +5,6 @@ import { Label } from "../entity/Label";
 import { FetchLabelsError } from "../vo/FetchLabelsError";
 import logger from "~/utils/global-logger";
 import * as todoist from "~/external/todoist";
-import { SyncApi } from "~/external/todoist";
 import { Task } from "~/domain/task/entity/Task";
 import {
   TaskEventListener,
@@ -124,7 +123,7 @@ export class TaskServiceImpl implements TaskService {
     });
   }
 
-  private syncCloudToInstance(res: SyncApi.Root) {
+  private syncCloudToInstance(res: todoist.SyncApi.Root) {
     this.todoistSyncToken = res.sync_token;
 
     if (res.full_sync) {
