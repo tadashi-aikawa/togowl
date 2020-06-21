@@ -28,6 +28,7 @@ import { Note } from "~/domain/task/entity/Note";
 import { NoteId } from "~/domain/task/vo/NoteId";
 import { LabelId } from "~/domain/task/vo/LabelId";
 import { Url } from "~/domain/common/Url";
+import { todoistToMarkdown } from "~/utils/string";
 
 const notesMemoize = LazyGetter();
 
@@ -98,7 +99,7 @@ export class TodoistTaskService implements TaskService {
   private toTask(task: todoist.SyncApi.Task): Task {
     return Task.of({
       id: TaskId.of(task.id),
-      title: task.content,
+      title: todoistToMarkdown(task.content),
       dayOrder: task.day_order,
       priority: Priority.try(task.priority).orThrow(),
       editableUrl: Url.try(

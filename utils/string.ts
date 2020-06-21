@@ -22,3 +22,6 @@ export const markdownToSlack = (markdownText: string): string =>
   markdownText
     .replace(/(.*)(^| )(http[^ ]+)(.*)/, "$1$2<$3>$4")
     .replace(/(.*)\[([^\]]+)]\(([^)]+)\)(.*)/, "$1<$3|$2>$4");
+
+export const todoistToMarkdown = (todoistText: string): string =>
+  todoistText.replace(/(http[^ ]+) \(([^)]+)\)/g, "[$2]($1)");

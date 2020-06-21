@@ -3,6 +3,7 @@ import {
   trimBracketDate,
   trimBracketTime,
   markdownToSlack,
+  todoistToMarkdown,
 } from "./string";
 
 describe.each`
@@ -73,4 +74,17 @@ describe.each`
 `("markdownToSlack ", ({ str, expected }) => {
   test(`${str} -> ${expected}`, () =>
     expect(markdownToSlack(str)).toBe(expected));
+});
+
+describe.each`
+  str                                              | expected
+  ${"http://hoge (title)"}                         | ${"[title](http://hoge)"}
+  ${"https://hoge (title)"}                        | ${"[title](https://hoge)"}
+  ${"http://hoge1 (title1) http://hoge2 (title2)"} | ${"[title1](http://hoge1) [title2](http://hoge2)"}
+  ${"📙 http://hoge (title)"}                      | ${"📙 [title](http://hoge)"}
+  ${"http://hoge (title) (10:00-10:15)"}           | ${"[title](http://hoge) (10:00-10:15)"}
+  ${"http://hoge(title)"}                          | ${"http://hoge(title)"}
+`("todoistToMarkdown ", ({ str, expected }) => {
+  test(`${str} -> ${expected}`, () =>
+    expect(todoistToMarkdown(str)).toBe(expected));
 });
