@@ -140,7 +140,7 @@
             <v-snackbar
               v-model="snackbar"
               :color="snackbarColor"
-              :timeout="0"
+              :timeout="-1"
               top
             >
               {{ snackMessage }}
