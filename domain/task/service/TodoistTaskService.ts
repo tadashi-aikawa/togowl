@@ -2,7 +2,12 @@ import _, { Dictionary } from "lodash";
 import { Either, left, right } from "owlelia";
 import { LazyGetter } from "lazy-get-decorator";
 import { Label } from "../entity/Label";
-import { FetchLabelsError } from "../vo/FetchLabelsError";
+import {
+  FetchTasksError,
+  CompleteTaskError,
+  FetchProjectsError,
+  FetchLabelsError,
+} from "./errors";
 import logger from "~/utils/global-logger";
 import * as todoist from "~/external/todoist";
 import { Task } from "~/domain/task/entity/Task";
@@ -17,11 +22,8 @@ import { Project } from "~/domain/task/entity/Project";
 import { ProjectName } from "~/domain/task/vo/ProjectlName";
 import { DateTime } from "~/domain/common/DateTime";
 import { SubscribeTaskError } from "~/domain/task/vo/SubscribeTaskError";
-import { FetchTasksError } from "~/domain/task/vo/FetchTasksError";
-import { CompleteTaskError } from "~/domain/task/vo/CompleteTaskError";
 import { UpdateTaskError } from "~/domain/task/vo/UpdateTaskError";
 import { UpdateTasksOrderError } from "~/domain/task/vo/UpdateTasksOrderError";
-import { FetchProjectsError } from "~/domain/task/vo/FetchProjectsError";
 import { Note } from "~/domain/task/entity/Note";
 import { NoteId } from "~/domain/task/vo/NoteId";
 import { LabelId } from "~/domain/task/vo/LabelId";
@@ -29,7 +31,7 @@ import { Url } from "~/domain/common/Url";
 
 const notesMemoize = LazyGetter();
 
-export class TaskServiceImpl implements TaskService {
+export class TodoistTaskService implements TaskService {
   private syncClient: todoist.SyncApi.SyncClient;
   private socketClient: todoist.SocketApi.ApiClient;
 
@@ -105,7 +107,7 @@ export class TaskServiceImpl implements TaskService {
       projectId: task.project_id ? ProjectId.of(task.project_id) : undefined,
       labelIds: task.labels.map(LabelId.of),
       dueDate: task.due ? DateTime.of(task.due.date) : undefined,
-      notes: this.notesByTaskId[task.id]?.map(TaskServiceImpl.toNote),
+      notes: this.notesByTaskId[task.id]?.map(TodoistTaskService.toNote),
     });
   }
 
@@ -307,7 +309,7 @@ export class TaskServiceImpl implements TaskService {
         _(this.projectById)
           .values()
           .reject((x) => x.is_deleted === 1)
-          .map((x) => TaskServiceImpl.toProject(x))
+          .map((x) => TodoistTaskService.toProject(x))
           .value()
       );
     } catch (err) {
@@ -335,7 +337,7 @@ export class TaskServiceImpl implements TaskService {
         _(this.labelsById)
           .values()
           .reject((x) => x.is_deleted === 1)
-          .map((x) => TaskServiceImpl.toLabel(x))
+          .map((x) => TodoistTaskService.toLabel(x))
           .value()
       );
     } catch (err) {

@@ -12,7 +12,7 @@ import {
   TaskEventListener,
   TaskService,
 } from "~/domain/task/service/TaskService";
-import { TaskServiceImpl } from "~/domain/task/service/TaskServiceImpl";
+import { TodoistTaskService } from "~/domain/task/service/TodoistTaskService";
 
 export class CreateServiceError extends TogowlError {
   code = "CREATE_SERVICE";
@@ -47,7 +47,7 @@ export async function createTaskService(
   listener: TaskEventListener
 ): Promise<TaskService> {
   const config = (await cloudRepository.loadTaskConfig()).orThrow();
-  return new TaskServiceImpl(config.token!, config.syncToken!, listener);
+  return new TodoistTaskService(config.token!, config.syncToken!, listener);
 }
 
 export async function createNotificationService(): Promise<

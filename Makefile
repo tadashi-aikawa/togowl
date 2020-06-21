@@ -18,6 +18,9 @@ guard-%:
 
 #------
 
+dev: ## Run for developnet
+	npm run dev
+
 build: ## Build
 	npm run build
 
