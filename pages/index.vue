@@ -76,7 +76,7 @@
                       placeholder="Search entries past"
                       full-width
                       return-object
-                      style="max-width: 480px;"
+                      style="max-width: 480px; padding: 0 10px; margin: 0 10px;"
                       @change="start(selectedEntry)"
                     >
                       <template #selection="data">
