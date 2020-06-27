@@ -37,7 +37,7 @@
         bottom
         right
         fab
-        style="margin: 0 224px 48px 0;"
+        style="margin-right: 224px;"
         :disabled="isZoomUpDisabled"
         @click="handleClickZoomUp"
       >
@@ -50,7 +50,7 @@
         bottom
         right
         fab
-        style="margin: 0 168px 48px 0;"
+        style="margin-right: 168px;"
         :disabled="isZoomDownDisabled"
         @click="handleClickZoomDown"
       >
@@ -63,7 +63,7 @@
         bottom
         right
         fab
-        style="margin: 0 112px 48px 0;"
+        style="margin-right: 112px;"
         @click="handleClickPrevious"
       >
         <v-icon>mdi-chevron-left</v-icon>
@@ -75,21 +75,12 @@
         bottom
         right
         fab
-        style="margin: 0 56px 48px 0;"
+        style="margin-right: 56px;"
         @click="handleClickNext"
       >
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
-      <v-btn
-        fixed
-        dark
-        small
-        bottom
-        right
-        fab
-        style="margin: 0 0 48px 0;"
-        @click="handleClickMoveToNow"
-      >
+      <v-btn fixed dark small bottom right fab @click="handleClickMoveToNow">
         <v-icon>mdi-send-clock</v-icon>
       </v-btn>
     </v-sheet>

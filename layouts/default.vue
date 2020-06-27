@@ -116,6 +116,11 @@ export default class extends Vue {
       to: "/",
     },
     {
+      icon: "mdi-calendar",
+      title: "Calendar",
+      to: "/calendar",
+    },
+    {
       icon: "mdi-cog",
       title: "Settings",
       to: "/settings",

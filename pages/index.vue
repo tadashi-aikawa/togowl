@@ -151,9 +151,7 @@
     </template>
 
     <template v-else-if="activeViewIndex === 1">
-      <div class="calendar-area">
-        <EntryCalendar :entries="entries" :height="calendarHeight" />
-      </div>
+      <div>工事中</div>
     </template>
 
     <template v-else-if="activeViewIndex === 2">
@@ -179,8 +177,8 @@
         <v-icon>mdi-clock</v-icon>
       </v-btn>
       <v-btn>
-        <span>Calendar</span>
-        <v-icon>mdi-calendar</v-icon>
+        <span>???</span>
+        <v-icon>mdi-question</v-icon>
       </v-btn>
       <v-btn>
         <span>Scheduler</span>
@@ -202,7 +200,6 @@ import { TogowlError } from "~/domain/common/TogowlError";
 import { ActionStatus } from "~/domain/common/ActionStatus";
 import CurrentTimeEntry from "~/components/CurrentTimeEntry.vue";
 import TimeEntry from "~/components/TimeEntry.vue";
-import EntryCalendar from "~/components/EntryCalendar.vue";
 import EntrySummary from "~/components/EntrySummary.vue";
 import TimeEntries from "~/components/TimeEntries.vue";
 import { Task } from "~/domain/task/entity/Task";
@@ -216,9 +213,8 @@ import Scheduler from "~/components/Scheduler.vue";
     TimeEntry,
     TimeEntries,
     TaskEntryList,
-    EntryCalendar,
-    EntrySummary,
     TaskDetail,
+    EntrySummary,
     Scheduler,
   },
 })
@@ -413,10 +409,6 @@ class Root extends Vue {
     return !!this.currentEntry;
   }
 
-  get calendarHeight(): string {
-    return "calc(100vh - 80px - 56px)";
-  }
-
   customFilter(item: Entry, queryText: string): boolean {
     const description = item.description.toLowerCase();
     const projectName = item.project?.name.unwrap().toLowerCase();
@@ -449,11 +441,6 @@ $current-entry-height: 12px + 220px + 12px;
   max-width: 650px;
   height: calc(#{$contents-height} - #{$current-entry-height} - 3px);
   overflow-y: scroll;
-}
-
-.calendar-area {
-  padding: 5px;
-  width: 100%;
 }
 
 .scheduler-area {
