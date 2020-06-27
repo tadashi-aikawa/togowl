@@ -159,10 +159,6 @@
     </template>
 
     <template v-else-if="activeViewIndex === 1">
-      <div>工事中</div>
-    </template>
-
-    <template v-else-if="activeViewIndex === 2">
       <div class="scheduler-area">
         <Scheduler
           :tasks="tasks"
@@ -183,10 +179,6 @@
       <v-btn>
         <span>Timer</span>
         <v-icon>mdi-clock</v-icon>
-      </v-btn>
-      <v-btn>
-        <span>???</span>
-        <v-icon>mdi-question</v-icon>
       </v-btn>
       <v-btn>
         <span>Scheduler</span>
