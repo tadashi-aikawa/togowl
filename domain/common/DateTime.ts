@@ -72,6 +72,10 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return this._value.format("YYYY-MM-DD");
   }
 
+  get displayDateFull(): string {
+    return this._value.format("YYYY-MM-DD (ddd)");
+  }
+
   get displayDateTime(): string {
     return this._value.format("YYYY-MM-DD HH:mm:ss");
   }

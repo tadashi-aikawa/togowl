@@ -115,6 +115,9 @@ export default defineComponent({
 .timer {
   padding: 10px;
   font-size: 200%;
+  letter-spacing: 0.05em;
+  color: white;
+  text-shadow: 0 0 20px rgba(230, 72, 10, 1), 0 0 20px rgba(230, 72, 10, 0);
 }
 .sub-title {
   font-size: 85%;

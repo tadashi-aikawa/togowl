@@ -91,6 +91,14 @@
                       </template>
                     </v-autocomplete>
                   </v-row>
+
+                  <v-row
+                    align="center"
+                    justify="center"
+                    style="padding-top: 20px;"
+                  >
+                    <Clock />
+                  </v-row>
                 </div>
               </v-fade-transition>
 
@@ -206,6 +214,7 @@ import { Task } from "~/domain/task/entity/Task";
 import TaskEntryList from "~/components/TaskEntryList.vue";
 import TaskDetail from "~/components/TaskDetail.vue";
 import Scheduler from "~/components/Scheduler.vue";
+import Clock from "~/components/Clock.vue";
 
 @Component({
   components: {
@@ -216,6 +225,7 @@ import Scheduler from "~/components/Scheduler.vue";
     TaskDetail,
     EntrySummary,
     Scheduler,
+    Clock,
   },
 })
 class Root extends Vue {
