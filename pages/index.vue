@@ -91,19 +91,6 @@
                       </template>
                     </v-autocomplete>
                   </v-row>
-
-                  <v-row>
-                    <swiper
-                      :options="subActionSwiperOption"
-                      style="height: 83px; max-width: 480px; width: 100%;"
-                    >
-                      <template v-for="entry in latest5Entries">
-                        <swiper-slide :key="entry.id.unwrap()">
-                          <TimeEntry :entry="entry" @on-click-start="start" />
-                        </swiper-slide>
-                      </template>
-                    </swiper>
-                  </v-row>
                 </div>
               </v-fade-transition>
 
@@ -205,7 +192,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
-import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import {
   notificationStore,
   taskStore,
@@ -224,8 +210,6 @@ import TaskEntryList from "~/components/TaskEntryList.vue";
 import TaskDetail from "~/components/TaskDetail.vue";
 import Scheduler from "~/components/Scheduler.vue";
 
-import "swiper/css/swiper.css";
-
 @Component({
   components: {
     CurrentTimeEntry,
@@ -236,8 +220,6 @@ import "swiper/css/swiper.css";
     EntrySummary,
     TaskDetail,
     Scheduler,
-    Swiper,
-    SwiperSlide,
   },
 })
 class Root extends Vue {
