@@ -24,7 +24,7 @@ import { UnexpectedError } from "~/domain/common/UnexpectedError";
 
 let service: TimerService | null;
 
-const MAX_HISTORY_DAYS = 10;
+const MAX_HISTORY_DAYS = 14;
 
 /**
  * Concrete implementation by using firebase
