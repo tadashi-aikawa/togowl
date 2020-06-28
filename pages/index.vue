@@ -441,6 +441,9 @@ class Root extends Vue {
     if (this.tasks.length > 5) {
       return 0.3;
     }
+    if (this.tasks.length > 0) {
+      return 0.5;
+    }
     return 1;
   }
 
