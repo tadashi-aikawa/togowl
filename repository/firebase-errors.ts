@@ -99,6 +99,24 @@ export class LoadProjectConfigError extends TogowlError {
   }
 }
 
+export class SaveAppConfigError extends TogowlError {
+  code = "SAVE_APP_CONFIG";
+  name = "Save app config error.";
+
+  static of(args: { detail: string }): SaveAppConfigError {
+    return new SaveAppConfigError(args.detail);
+  }
+}
+
+export class LoadAppConfigError extends TogowlError {
+  code = "LOAD_APP_CONFIG";
+  name = "Load app config error.";
+
+  static of(args: { detail: string }): LoadAppConfigError {
+    return new LoadAppConfigError(args.detail);
+  }
+}
+
 export class SaveProjectCategoryConfigError extends TogowlError {
   code = "SAVE_PROJECT_CATEGORY_CONFIG";
   name = "Save project category config error.";

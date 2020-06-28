@@ -121,6 +121,18 @@
 
               <v-row justify="center">
                 <v-sheet tile class="task-area">
+                  <v-img
+                    v-if="!isTasksLoading"
+                    width="100%"
+                    :src="taskBackgroundImageUrl"
+                    :style="{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      opacity: tasksBackgroundOpacity,
+                      transition: 'opacity 1.0s',
+                    }"
+                  ></v-img>
                   <TaskEntryList
                     :tasks="tasks"
                     :loading="isTasksLoading"
@@ -191,6 +203,7 @@
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
 import {
+  appStore,
   notificationStore,
   taskStore,
   timerStore,
@@ -411,6 +424,26 @@ class Root extends Vue {
     return !!this.currentEntry;
   }
 
+  get taskBackgroundImageUrl(): string | undefined {
+    return appStore.config.theme.taskBackgroundImageUrl;
+  }
+
+  get tasksBackgroundOpacity(): number {
+    if (this.tasks.length > 30) {
+      return 0;
+    }
+    if (this.tasks.length > 20) {
+      return 0.1;
+    }
+    if (this.tasks.length > 10) {
+      return 0.2;
+    }
+    if (this.tasks.length > 5) {
+      return 0.3;
+    }
+    return 1;
+  }
+
   customFilter(item: Entry, queryText: string): boolean {
     const description = item.description.toLowerCase();
     const projectName = item.project?.name.unwrap().toLowerCase();
@@ -437,6 +470,7 @@ export default Root;
 $current-entry-height: 12px + 220px + 12px;
 
 .task-area {
+  position: relative;
   margin: 10px;
   padding: 5px;
   width: 100%;

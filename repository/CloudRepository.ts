@@ -9,6 +9,7 @@ import { TaskConfig } from "~/domain/task/vo/TaskConfig";
 import { RecentTask } from "~/domain/common/RecentTask";
 import { UId } from "~/domain/authentication/vo/UId";
 import {
+  LoadAppConfigError,
   LoadProjectCategoryConfigError,
   LoadProjectConfigError,
   LoadSlackConfigError,
@@ -16,6 +17,7 @@ import {
   LoadTimerConfigError,
   LoadUserError,
   LoginError,
+  SaveAppConfigError,
   SaveProjectCategoryConfigError,
   SaveProjectConfigError,
   SaveRecentTaskError,
@@ -23,6 +25,7 @@ import {
   SaveTaskConfigError,
   SaveTimerConfigError,
 } from "~/repository/firebase-errors";
+import { AppConfig } from "~/domain/app/vo/AppConfig";
 
 interface CloudRepository {
   login(payload?: LoginPayload): Promise<Either<LoginError, User>>;
@@ -36,6 +39,9 @@ interface CloudRepository {
 
   saveTimerConfig(config: TimerConfig): Promise<SaveTimerConfigError | null>;
   loadTimerConfig(): Promise<Either<LoadTimerConfigError, TimerConfig>>;
+
+  saveAppConfig(config: AppConfig): Promise<SaveAppConfigError | null>;
+  loadAppConfig(): Promise<Either<LoadAppConfigError, AppConfig>>;
 
   saveTaskConfig(config: TaskConfig): Promise<SaveTaskConfigError | null>;
   loadTaskConfig(): Promise<Either<LoadTaskConfigError, TaskConfig>>;

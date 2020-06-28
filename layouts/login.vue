@@ -3,7 +3,7 @@
     <v-flex xs12 sm8 md6>
       <v-row>
         <v-img
-          src="https://github.com/tadashi-aikawa/togowl/raw/master/public/icon.png"
+          src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
           width="64"
         />
       </v-row>

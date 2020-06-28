@@ -24,6 +24,7 @@ import {
   LoadProjectConfigError,
   LoadSlackConfigError,
   LoadTaskConfigError,
+  LoadAppConfigError,
   LoadTimerConfigError,
   LoadUserError,
   LoginError,
@@ -32,9 +33,12 @@ import {
   SaveRecentTaskError,
   SaveSlackConfigError,
   SaveTaskConfigError,
+  SaveAppConfigError,
   SaveTimerConfigError,
 } from "~/repository/firebase-errors";
 import { Color } from "~/domain/common/Color";
+import { Theme } from "~/domain/app/vo/Theme";
+import { AppConfig } from "~/domain/app/vo/AppConfig";
 
 export interface FirestoreRecentTask {
   taskId?: string;
@@ -56,6 +60,12 @@ export interface FirestoreTimer {
   token?: string;
   workspaceId?: number;
   proxy?: string;
+}
+
+export interface FirestoreAppConfig {
+  theme: {
+    taskBackgroundImageUrl?: string;
+  };
 }
 
 export interface FirestoreProject {
@@ -124,6 +134,24 @@ export function toSlackConfig(data: FirestoreSlack): SlackConfig {
       : undefined,
     proxy: data.proxy,
   });
+}
+
+export function toAppConfig(data: FirestoreAppConfig): AppConfig {
+  return AppConfig.of({
+    theme: Theme.of({
+      taskBackgroundImageUrl: data.theme.taskBackgroundImageUrl
+        ? Url.try(data.theme.taskBackgroundImageUrl).orThrow()
+        : undefined,
+    }),
+  });
+}
+
+export function fromAppConfig(config: AppConfig): FirestoreAppConfig {
+  return {
+    theme: {
+      taskBackgroundImageUrl: config.theme.taskBackgroundImageUrl ?? "",
+    },
+  };
 }
 
 export function toProjectConfig(data: FirestoreProject): ProjectConfig {
@@ -382,6 +410,45 @@ class FirebaseCloudRepository implements CloudRepository {
       .catch((e) =>
         left(
           LoadTaskConfigError.of({
+            detail: `${e.code}: ${e.message}`,
+          })
+        )
+      );
+  }
+
+  saveAppConfig(config: AppConfig): Promise<SaveAppConfigError | null> {
+    return store
+      .collection("app")
+      .doc(this.uid)
+      .set(fromAppConfig(config))
+      .then(() => {
+        return null;
+      })
+      .catch((e) =>
+        SaveAppConfigError.of({
+          detail: `${e.code}: ${e.message}`,
+        })
+      );
+  }
+
+  loadAppConfig(): Promise<Either<LoadAppConfigError, AppConfig>> {
+    return store
+      .collection("app")
+      .doc(this.uid)
+      .get()
+      .then((x) => {
+        const data = x.data() as FirestoreAppConfig;
+        return data
+          ? right<LoadAppConfigError, AppConfig>(toAppConfig(data))
+          : left<LoadAppConfigError, AppConfig>(
+              LoadAppConfigError.of({
+                detail: `App config is empty`,
+              })
+            );
+      })
+      .catch((e) =>
+        left(
+          LoadAppConfigError.of({
             detail: `${e.code}: ${e.message}`,
           })
         )

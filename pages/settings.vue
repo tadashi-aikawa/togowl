@@ -3,6 +3,14 @@
     <v-container fluid>
       <v-card class="card-area">
         <v-img
+          src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
+          max-width="30"
+        />
+        <SettingsApp />
+      </v-card>
+
+      <v-card class="card-area">
+        <v-img
           src="https://cdn.svgporn.com/logos/slack-icon.svg"
           max-width="30"
         />
@@ -34,6 +42,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
+import SettingsApp from "~/components/SettingsApp.vue";
 import SettingsSlack from "~/components/SettingsSlack.vue";
 import SettingsToggl from "~/components/SettingsToggl.vue";
 import SettingsProject from "~/components/SettingsProject.vue";
@@ -41,6 +50,7 @@ import SettingsTodoist from "~/components/SettingsTodoist.vue";
 
 @Component({
   components: {
+    SettingsApp,
     SettingsSlack,
     SettingsToggl,
     SettingsTodoist,

@@ -7,6 +7,7 @@ import {
   taskStore,
   timerStore,
   userStore,
+  appStore,
 } from "~/utils/store-accessor";
 import firebase from "~/plugins/firebase";
 import { UId } from "~/domain/authentication/vo/UId";
@@ -16,6 +17,7 @@ import logger from "~/utils/global-logger";
 
 async function initCloudStores(uid: UId) {
   userStore.init(uid);
+  appStore.init(uid);
   notificationStore.init(uid);
   taskStore.init(uid);
   projectStore.init(uid);
