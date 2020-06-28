@@ -68,6 +68,7 @@
         @click="save"
       >
         Save
+        <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
     </v-row>
   </v-list>

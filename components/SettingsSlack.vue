@@ -39,15 +39,15 @@
       <v-btn
         :disabled="!isValid"
         color="success"
-        class="mr-4"
         :loading="isSlackConfigUpdating"
         @click="saveSlackConfig"
       >
         Save
+        <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div style="padding: 15px;">
-        <v-alert v-if="slackConfigUpdateError" type="error">
+      <div v-if="slackConfigUpdateError" style="padding: 15px;">
+        <v-alert type="error">
           {{ slackConfigUpdateError.message }}
         </v-alert>
       </div>

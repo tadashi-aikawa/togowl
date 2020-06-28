@@ -23,15 +23,15 @@
       <v-btn
         :disabled="!isValid"
         color="success"
-        class="mr-4"
         :loading="isTaskConfigUpdating"
         @click="saveTaskConfig"
       >
         Save
+        <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div style="padding: 15px;">
-        <v-alert v-if="taskConfigUpdateError" type="error">
+      <div v-if="taskConfigUpdateError" style="padding: 15px;">
+        <v-alert type="error">
           {{ taskConfigUpdateError.message }}
         </v-alert>
       </div>

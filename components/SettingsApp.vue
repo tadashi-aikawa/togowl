@@ -17,15 +17,15 @@
       <v-btn
         :disabled="!state.isValid"
         color="success"
-        class="mr-4"
         :loading="isAppConfigUpdating"
         @click="saveAppConfig"
       >
         Save
+        <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div style="padding: 15px;">
-        <v-alert v-if="appConfigUpdateError" type="error">
+      <div v-if="appConfigUpdateError" style="padding: 15px;">
+        <v-alert type="error">
           {{ appConfigUpdateError.message }}
         </v-alert>
       </div>

@@ -39,15 +39,15 @@
       <v-btn
         :disabled="!isValid"
         color="success"
-        class="mr-4"
         :loading="isTimerConfigUpdating"
         @click="saveTimerConfig"
       >
         Save
+        <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div style="padding: 15px;">
-        <v-alert v-if="timerConfigUpdateError" type="error">
+      <div v-if="timerConfigUpdateError" style="padding: 15px;">
+        <v-alert type="error">
           {{ timerConfigUpdateError.message }}
         </v-alert>
       </div>
