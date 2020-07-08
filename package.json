@@ -11,7 +11,7 @@
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint:fix": "eslint --ext .js,.vue --fix --ignore-path .gitignore .",
-    "test": "jest",
+    "test": "jest --maxWorkers=1",
     "deploy": "firebase deploy"
   },
   "dependencies": {
