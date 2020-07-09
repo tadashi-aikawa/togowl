@@ -71,6 +71,7 @@ describe.each`
   ${"(xxx) [title](http://hoge)"}   | ${"(xxx) <http://hoge|title>"}
   ${"[title](http://hoge)(xxx)"}    | ${"<http://hoge|title>(xxx)"}
   ${"[title](http://hoge) (xxx)"}   | ${"<http://hoge|title> (xxx)"}
+  ${"[title[inner]](http://hoge)"}  | ${"<http://hoge|title[inner]>"}
 `("markdownToSlack ", ({ str, expected }) => {
   test(`${str} -> ${expected}`, () =>
     expect(markdownToSlack(str)).toBe(expected));
