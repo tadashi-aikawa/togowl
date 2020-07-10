@@ -9,10 +9,13 @@
         <slot></slot>
       </div>
     </template>
-    <v-date-picker v-model="state.date" color="green darken-2" scrollable>
+    <v-date-picker
+      v-model="state.date"
+      color="green darken-2"
+      scrollable
+      @click:date="selectDate"
+    >
       <v-spacer></v-spacer>
-      <v-btn text @click="handleClickCancel">Cancel</v-btn>
-      <v-btn text @click="handleClickOk">OK</v-btn>
     </v-date-picker>
   </v-dialog>
 </template>
@@ -31,18 +34,14 @@ export default defineComponent({
       visible: props.visible,
     });
 
-    const handleClickOk = () => {
+    const selectDate = () => {
       state.visible = false;
-      context.emit("confirm", state.date);
-    };
-    const handleClickCancel = () => {
-      state.visible = false;
+      context.emit("select-date", state.date);
     };
 
     return {
       state,
-      handleClickOk,
-      handleClickCancel,
+      selectDate,
     };
   },
 });

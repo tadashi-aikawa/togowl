@@ -43,7 +43,7 @@
                 >
                   <v-icon>mdi-calendar-arrow-right</v-icon>
                 </v-btn>
-                <calendar-selector :date="date" @confirm="updateDueDate">
+                <calendar-selector :date="date" @select-date="updateDueDate">
                   <v-btn outlined class="mx-2" fab x-small dark height="28">
                     <v-icon>mdi-calendar-edit</v-icon>
                   </v-btn>
@@ -85,7 +85,7 @@
                 >
                   <v-icon>mdi-calendar-arrow-right</v-icon>
                 </v-btn>
-                <calendar-selector :date="date" @confirm="updateDueDate">
+                <calendar-selector :date="date" @select-date="updateDueDate">
                   <v-btn outlined class="mx-2" fab small dark>
                     <v-icon>mdi-calendar-edit</v-icon>
                   </v-btn>
