@@ -1,6 +1,9 @@
 togowl
 ======
 
+[![Actions Status](https://github.com/tadashi-aikawa/togowl/workflows/Tests/badge.svg)](https://github.com/tadashi-aikawa/togowl/actions)
+[![codecov](https://codecov.io/gh/tadashi-aikawa/togowl/branch/master/graph/badge.svg)](https://codecov.io/gh/tadashi-aikawa/togowl)
+
 <img src="./static/icon.png" width="240" />
 
 Togowl is task and life management tools for next generation owls.  

@@ -28,7 +28,13 @@ jobs:
       - run: npm install
       - run: cp .firebase.config.sample.json .firebase.config.json
       - run: npm run build
-      - run: npm test
+
+      - run: npm run test-with-coverage
+      - uses: codecov/codecov-action@v1
+        if: "matrix.node == '12.x' && success()"
+        with:
+          file: ./coverage/clover.xml
+          fail_ci_if_error: true
 
       - name: 'Slack notification (not success)'
         uses: homoluctus/slatify@master
@@ -53,6 +59,6 @@ jobs:
         with:
           type: ${{ job.status }}
           username: GitHub Actions (Success)
-          job_name: ':togowl: :chrome: :nodejs: All tests'
+          job_name: ':togowl: :chrome: :nodejs: All tests  `Versions` 10.x/12.x'
           icon_emoji: ':github:'
           url: ${{ secrets.SLACK_WEBHOOK }}
