@@ -12,6 +12,7 @@
     <v-date-picker
       v-model="state.date"
       color="green darken-2"
+      first-day-of-week="1"
       scrollable
       @click:date="selectDate"
     >
