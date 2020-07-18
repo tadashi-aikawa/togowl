@@ -61,6 +61,7 @@ describe.each`
 describe.each`
   str                               | expected
   ${"http://hoge"}                  | ${"<http://hoge>"}
+  ${"http:/hoge"}                   | ${"http:/hoge"}
   ${"📙 http://hoge"}               | ${"📙 <http://hoge>"}
   ${"📙 http://hoge tail"}          | ${"📙 <http://hoge> tail"}
   ${"aaahttp://hoge"}               | ${"aaahttp://hoge"}
@@ -80,6 +81,7 @@ describe.each`
 describe.each`
   str                                              | expected
   ${"http://hoge (title)"}                         | ${"[title](http://hoge)"}
+  ${"http:/hoge (title)"}                          | ${"http:/hoge (title)"}
   ${"https://hoge (title)"}                        | ${"[title](https://hoge)"}
   ${"http://hoge1 (title1) http://hoge2 (title2)"} | ${"[title1](http://hoge1) [title2](http://hoge2)"}
   ${"📙 http://hoge (title)"}                      | ${"📙 [title](http://hoge)"}
