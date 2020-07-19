@@ -14,8 +14,9 @@ export namespace SyncApi {
     | "notes"
     | "labels";
   export interface Command {
-    type: "item_update" | "item_update_day_orders" | "item_close";
+    type: "item_add" | "item_update" | "item_update_day_orders" | "item_close";
     uuid: string;
+    temp_id?: string;
     args: { [key: string]: any };
   }
 
@@ -80,6 +81,7 @@ export namespace SyncApi {
     labels?: Label[];
     notes?: Note[];
     day_orders?: Dictionary<number>;
+    temp_id_mapping?: { [tmp_id: string]: number };
   }
 
   export class SyncClient {
@@ -118,6 +120,27 @@ export namespace SyncApi {
 
     syncAll(syncToken = "*"): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken);
+    }
+
+    syncItemAdd(
+      tempId: string,
+      content: string,
+      due?: Partial<Due>,
+      projectId?: number,
+      syncToken = "*"
+    ): AxiosPromise<Root> {
+      return this.sync(this.SYNC_RESOURCES, syncToken, [
+        {
+          type: "item_add",
+          temp_id: tempId,
+          uuid: uuidv4(),
+          args: {
+            content,
+            due,
+            project_id: projectId,
+          },
+        },
+      ]);
     }
 
     syncItemUpdate(

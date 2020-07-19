@@ -3,10 +3,11 @@ import { Either, left, right } from "owlelia";
 import { LazyGetter } from "lazy-get-decorator";
 import { Label } from "../entity/Label";
 import {
-  FetchTasksError,
+  AddTaskError,
   CompleteTaskError,
-  FetchProjectsError,
   FetchLabelsError,
+  FetchProjectsError,
+  FetchTasksError,
 } from "./errors";
 import logger from "~/utils/global-logger";
 import * as todoist from "~/external/todoist";
@@ -18,7 +19,7 @@ import {
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Priority } from "~/domain/task/vo/Priority";
-import { Project } from "~/domain/task/entity/Project";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { ProjectName } from "~/domain/task/vo/ProjectlName";
 import { DateTime } from "~/domain/common/DateTime";
 import { SubscribeTaskError } from "~/domain/task/vo/SubscribeTaskError";
@@ -112,8 +113,8 @@ export class TodoistTaskService implements TaskService {
     });
   }
 
-  private static toProject(project: todoist.SyncApi.Project): Project {
-    return Project.of({
+  private static toProject(project: todoist.SyncApi.Project): TaskProject {
+    return TaskProject.of({
       id: ProjectId.of(project.id),
       name: ProjectName.of(project.name),
     });
@@ -231,6 +232,40 @@ export class TodoistTaskService implements TaskService {
     }
   }
 
+  async addTask(
+    title: string,
+    optional: {
+      dueDate?: DateTime;
+      project?: TaskProject;
+    }
+  ): Promise<AddTaskError | null> {
+    logger.put(`TaskService.addTask: ${this.shortTodoistSyncToken}`);
+    try {
+      const res = (
+        await this.syncClient.syncItemAdd(
+          "temp_id",
+          title,
+          { date: optional.dueDate?.displayDate },
+          optional.project?.id.asNumber,
+          this.todoistSyncToken
+        )
+      ).data;
+      logger.put(`TaskService.addTask.success: ${this.shortTodoistSyncToken}`);
+      this.syncCloudToInstance(res);
+      logger.put(
+        `TaskService.addTask.success (sync to local): ${this.shortTodoistSyncToken}`
+      );
+      return null;
+    } catch (err) {
+      console.error(err);
+      logger.put(`TaskService.addTask.error: ${this.shortTodoistSyncToken}`);
+      return AddTaskError.of({
+        title,
+        detail: "Can't add a task to Todoist",
+      });
+    }
+  }
+
   async updateDueDate(
     taskId: TaskId,
     date: DateTime
@@ -294,7 +329,7 @@ export class TodoistTaskService implements TaskService {
     }
   }
 
-  async fetchProjects(): Promise<Either<FetchProjectsError, Project[]>> {
+  async fetchProjects(): Promise<Either<FetchProjectsError, TaskProject[]>> {
     logger.put(`TaskService.fetchProjects: ${this.shortTodoistSyncToken}`);
     try {
       const res = (await this.syncClient.syncAll(this.todoistSyncToken)).data;

@@ -10,11 +10,11 @@ interface Props {
 
 type Args = Props;
 
-export class Project extends Entity<Props> {
+export class TaskProject extends Entity<Props> {
   private _entityTaskProjectBrand!: never;
 
-  static of(args: Args): Project {
-    return new Project(args.id.unwrap(), args);
+  static of(args: Args): TaskProject {
+    return new TaskProject(args.id.unwrap(), args);
   }
 
   get id(): ProjectId {

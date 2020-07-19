@@ -38,7 +38,7 @@ import _ from "lodash";
 import { Component, Vue } from "~/node_modules/nuxt-property-decorator";
 import { projectStore, taskStore } from "~/utils/store-accessor";
 import { Project } from "~/domain/timer/entity/Project";
-import { Project as TaskProject } from "~/domain/task/entity/Project";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import SettingsProjectEdit from "~/components/SettingsProjectEdit.vue";
 import { Icon } from "~/domain/common/Icon";

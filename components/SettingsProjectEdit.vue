@@ -85,7 +85,7 @@ import { Icon } from "~/domain/common/Icon";
 import { Url } from "~/domain/common/Url";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
 import { taskStore } from "~/utils/store-accessor";
-import { Project as TaskProject } from "~/domain/task/entity/Project";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { Color } from "~/domain/common/Color";
 
 export default defineComponent({

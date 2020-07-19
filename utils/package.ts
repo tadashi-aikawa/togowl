@@ -1,5 +1,5 @@
 import * as pkg from "~/package.json";
 
-export function appVersion(): string {
+export function getAppVersion(): string {
   return pkg.version;
 }

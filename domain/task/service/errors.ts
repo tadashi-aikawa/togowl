@@ -37,3 +37,14 @@ export class FetchTasksError extends TogowlError {
     return new FetchTasksError(args.message);
   }
 }
+
+export class AddTaskError extends TogowlError {
+  code = "ADD_TASK";
+  name = "Fail to add a task.";
+
+  static of(args: { title: string; detail: string }): AddTaskError {
+    return new AddTaskError(
+      `Fail to add a task. title: ${args.title}. ${args.detail}`
+    );
+  }
+}

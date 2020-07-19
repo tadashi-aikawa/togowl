@@ -2,13 +2,14 @@ import { Either } from "owlelia";
 import { Label } from "../entity/Label";
 import { UpdateTaskError } from "../vo/UpdateTaskError";
 import {
-  FetchTasksError,
+  AddTaskError,
   CompleteTaskError,
-  FetchProjectsError,
   FetchLabelsError,
+  FetchProjectsError,
+  FetchTasksError,
 } from "./errors";
 import { Task } from "~/domain/task/entity/Task";
-import { Project } from "~/domain/task/entity/Project";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { DateTime } from "~/domain/common/DateTime";
 import { UpdateTasksOrderError } from "~/domain/task/vo/UpdateTasksOrderError";
@@ -24,8 +25,15 @@ export interface TaskEventListener {
 export interface TaskService {
   fetchTasks(): Promise<Either<FetchTasksError, Task[]>>;
   completeTask(taskId: TaskId): Promise<CompleteTaskError | null>;
-  fetchProjects(): Promise<Either<FetchProjectsError, Project[]>>;
+  fetchProjects(): Promise<Either<FetchProjectsError, TaskProject[]>>;
   fetchLabels(): Promise<Either<FetchLabelsError, Label[]>>;
+  addTask(
+    title: string,
+    optional: {
+      dueDate?: DateTime;
+      project?: TaskProject;
+    }
+  ): Promise<AddTaskError | null>;
   updateDueDate(
     taskId: TaskId,
     date: DateTime

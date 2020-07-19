@@ -10,7 +10,7 @@ import {
   toProjectCategoryConfig,
   toProjectConfig,
 } from "~/repository/FirebaseCloudRepository";
-import { cloudRepository } from "~/store/index";
+import { cloudRepository, taskStore } from "~/store/index";
 import { ActionStatus } from "~/domain/common/ActionStatus";
 import { createAction } from "~/utils/firestore-facade";
 import { ProjectConfig } from "~/domain/timer/vo/ProjectConfig";
@@ -18,6 +18,7 @@ import { ProjectCategoryConfig } from "~/domain/timer/vo/ProjectCategoryConfig";
 import { Project } from "~/domain/timer/entity/Project";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import { addMetaToProject } from "~/domain/timer/service/TimerMetaService";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
 
 let service: TimerService | null;
 
@@ -65,6 +66,17 @@ class ProjectModule extends VuexModule {
     return _(this.projects)
       .flatMap((pj) => pj.taskProjectIds.map((tpid) => [tpid.unwrap(), pj]))
       .fromPairs()
+      .value();
+  }
+
+  /**
+   * Get only task projects related to timer projects.
+   */
+  get relatedTaskProjects(): TaskProject[] {
+    return _(this.projects)
+      .flatMap((x) => x.taskProjectIds)
+      .uniq()
+      .map((x) => taskStore.projectById[x.asNumber])
       .value();
   }
 
