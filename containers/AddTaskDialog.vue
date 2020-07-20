@@ -1,62 +1,65 @@
 <template>
-  <v-dialog v-model="state.visible" max-width="600px" dark>
-    <template v-slot:activator="{ on, attrs }">
-      <div v-bind="attrs" v-on="on">
-        <slot></slot>
-      </div>
-    </template>
-    <v-card>
-      <v-card-title>
-        <v-icon>mdi-format-list-checks</v-icon>
-        <span style="margin-left: 5px;">Add Task</span>
-      </v-card-title>
-      <v-card-text>
-        <v-form ref="form" v-model="state.isValid">
-          <v-row style="padding: 0 10px 0;">
-            <v-text-field
-              v-model="state.taskName"
-              autofocus
-              :rules="TASK_NAME_RULES"
-              placeholder="Morning coffee☕"
-              hint="Task name"
-              persistent-hint
-            />
-          </v-row>
-          <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
-            <task-project-selector
-              v-model="state.project"
-            ></task-project-selector>
-          </v-row>
-        </v-form>
-        <v-alert v-if="state.processErrorMessage" dense outlined type="error">
-          {{ state.processErrorMessage }}
-        </v-alert>
-      </v-card-text>
-      <v-divider></v-divider>
-      <v-card-actions class="center">
-        <v-btn text :disabled="!state.isValid" @click="handleClickToday"
-          >Today</v-btn
-        >
-        <v-btn text :disabled="!state.isValid" @click="handleClickTomorrow"
-          >Tomorrow</v-btn
-        >
-        <v-btn text :disabled="!state.isValid" @click="handleClickLater"
-          >Later</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-    <v-overlay key="state.processing" absolute :value="state.processing">
-      <v-progress-circular indeterminate size="64"></v-progress-circular>
-    </v-overlay>
+  <div>
+    <v-dialog v-model="state.visible" max-width="600px" dark>
+      <template v-slot:activator="{ on, attrs }">
+        <div v-bind="attrs" v-on="on">
+          <slot></slot>
+        </div>
+      </template>
+      <v-card>
+        <v-card-title>
+          <v-icon>mdi-format-list-checks</v-icon>
+          <span style="margin-left: 5px;">Add Task</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="state.isValid">
+            <v-row style="padding: 0 10px 0;">
+              <v-text-field
+                v-model="state.taskName"
+                autofocus
+                :rules="TASK_NAME_RULES"
+                placeholder="Morning coffee☕"
+                hint="Task name"
+                persistent-hint
+              />
+            </v-row>
+            <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
+              <task-project-selector
+                v-model="state.project"
+              ></task-project-selector>
+            </v-row>
+          </v-form>
+          <v-alert v-if="state.processErrorMessage" dense outlined type="error">
+            {{ state.processErrorMessage }}
+          </v-alert>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="center">
+          <v-btn text :disabled="!state.isValid" @click="handleClickToday"
+            >Today</v-btn
+          >
+          <v-btn text :disabled="!state.isValid" @click="handleClickTomorrow"
+            >Tomorrow</v-btn
+          >
+          <v-btn text :disabled="!state.isValid" @click="handleClickLater"
+            >Later</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+      <v-overlay key="state.processing" absolute :value="state.processing">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+    </v-dialog>
     <v-snackbar
       v-model="state.snackbar"
       :timeout="3000"
       color="success darken-2"
       dark
+      top
     >
       {{ state.snackbarMessage }}
     </v-snackbar>
-  </v-dialog>
+  </div>
 </template>
 
 <script lang="ts">
@@ -103,6 +106,7 @@ export default defineComponent({
 
       state.snackbar = true;
       state.snackbarMessage = `"${state.taskName}" is created!`;
+      state.visible = false;
     };
 
     const handleClickToday = async () => {
