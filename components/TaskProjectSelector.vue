@@ -6,6 +6,7 @@
     :menu-props="{ maxHeight: 300 }"
     item-text="indexForSearch"
     color="cyan"
+    item-color="cyan"
     full-width
     return-object
     hint="Project"
@@ -33,14 +34,10 @@
 
 <script lang="ts">
 import { computed, defineComponent } from "@vue/composition-api";
-import ProjectSummary from "~/components/ProjectSummary.vue";
 import { projectStore } from "~/utils/store-accessor";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
 
 export default defineComponent({
-  components: {
-    ProjectSummary,
-  },
   props: {
     value: { type: Object as () => TaskProject | null },
   },

@@ -29,6 +29,9 @@
                 v-model="state.project"
               ></task-project-selector>
             </v-row>
+            <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
+              <task-label-selector v-model="state.labels"></task-label-selector>
+            </v-row>
           </v-form>
           <v-alert v-if="state.processErrorMessage" dense outlined type="error">
             {{ state.processErrorMessage }}
@@ -68,10 +71,12 @@ import { defineComponent, reactive } from "@vue/composition-api";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
 import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
+import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
+import { Label } from "~/domain/task/entity/Label";
 
 export default defineComponent({
-  components: { TaskProjectSelector },
+  components: { TaskProjectSelector, TaskLabelSelector },
   props: {
     visible: { type: Boolean },
   },
@@ -82,6 +87,7 @@ export default defineComponent({
       isValid: false,
       taskName: "",
       project: undefined,
+      labels: [] as Label[],
       processing: false,
       snackbar: false,
       snackbarMessage: "",
@@ -96,6 +102,7 @@ export default defineComponent({
         title: state.taskName,
         dueDate,
         project: state.project as TaskProject | undefined,
+        labels: state.labels,
       });
       state.processing = false;
 

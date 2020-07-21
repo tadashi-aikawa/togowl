@@ -32,6 +32,7 @@ export interface TaskService {
     optional: {
       dueDate?: DateTime;
       project?: TaskProject;
+      labels?: Label[];
     }
   ): Promise<AddTaskError | null>;
   updateDueDate(

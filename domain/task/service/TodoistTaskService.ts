@@ -237,6 +237,7 @@ export class TodoistTaskService implements TaskService {
     optional: {
       dueDate?: DateTime;
       project?: TaskProject;
+      labels?: Label[];
     }
   ): Promise<AddTaskError | null> {
     logger.put(`TaskService.addTask: ${this.shortTodoistSyncToken}`);
@@ -247,6 +248,7 @@ export class TodoistTaskService implements TaskService {
           title,
           { date: optional.dueDate?.displayDate },
           optional.project?.id.asNumber,
+          optional.labels?.map((x) => x.idAsNumber),
           this.todoistSyncToken
         )
       ).data;

@@ -80,6 +80,10 @@ class TaskModule extends VuexModule {
     return this._projectById;
   }
 
+  get labels(): Label[] {
+    return Object.values(this._labelById);
+  }
+
   private _taskById: { [taskId: number]: Task } = {};
   @Mutation
   setTaskById(taskById: { [taskId: number]: Task }) {
@@ -202,9 +206,10 @@ class TaskModule extends VuexModule {
     title: string;
     dueDate?: DateTime;
     project?: TaskProject;
+    labels?: Label[];
   }): Promise<TogowlError | undefined> {
-    const { title, dueDate, project } = payload;
-    const err = await service!.addTask(title, { dueDate, project });
+    const { title, dueDate, project, labels } = payload;
+    const err = await service!.addTask(title, { dueDate, project, labels });
     if (err) {
       this.setError(err);
       this.setStatus("error");
