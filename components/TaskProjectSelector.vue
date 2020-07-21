@@ -12,6 +12,7 @@
     persistent-hint
     dark
     dense
+    clearable
     prepend-icon="mdi-briefcase"
     @change="handleChangeProject"
   >

@@ -21,6 +21,7 @@
                 placeholder="Morning coffee☕"
                 hint="Task name"
                 persistent-hint
+                clearable
               />
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
