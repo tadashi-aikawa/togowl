@@ -4,6 +4,7 @@ import {
   trimBracketTime,
   markdownToSlack,
   todoistToMarkdown,
+  pickUrl,
 } from "./string";
 
 describe.each`
@@ -90,4 +91,17 @@ describe.each`
 `("todoistToMarkdown ", ({ str, expected }) => {
   test(`${str} -> ${expected}`, () =>
     expect(todoistToMarkdown(str)).toBe(expected));
+});
+
+describe.each`
+  str                                     | expected
+  ${"[title](http://hoge)"}               | ${"http://hoge"}
+  ${"prefix [title](http://hoge)"}        | ${"http://hoge"}
+  ${"[title](http://hoge) suffix"}        | ${"http://hoge"}
+  ${"prefix [title](http://hoge) suffix"} | ${"http://hoge"}
+  ${"[title](Invalid URL)"}               | ${undefined}
+  ${"No URL"}                             | ${undefined}
+`("pickUrl ", ({ str, expected }) => {
+  test(`${str} -> ${expected}`, () =>
+    expect(pickUrl(str)?.unwrap()).toBe(expected));
 });

@@ -284,6 +284,10 @@ class Root extends Vue {
     if (err) {
       this.showSnackBar(err.message, true);
     }
+
+    if (task.urlEmbeddedOnTitle) {
+      window.open(task.urlEmbeddedOnTitle.unwrap(), "_blank");
+    }
   }
 
   async complete() {

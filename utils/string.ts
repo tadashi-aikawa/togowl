@@ -1,4 +1,5 @@
 import { HtmlString } from "~/domain/common/HtmlString";
+import { Url } from "~/domain/common/Url";
 
 const marked = require("marked");
 const defaultRenderer = new marked.Renderer();
@@ -25,3 +26,8 @@ export const markdownToSlack = (markdownText: string): string =>
 
 export const todoistToMarkdown = (todoistText: string): string =>
   todoistText.replace(/(https?:\/\/[^ ]+) \(([^)]+)\)/g, "[$2]($1)");
+
+export const pickUrl = (markdownText: string): Url | undefined =>
+  Url.try(
+    markdownText.match(/\[.+]\((?<url>.+)\)/)?.groups?.url ?? "invalid_url"
+  ).orUndefined();

@@ -5,7 +5,7 @@ import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Project } from "~/domain/timer/entity/Project";
 import { Priority } from "~/domain/task/vo/Priority";
-import { toHTML, trimBracketContents } from "~/utils/string";
+import { toHTML, trimBracketContents, pickUrl } from "~/utils/string";
 import { DateTime } from "~/domain/common/DateTime";
 import { Note } from "~/domain/task/entity/Note";
 import { HtmlString } from "~/domain/common/HtmlString";
@@ -89,6 +89,10 @@ export class Task extends Entity<Props> {
 
   get titleAsMarkdownWithoutDecorated(): HtmlString {
     return toHTML(trimBracketContents(this._props.title));
+  }
+
+  get urlEmbeddedOnTitle(): Url | undefined {
+    return pickUrl(this._props.title);
   }
 
   cloneWith(partial: Partial<Task>): Task {
