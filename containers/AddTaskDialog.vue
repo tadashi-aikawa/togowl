@@ -26,6 +26,8 @@
                 placeholder="Morning coffee☕"
                 hint="Task name"
                 persistent-hint
+                color="cyan"
+                item-color="cyan"
                 clearable
               />
             </v-row>
