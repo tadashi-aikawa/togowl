@@ -206,10 +206,16 @@ class TaskModule extends VuexModule {
     title: string;
     dueDate?: DateTime;
     project?: TaskProject;
+    dayOrder?: number;
     labels?: Label[];
   }): Promise<TogowlError | undefined> {
-    const { title, dueDate, project, labels } = payload;
-    const err = await service!.addTask(title, { dueDate, project, labels });
+    const { title, dueDate, project, labels, dayOrder } = payload;
+    const err = await service!.addTask(title, {
+      dueDate,
+      project,
+      labels,
+      dayOrder,
+    });
     if (err) {
       this.setError(err);
       this.setStatus("error");

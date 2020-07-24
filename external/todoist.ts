@@ -128,6 +128,7 @@ export namespace SyncApi {
       due?: Partial<Due>,
       projectId?: number,
       labels?: number[],
+      dayOrder?: number,
       syncToken = "*"
     ): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
@@ -139,6 +140,7 @@ export namespace SyncApi {
             content,
             due,
             project_id: projectId,
+            day_order: dayOrder,
             labels,
           },
         },

@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-dialog v-model="state.visible" max-width="600px" dark>
+    <v-dialog
+      v-model="state.visible"
+      max-width="600px"
+      dark
+      overlay-opacity="0.85"
+    >
       <template v-slot:activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <slot></slot>
@@ -39,15 +44,36 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions class="center">
-          <v-btn text :disabled="!state.isValid" @click="handleClickToday"
-            >Today</v-btn
+          <v-btn
+            :disabled="!state.isValid"
+            color="green darken-2"
+            @click="handleClickTodayFirst"
           >
-          <v-btn text :disabled="!state.isValid" @click="handleClickTomorrow"
-            >Tomorrow</v-btn
+            <v-icon>mdi-calendar-today</v-icon>
+            <v-icon>mdi-chevron-triple-up</v-icon>
+          </v-btn>
+          <v-btn
+            :disabled="!state.isValid"
+            color="green darken-2"
+            @click="handleClickTodayLast"
           >
-          <v-btn text :disabled="!state.isValid" @click="handleClickLater"
-            >Later</v-btn
+            <v-icon>mdi-calendar-today</v-icon>
+            <v-icon>mdi-chevron-triple-down</v-icon>
+          </v-btn>
+          <v-btn
+            :disabled="!state.isValid"
+            color="green darken-2"
+            @click="handleClickTomorrow"
           >
+            <v-icon>mdi-calendar-arrow-right</v-icon>
+          </v-btn>
+          <v-btn
+            :disabled="!state.isValid"
+            color="green darken-2"
+            @click="handleClickLater"
+          >
+            <v-icon>mdi-calendar-blank</v-icon>
+          </v-btn>
         </v-card-actions>
       </v-card>
       <v-overlay key="state.processing" absolute :value="state.processing">
@@ -95,12 +121,17 @@ export default defineComponent({
       visible: props.visible as boolean,
     });
 
-    const emitAddTaskAction = async (dueDate?: DateTime) => {
+    const emitAddTaskAction = async (payload: {
+      successMessage: string;
+      dueDate?: DateTime;
+      dayOrder?: number;
+    }) => {
       state.processing = true;
       state.processErrorMessage = "";
       const err = await taskStore.addTask({
         title: state.taskName,
-        dueDate,
+        dueDate: payload.dueDate,
+        dayOrder: payload.dayOrder,
         project: state.project as TaskProject | undefined,
         labels: state.labels,
       });
@@ -113,26 +144,43 @@ export default defineComponent({
       }
 
       state.snackbar = true;
-      state.snackbarMessage = `"${state.taskName}" is created!`;
+      state.snackbarMessage = payload.successMessage;
       state.visible = false;
     };
 
-    const handleClickToday = async () => {
-      await emitAddTaskAction(DateTime.now());
+    const handleClickTodayFirst = async () => {
+      await emitAddTaskAction({
+        dueDate: DateTime.now(),
+        successMessage: `🆕 Add 『${state.taskName}』 at FIRST today.`,
+      });
+    };
+
+    const handleClickTodayLast = async () => {
+      await emitAddTaskAction({
+        dueDate: DateTime.now(),
+        successMessage: `🆕 Add 『${state.taskName}』 at LAST today.`,
+        dayOrder: 999,
+      });
     };
 
     const handleClickTomorrow = async () => {
-      await emitAddTaskAction(DateTime.tomorrow());
+      await emitAddTaskAction({
+        dueDate: DateTime.tomorrow(),
+        successMessage: `🆕 Add 『${state.taskName}』 at tomorrow.`,
+      });
     };
 
     const handleClickLater = async () => {
-      await emitAddTaskAction();
+      await emitAddTaskAction({
+        successMessage: `🆕 Add 『${state.taskName}』.`,
+      });
     };
 
     return {
       TASK_NAME_RULES,
       state,
-      handleClickToday,
+      handleClickTodayFirst,
+      handleClickTodayLast,
       handleClickTomorrow,
       handleClickLater,
     };
