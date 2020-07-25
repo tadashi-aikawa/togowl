@@ -20,110 +20,38 @@
       </swiper-slide>
       <swiper-slide :class="{ 'swiper-extra-menu-area': true, compact }">
         <v-list-item>
-          <template v-if="compact">
-            <v-container style="padding-top: 0;">
-              <v-row justify="center">
-                <v-btn
-                  outlined
-                  fab
-                  class="mx-2"
-                  x-small
-                  height="28"
-                  @click="updateToTodayAtFirst"
-                >
-                  <v-icon>mdi-chevron-triple-up</v-icon>
-                </v-btn>
-                <v-btn
-                  outlined
-                  fab
-                  class="mx-2"
-                  x-small
-                  height="28"
-                  @click="updateToTodayAtLast"
-                >
-                  <v-icon>mdi-chevron-triple-down</v-icon>
-                </v-btn>
-                <v-btn
-                  outlined
-                  fab
-                  class="mx-2"
-                  x-small
-                  height="28"
-                  @click="updateToTomorrow"
-                >
-                  <v-icon>mdi-calendar-arrow-right</v-icon>
-                </v-btn>
-                <calendar-selector :date="date" @select-date="updateDueDate">
-                  <v-btn outlined class="mx-2" fab x-small dark height="28">
-                    <v-icon>mdi-calendar-edit</v-icon>
-                  </v-btn>
-                </calendar-selector>
-                <v-btn
-                  outlined
-                  fab
-                  class="mx-2"
-                  x-small
-                  height="28"
-                  :href="editableUrl"
-                  target="_blank"
-                >
-                  <v-icon>mdi-pencil-box-multiple</v-icon>
-                </v-btn>
-              </v-row>
-            </v-container>
-          </template>
-          <template v-else>
-            <v-container>
-              <v-row align="center" justify="center">
-                <v-btn
-                  outlined
-                  class="mx-2"
-                  fab
-                  small
-                  dark
-                  @click="updateToTodayAtFirst"
-                >
-                  <v-icon>mdi-chevron-triple-up</v-icon>
-                </v-btn>
-                <v-btn
-                  outlined
-                  class="mx-2"
-                  fab
-                  small
-                  dark
-                  @click="updateToTodayAtLast"
-                >
-                  <v-icon>mdi-chevron-triple-down</v-icon>
-                </v-btn>
-                <v-btn
-                  outlined
-                  class="mx-2"
-                  fab
-                  small
-                  dark
-                  @click="updateToTomorrow"
-                >
-                  <v-icon>mdi-calendar-arrow-right</v-icon>
-                </v-btn>
-                <calendar-selector :date="date" @select-date="updateDueDate">
-                  <v-btn outlined class="mx-2" fab small dark>
-                    <v-icon>mdi-calendar-edit</v-icon>
-                  </v-btn>
-                </calendar-selector>
-                <v-btn
-                  outlined
-                  class="mx-2"
-                  fab
-                  small
-                  dark
-                  :href="editableUrl"
-                  target="_blank"
-                >
-                  <v-icon>mdi-pencil-box-multiple</v-icon>
-                </v-btn>
-              </v-row>
-            </v-container>
-          </template>
+          <v-container
+            :class="{ 'swiper-extra-menu-list-item': true, compact }"
+          >
+            <v-row align="center" justify="center">
+              <task-swiper-button
+                :compact="compact"
+                icon="mdi-chevron-triple-up"
+                @click="updateToTodayAtFirst"
+              />
+              <task-swiper-button
+                :compact="compact"
+                icon="mdi-chevron-triple-down"
+                @click="updateToTodayAtLast"
+              />
+              <task-swiper-button
+                :compact="compact"
+                icon="mdi-calendar-arrow-right"
+                @click="updateToTomorrow"
+              />
+              <calendar-selector :date="date" @select-date="updateDueDate">
+                <task-swiper-button
+                  :compact="compact"
+                  icon="mdi-calendar-edit"
+                />
+              </calendar-selector>
+              <task-swiper-button
+                :compact="compact"
+                icon="mdi-pencil-box-multiple"
+                @click="showTaskEditable"
+              />
+            </v-row>
+          </v-container>
         </v-list-item>
       </swiper-slide>
     </swiper>
@@ -135,12 +63,19 @@ import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntry from "~/components/TaskEntry.vue";
 import CalendarSelector from "~/components/CalendarSelector.vue";
+import TaskSwiperButton from "~/components/TaskSwiperButton.vue";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
 import "swiper/css/swiper.css";
 
 export default defineComponent({
-  components: { TaskEntry, Swiper, SwiperSlide, CalendarSelector },
+  components: {
+    TaskEntry,
+    Swiper,
+    SwiperSlide,
+    CalendarSelector,
+    TaskSwiperButton,
+  },
   props: {
     task: { type: Object as () => Task, required: true },
     disabledStart: { type: Boolean },
@@ -168,7 +103,6 @@ export default defineComponent({
       mySwiper.value.$swiper.slideTo(1);
     };
 
-    const editableUrl = computed(() => props.task.editableUrl.unwrap());
     const date = computed(() => props.task.dueDate!.displayDate);
 
     const completeTask = async () => {
@@ -192,9 +126,12 @@ export default defineComponent({
     const updateDueDate = (date: string) =>
       emitUpdateDueDateAction(DateTime.of(date));
 
+    const showTaskEditable = () => {
+      window.open(props.task.editableUrl.unwrap(), "_blank");
+    };
+
     return {
       state,
-      editableUrl,
       date,
       mySwiper,
       completeTask,
@@ -202,6 +139,7 @@ export default defineComponent({
       updateToTodayAtLast,
       updateToTomorrow,
       updateDueDate,
+      showTaskEditable,
       handleClickStartButton() {
         emit("on-click-start-button", props.task);
       },
@@ -234,6 +172,12 @@ export default defineComponent({
 
   &.compact {
     height: 35px;
+  }
+}
+
+.swiper-extra-menu-list-item {
+  &.compact {
+    padding-top: 0;
   }
 }
 
