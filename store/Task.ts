@@ -68,7 +68,10 @@ class TaskModule extends VuexModule {
       )
       .orderBy((x) => x.dayOrder)
       .orderBy((x) => x.priority.number, "desc")
-      .orderBy((x) => x.dueDate?.unix, "asc")
+      .orderBy(
+        (x) => (x.dueDate?.isStartOfDay ? undefined : x.dueDate?.unix),
+        "asc"
+      )
       .value();
   }
 

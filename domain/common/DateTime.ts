@@ -71,7 +71,7 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return this._value.isSame(dateTime._value, "day");
   }
 
-  isStartOfDay(): boolean {
+  get isStartOfDay(): boolean {
     return this._value.startOf("day").isSame(this._value);
   }
 

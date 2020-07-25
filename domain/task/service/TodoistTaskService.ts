@@ -281,10 +281,9 @@ export class TodoistTaskService implements TaskService {
     const task = this.taskById[taskId.unwrap()]!;
     const due = {
       ...task.due,
-      date: date.isStartOfDay()
-        ? date.displayDate
-        : date.rfc3339WithoutTimezone,
+      date: date.isStartOfDay ? date.displayDate : date.rfc3339WithoutTimezone,
     };
+
     try {
       const res = (
         await this.syncClient.syncItemUpdate(
