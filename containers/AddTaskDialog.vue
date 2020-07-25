@@ -154,6 +154,7 @@ export default defineComponent({
       await emitAddTaskAction({
         dueDate: DateTime.now(),
         successMessage: `🆕 Add 『${state.taskName}』 at FIRST today.`,
+        dayOrder: 0,
       });
     };
 

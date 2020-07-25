@@ -23,14 +23,18 @@ export class UpdateDueDateCommand implements Command {
   constructor(
     public execFunction: (
       taskId: TaskId,
-      date: DateTime
+      date: DateTime,
+      optional: {
+        dayOrder?: number;
+      }
     ) => Promise<TogowlError | null>,
     public taskId: TaskId,
-    public date: DateTime
+    public date: DateTime,
+    public optional: { dayOrder?: number }
   ) {}
 
   exec() {
-    return this.execFunction(this.taskId, this.date);
+    return this.execFunction(this.taskId, this.date, this.optional);
   }
 }
 

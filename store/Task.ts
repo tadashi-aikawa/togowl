@@ -227,22 +227,27 @@ class TaskModule extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async updateDueDate(payload: {
+  updateDueDate(payload: {
     taskId: TaskId;
     dueDate: DateTime;
-  }): Promise<void> {
-    const { taskId, dueDate } = payload;
+    dayOrder?: number;
+  }) {
+    const { taskId, dueDate, dayOrder } = payload;
     // TODO: Illegal case
     this.setTaskById({
       ...this._taskById,
-      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWith({ dueDate }),
+      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWith({
+        dueDate,
+        dayOrder,
+      }),
     });
-    await this.commandExecutor
+    this.commandExecutor
       .add(
         new UpdateDueDateCommand(
           service!.updateDueDate.bind(service),
           taskId,
-          dueDate
+          dueDate,
+          { dayOrder }
         )
       )
       .execAll(1000);

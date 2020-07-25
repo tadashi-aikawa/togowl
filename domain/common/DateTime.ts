@@ -16,12 +16,16 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return new DateTime(dayjs());
   }
 
+  static today(): DateTime {
+    return new DateTime(dayjs().startOf("day"));
+  }
+
   static yesterday(): DateTime {
-    return DateTime.now().minusDays(1);
+    return DateTime.today().minusDays(1);
   }
 
   static tomorrow(): DateTime {
-    return DateTime.now().plusDays(1);
+    return DateTime.today().plusDays(1);
   }
 
   plusDays(days: number): DateTime {
@@ -40,6 +44,21 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return new DateTime(this._value.subtract(minutes, "minute"));
   }
 
+  overwriteDate(date: DateTime): DateTime {
+    return new DateTime(
+      this._value
+        .year(date._value.year())
+        .month(date._value.month())
+        .date(date._value.date())
+    );
+  }
+
+  equals(date: DateTime, ignoreTime = false): boolean {
+    return ignoreTime
+      ? this._value.isSame(date._value, "date")
+      : this._value.isSame(date._value);
+  }
+
   displayDiffFromNow(): string {
     return toHHmmss(dayjs().diff(this._value, "second"));
   }
@@ -52,12 +71,20 @@ export class DateTime extends ValueObject<dayjs.Dayjs> {
     return this._value.isSame(dateTime._value, "day");
   }
 
+  isStartOfDay(): boolean {
+    return this._value.startOf("day").isSame(this._value);
+  }
+
   get unix(): number {
     return this._value.unix();
   }
 
   get rfc3339(): string {
     return this._value.format("YYYY-MM-DDTHH:mm:ssZ");
+  }
+
+  get rfc3339WithoutTimezone(): string {
+    return this._value.format("YYYY-MM-DDTHH:mm:ss");
   }
 
   get displayTime(): string {

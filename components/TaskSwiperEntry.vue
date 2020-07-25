@@ -29,9 +29,19 @@
                   class="mx-2"
                   x-small
                   height="28"
-                  @click="updateToToday"
+                  @click="updateToTodayAtFirst"
                 >
-                  <v-icon>mdi-calendar-today</v-icon>
+                  <v-icon>mdi-chevron-triple-up</v-icon>
+                </v-btn>
+                <v-btn
+                  outlined
+                  fab
+                  class="mx-2"
+                  x-small
+                  height="28"
+                  @click="updateToTodayAtLast"
+                >
+                  <v-icon>mdi-chevron-triple-down</v-icon>
                 </v-btn>
                 <v-btn
                   outlined
@@ -71,9 +81,19 @@
                   fab
                   small
                   dark
-                  @click="updateToToday"
+                  @click="updateToTodayAtFirst"
                 >
-                  <v-icon>mdi-calendar-today</v-icon>
+                  <v-icon>mdi-chevron-triple-up</v-icon>
+                </v-btn>
+                <v-btn
+                  outlined
+                  class="mx-2"
+                  fab
+                  small
+                  dark
+                  @click="updateToTodayAtLast"
+                >
+                  <v-icon>mdi-chevron-triple-down</v-icon>
                 </v-btn>
                 <v-btn
                   outlined
@@ -155,27 +175,22 @@ export default defineComponent({
       revertSwiperStateAsDefault();
       await taskStore.completeTask(props.task.id);
     };
-    const updateToToday = async () => {
+
+    const emitUpdateDueDateAction = (dueDate: DateTime, dayOrder?: number) => {
       revertSwiperStateAsDefault();
-      await taskStore.updateDueDate({
+      taskStore.updateDueDate({
         taskId: props.task.id,
-        dueDate: DateTime.now(),
+        dueDate: props.task.dueDate?.overwriteDate(dueDate) ?? dueDate,
+        dayOrder,
       });
     };
-    const updateToTomorrow = async () => {
-      revertSwiperStateAsDefault();
-      await taskStore.updateDueDate({
-        taskId: props.task.id,
-        dueDate: DateTime.tomorrow(),
-      });
-    };
-    const updateDueDate = async (date: string) => {
-      revertSwiperStateAsDefault();
-      await taskStore.updateDueDate({
-        taskId: props.task.id,
-        dueDate: DateTime.of(date),
-      });
-    };
+    const updateToTodayAtFirst = () =>
+      emitUpdateDueDateAction(DateTime.today(), 0);
+    const updateToTodayAtLast = () =>
+      emitUpdateDueDateAction(DateTime.today(), 999);
+    const updateToTomorrow = () => emitUpdateDueDateAction(DateTime.tomorrow());
+    const updateDueDate = (date: string) =>
+      emitUpdateDueDateAction(DateTime.of(date));
 
     return {
       state,
@@ -183,7 +198,8 @@ export default defineComponent({
       date,
       mySwiper,
       completeTask,
-      updateToToday,
+      updateToTodayAtFirst,
+      updateToTodayAtLast,
       updateToTomorrow,
       updateDueDate,
       handleClickStartButton() {

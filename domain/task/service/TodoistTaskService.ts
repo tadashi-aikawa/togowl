@@ -272,16 +272,25 @@ export class TodoistTaskService implements TaskService {
 
   async updateDueDate(
     taskId: TaskId,
-    date: DateTime
+    date: DateTime,
+    optional: {
+      dayOrder: number;
+    }
   ): Promise<UpdateTaskError | null> {
     logger.put(`TaskService.updateDueDate: ${this.shortTodoistSyncToken}`);
     const task = this.taskById[taskId.unwrap()]!;
-    const due = { ...task.due, date: date.displayDate };
+    const due = {
+      ...task.due,
+      date: date.isStartOfDay()
+        ? date.displayDate
+        : date.rfc3339WithoutTimezone,
+    };
     try {
       const res = (
         await this.syncClient.syncItemUpdate(
           taskId.asNumber,
           due,
+          optional.dayOrder,
           this.todoistSyncToken
         )
       ).data;

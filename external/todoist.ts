@@ -150,6 +150,7 @@ export namespace SyncApi {
     syncItemUpdate(
       taskId: number,
       due: Partial<Due>,
+      dayOrder?: number,
       syncToken = "*"
     ): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
@@ -159,6 +160,7 @@ export namespace SyncApi {
           args: {
             id: taskId,
             due,
+            day_order: dayOrder,
           },
         },
       ]);
