@@ -46,7 +46,7 @@
       <v-toolbar-title>Togowl</v-toolbar-title>
       <v-spacer />
       <add-task-dialog>
-        <v-btn icon>
+        <v-btn icon accesskey="a">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </add-task-dialog>
