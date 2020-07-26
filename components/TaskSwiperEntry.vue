@@ -81,6 +81,7 @@ export default defineComponent({
       swiperOption: {
         initialSlide: 1,
         loop: false,
+        threshold: 10,
         noSwipingClass: "no-swiping-class",
         on: {
           transitionEnd(this: { activeIndex: number }) {
