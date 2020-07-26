@@ -45,11 +45,6 @@
                   icon="mdi-calendar-edit"
                 />
               </calendar-selector>
-              <task-swiper-button
-                :compact="compact"
-                icon="mdi-pencil-box-multiple"
-                @click="showTaskEditable"
-              />
             </v-row>
           </v-container>
         </v-list-item>
@@ -126,10 +121,6 @@ export default defineComponent({
     const updateDueDate = (date: string) =>
       emitUpdateDueDateAction(DateTime.of(date));
 
-    const showTaskEditable = () => {
-      window.open(props.task.editableUrl.unwrap(), "_blank");
-    };
-
     return {
       state,
       date,
@@ -139,7 +130,6 @@ export default defineComponent({
       updateToTodayAtLast,
       updateToTomorrow,
       updateDueDate,
-      showTaskEditable,
       handleClickStartButton() {
         emit("on-click-start-button", props.task);
       },
