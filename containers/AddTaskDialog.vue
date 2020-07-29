@@ -161,7 +161,7 @@ export default defineComponent({
     const handleClickTodayFirst = async () => {
       await emitAddTaskAction({
         dueDate: DateTime.now(),
-        successMessage: `🆕 Add 『${state.taskName}』 at FIRST today.`,
+        successMessage: `Add 『${state.taskName}』 at FIRST today.`,
         dayOrder: 0,
       });
     };
@@ -169,7 +169,7 @@ export default defineComponent({
     const handleClickTodayLast = async () => {
       await emitAddTaskAction({
         dueDate: DateTime.now(),
-        successMessage: `🆕 Add 『${state.taskName}』 at LAST today.`,
+        successMessage: `Add 『${state.taskName}』 at LAST today.`,
         dayOrder: 999,
       });
     };
@@ -177,7 +177,7 @@ export default defineComponent({
     const handleClickTomorrow = async () => {
       await emitAddTaskAction({
         dueDate: DateTime.tomorrow(),
-        successMessage: `🆕 Add 『${state.taskName}』 at tomorrow.`,
+        successMessage: `Add 『${state.taskName}』 at tomorrow.`,
       });
     };
 
@@ -185,7 +185,7 @@ export default defineComponent({
       state.date = date;
       await emitAddTaskAction({
         dueDate: DateTime.of(date),
-        successMessage: `🆕 Add 『${state.taskName}』at ${date}.`,
+        successMessage: `Add 『${state.taskName}』at ${date}.`,
       });
     };
 
