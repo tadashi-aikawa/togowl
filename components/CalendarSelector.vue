@@ -2,10 +2,11 @@
   <v-dialog
     v-model="state.visible"
     :return-value.sync="state.date"
+    :disabled="disabled"
     width="290px"
   >
     <template v-slot:activator="{ on, attrs }">
-      <div v-bind="attrs" v-on="on">
+      <div v-bind="attrs" style="cursor: default;" v-on="on">
         <slot></slot>
       </div>
     </template>
@@ -22,11 +23,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "@vue/composition-api";
+import { defineComponent, reactive, watch } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
     date: { type: String, required: true },
+    disabled: { type: Boolean },
     visible: { type: Boolean },
   },
   setup(props, context) {
@@ -34,6 +36,13 @@ export default defineComponent({
       date: props.date,
       visible: props.visible,
     });
+
+    watch(
+      () => props.date,
+      (date) => {
+        state.date = date;
+      }
+    );
 
     const selectDate = () => {
       state.visible = false;

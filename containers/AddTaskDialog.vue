@@ -69,13 +69,19 @@
           >
             <v-icon>mdi-calendar-arrow-right</v-icon>
           </v-btn>
-          <v-btn
+          <calendar-selector
             :disabled="!state.isValid"
-            color="green darken-2"
-            @click="handleClickLater"
+            :date="state.date"
+            @select-date="handleSelectSpecifiedDate"
           >
-            <v-icon>mdi-calendar-blank</v-icon>
-          </v-btn>
+            <v-btn
+              :disabled="!state.isValid"
+              color="green darken-2"
+              style="margin-left: 8px;"
+            >
+              <v-icon>mdi-calendar-edit</v-icon>
+            </v-btn>
+          </calendar-selector>
         </v-card-actions>
       </v-card>
       <v-overlay key="state.processing" absolute :value="state.processing">
@@ -102,9 +108,10 @@ import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
 import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { Label } from "~/domain/task/entity/Label";
+import CalendarSelector from "~/components/CalendarSelector.vue";
 
 export default defineComponent({
-  components: { TaskProjectSelector, TaskLabelSelector },
+  components: { TaskProjectSelector, TaskLabelSelector, CalendarSelector },
   props: {
     visible: { type: Boolean },
   },
@@ -116,6 +123,7 @@ export default defineComponent({
       taskName: "",
       project: undefined,
       labels: [] as Label[],
+      date: DateTime.now().displayDate,
       processing: false,
       snackbar: false,
       snackbarMessage: "",
@@ -173,9 +181,11 @@ export default defineComponent({
       });
     };
 
-    const handleClickLater = async () => {
+    const handleSelectSpecifiedDate = async (date: string) => {
+      state.date = date;
       await emitAddTaskAction({
-        successMessage: `🆕 Add 『${state.taskName}』.`,
+        dueDate: DateTime.of(date),
+        successMessage: `🆕 Add 『${state.taskName}』at ${date}.`,
       });
     };
 
@@ -185,7 +195,7 @@ export default defineComponent({
       handleClickTodayFirst,
       handleClickTodayLast,
       handleClickTomorrow,
-      handleClickLater,
+      handleSelectSpecifiedDate,
     };
   },
 });
