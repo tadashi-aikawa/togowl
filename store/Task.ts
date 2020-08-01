@@ -56,14 +56,14 @@ class TaskModule extends VuexModule {
   }
 
   get tasksOrderAsDay(): Task[] {
-    const today = DateTime.now();
-    const yesterday = DateTime.now().minusDays(1);
+    const today = DateTime.today();
+    const yesterday = DateTime.yesterday();
     return _(this.tasks)
       .reject((x) => !x.dueDate)
       .filter(
         (x) =>
-          (today.equalsAsDate(x.dueDate!) ||
-            yesterday.equalsAsDate(x.dueDate!)) ??
+          (today.equals(x.dueDate!, true) ||
+            yesterday.equals(x.dueDate!, true)) ??
           false
       )
       .orderBy((x) => x.dayOrder)
