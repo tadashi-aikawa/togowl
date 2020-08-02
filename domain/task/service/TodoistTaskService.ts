@@ -31,6 +31,7 @@ import { LabelId } from "~/domain/task/vo/LabelId";
 import { Url } from "~/domain/common/Url";
 import { todoistToMarkdown } from "~/utils/string";
 
+const inboxProjectIdMemoize = LazyGetter();
 const notesMemoize = LazyGetter();
 
 export class TodoistTaskService implements TaskService {
@@ -42,6 +43,11 @@ export class TodoistTaskService implements TaskService {
   private projectById: Dictionary<todoist.SyncApi.Project>;
   private labelsById: Dictionary<todoist.SyncApi.Label>;
   private notesById: Dictionary<todoist.SyncApi.Note>;
+
+  @inboxProjectIdMemoize
+  private get inboxProjectId(): number {
+    return _(this.projectById).find((x) => x.inbox_project)!.id;
+  }
 
   @notesMemoize
   private get notesByTaskId(): Dictionary<todoist.SyncApi.Note[]> {
@@ -270,6 +276,45 @@ export class TodoistTaskService implements TaskService {
     }
   }
 
+  async updateTask(
+    taskId: TaskId,
+    title?: string,
+    project?: TaskProject | null,
+    labels?: Label[]
+  ): Promise<UpdateTaskError | null> {
+    logger.put(`TaskService.updateTask: ${this.shortTodoistSyncToken}`);
+
+    try {
+      const res = (
+        await this.syncClient.syncItemUpdate(
+          taskId.asNumber,
+          this.todoistSyncToken,
+          {
+            content: title,
+            projectId:
+              project === null ? this.inboxProjectId : project?.id.asNumber,
+            labels: labels?.map((x) => x.idAsNumber),
+          }
+        )
+      ).data;
+      logger.put(
+        `TaskService.updateTask.success: ${this.shortTodoistSyncToken}`
+      );
+      this.syncCloudToInstance(res);
+      logger.put(
+        `TaskService.updateTask.success (sync to local): ${this.shortTodoistSyncToken}`
+      );
+      return null;
+    } catch (err) {
+      console.error(err);
+      logger.put(`TaskService.updateTask.error: ${this.shortTodoistSyncToken}`);
+      return UpdateTaskError.of({
+        taskId,
+        detail: "Can't update a task on Todoist",
+      });
+    }
+  }
+
   async updateDueDate(
     taskId: TaskId,
     date: DateTime,
@@ -288,9 +333,8 @@ export class TodoistTaskService implements TaskService {
       const res = (
         await this.syncClient.syncItemUpdate(
           taskId.asNumber,
-          due,
-          optional.dayOrder,
-          this.todoistSyncToken
+          this.todoistSyncToken,
+          { due, dayOrder: optional.dayOrder }
         )
       ).data;
       logger.put(

@@ -15,6 +15,10 @@ export class Label extends Entity<Props> {
     return new Label(args.id.unwrap(), args);
   }
 
+  get id(): LabelId {
+    return this._props.id;
+  }
+
   get idAsNumber(): number {
     return this._props.id.asNumber;
   }

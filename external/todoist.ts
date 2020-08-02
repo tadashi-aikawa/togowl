@@ -14,7 +14,12 @@ export namespace SyncApi {
     | "notes"
     | "labels";
   export interface Command {
-    type: "item_add" | "item_update" | "item_update_day_orders" | "item_close";
+    type:
+      | "item_add"
+      | "item_update"
+      | "item_update_day_orders"
+      | "item_close"
+      | "item_move";
     uuid: string;
     temp_id?: string;
     args: { [key: string]: any };
@@ -47,6 +52,7 @@ export namespace SyncApi {
     name: string;
     /** 0: exists, 1: removed */
     is_deleted: number;
+    inbox_project: boolean;
   }
 
   interface Due {
@@ -149,21 +155,40 @@ export namespace SyncApi {
 
     syncItemUpdate(
       taskId: number,
-      due: Partial<Due>,
-      dayOrder?: number,
-      syncToken = "*"
+      syncToken = "*",
+      payload: {
+        content?: string;
+        projectId?: number;
+        labels?: number[];
+        due?: Partial<Due> | null;
+        dayOrder?: number;
+      }
     ): AxiosPromise<Root> {
-      return this.sync(this.SYNC_RESOURCES, syncToken, [
+      const commands: Command[] = [
         {
           type: "item_update",
           uuid: uuidv4(),
           args: {
             id: taskId,
-            due,
-            day_order: dayOrder,
+            content: payload.content,
+            due: payload.due,
+            day_order: payload.dayOrder,
+            labels: payload.labels,
           },
         },
-      ]);
+      ];
+      if (payload.projectId !== undefined) {
+        commands.push({
+          type: "item_move",
+          uuid: uuidv4(),
+          args: {
+            id: taskId,
+            project_id: payload.projectId,
+          },
+        });
+      }
+
+      return this.sync(this.SYNC_RESOURCES, syncToken, commands);
     }
 
     syncItemUpdateDayOrders(

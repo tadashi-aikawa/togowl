@@ -36,6 +36,12 @@ export interface TaskService {
       dayOrder?: number;
     }
   ): Promise<AddTaskError | null>;
+  updateTask(
+    taskId: TaskId,
+    title?: string,
+    project?: TaskProject | null,
+    labels?: Label[]
+  ): Promise<UpdateTaskError | null>;
   updateDueDate(
     taskId: TaskId,
     date: DateTime,

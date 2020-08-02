@@ -12,7 +12,13 @@
     >
     <v-list-item-content>
       <v-list-item-title style="cursor: pointer;">
-        <v-menu offset-y transition="slide-y-transition" dark rounded="b-xl">
+        <v-menu
+          v-model="state.isMenuVisible"
+          offset-y
+          transition="slide-y-transition"
+          dark
+          rounded="b-xl"
+        >
           <template v-slot:activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
               <TaskSummary
@@ -23,25 +29,25 @@
             </div>
           </template>
           <v-list dense outlined>
-            <v-list-item @click="handleClickEditTaskMenuItem">
-              <v-list-item-icon>
-                <v-icon>mdi-monitor-edit</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title
-                >連携先サービスでタスクの編集
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item disabled>
-              <v-list-item-icon>
-                <v-icon disabled>mdi-circle-edit-outline</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>タスクの編集</v-list-item-title>
-            </v-list-item>
+            <edit-task-dialog :task="task">
+              <v-list-item @click="handleClickEditTaskMenuItem">
+                <v-list-item-icon>
+                  <v-icon>mdi-circle-edit-outline</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Edit</v-list-item-title>
+              </v-list-item>
+            </edit-task-dialog>
             <v-list-item disabled>
               <v-list-item-icon>
                 <v-icon disabled>mdi-delete-forever</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>タスクの削除</v-list-item-title>
+              <v-list-item-title>Delete</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="handleClickEditTaskOriginMenuItem">
+              <v-list-item-icon>
+                <v-icon>mdi-monitor-edit</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Edit on Todoist </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -61,18 +67,24 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent, reactive } from "@vue/composition-api";
+import AddTaskDialog from "~/containers/AddTaskDialog.vue";
+import EditTaskDialog from "~/containers/EditTaskDialog.vue";
 import TaskSummary from "~/components/TaskSummary.vue";
 import { Task } from "~/domain/task/entity/Task";
 
 export default defineComponent({
-  components: { TaskSummary },
+  components: { TaskSummary, AddTaskDialog, EditTaskDialog },
   props: {
     task: { type: Object as () => Task, required: true },
     disabled: { type: Boolean },
     compact: { type: Boolean },
   },
   setup(props, { emit }) {
+    const state = reactive({
+      isMenuVisible: false,
+    });
+
     const itemClass = computed((): string =>
       props.task.titleWithoutDecorated.startsWith("⏲") ? "divider" : "task"
     );
@@ -80,14 +92,21 @@ export default defineComponent({
     const handleClickStartButton = () => {
       emit("on-click-start-button", props.task);
     };
-    const handleClickEditTaskMenuItem = () => {
+
+    const handleClickEditTaskOriginMenuItem = () => {
+      state.isMenuVisible = false;
       window.open(props.task.editableUrl.unwrap(), "_blank");
+    };
+    const handleClickEditTaskMenuItem = () => {
+      state.isMenuVisible = false;
     };
 
     return {
+      state,
       itemClass,
-      handleClickEditTaskMenuItem,
+      handleClickEditTaskOriginMenuItem,
       handleClickStartButton,
+      handleClickEditTaskMenuItem,
     };
   },
 });

@@ -41,6 +41,7 @@ class TaskModule extends VuexModule {
   get taskById(): { [taskId: number]: Task } {
     return _.mapValues(this._taskById, (x) =>
       x.cloneWith({
+        project: this.projectById[x.projectId?.asNumber ?? -1],
         entryProject: x.projectId
           ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
           : undefined,
@@ -219,6 +220,35 @@ class TaskModule extends VuexModule {
       labels,
       dayOrder,
     });
+    if (err) {
+      this.setError(err);
+      this.setStatus("error");
+      return err;
+    }
+
+    this.setError(null);
+    this.setStatus("success");
+  }
+
+  @Action({ rawError: true })
+  async updateTask(payload: {
+    taskId: TaskId;
+    title: string;
+    project: TaskProject | null;
+    labels: Label[];
+  }): Promise<TogowlError | undefined> {
+    const { taskId, title, project, labels } = payload;
+    // TODO: Illegal case
+    this.setTaskById({
+      ...this._taskById,
+      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWith({
+        title,
+        projectId: project?.id,
+        labelIds: labels.map((x) => x.id),
+      }),
+    });
+
+    const err = await service!.updateTask(taskId, title, project, labels);
     if (err) {
       this.setError(err);
       this.setStatus("error");

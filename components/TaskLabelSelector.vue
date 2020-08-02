@@ -20,12 +20,12 @@
     @change="handleChangeLabels"
   >
     <template #selection="data">
-      <v-chip :class="ma - 1" x-small dark>
+      <v-chip class="ma-1" x-small dark>
         {{ data.item.name }}
       </v-chip>
     </template>
     <template #item="data">
-      <v-chip :class="ma - 1" x-small dark>
+      <v-chip class="ma-1" x-small dark>
         {{ data.item.name }}
       </v-chip>
     </template>

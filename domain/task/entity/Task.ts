@@ -1,6 +1,7 @@
 import { Entity } from "owlelia";
 import { LabelId } from "../vo/LabelId";
 import { Label } from "./Label";
+import { TaskProject } from "./TaskProject";
 import { TaskId } from "~/domain/task/vo/TaskId";
 import { ProjectId } from "~/domain/task/vo/ProjectId";
 import { Project } from "~/domain/timer/entity/Project";
@@ -18,6 +19,7 @@ interface Props {
   priority: Priority;
   editableUrl: Url;
   projectId?: ProjectId;
+  project?: TaskProject;
   entryProject?: Project;
   labelIds: LabelId[];
   labels?: Label[];
@@ -59,6 +61,10 @@ export class Task extends Entity<Props> {
     return this._props.projectId;
   }
 
+  get project(): TaskProject | undefined {
+    return this._props.project;
+  }
+
   get entryProject(): Project | undefined {
     return this._props.entryProject;
   }
@@ -95,7 +101,7 @@ export class Task extends Entity<Props> {
     return pickUrl(this._props.title);
   }
 
-  cloneWith(partial: Partial<Task>): Task {
+  cloneWith(partial: Partial<Props>): Task {
     return Task.of({ ...this._props, ...partial });
   }
 }
