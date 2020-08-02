@@ -143,18 +143,6 @@
                 </v-sheet>
               </v-row>
             </v-flex>
-
-            <v-snackbar
-              v-model="snackbar"
-              :color="snackbarColor"
-              :timeout="-1"
-              top
-            >
-              {{ snackMessage }}
-              <v-btn color="blue" text @click="snackbar = false">
-                Close
-              </v-btn>
-            </v-snackbar>
           </v-col>
 
           <v-col v-if="$vuetify.breakpoint.mdAndUp" :md="4">
@@ -197,6 +185,15 @@
         <v-icon>mdi-pen</v-icon>
       </v-btn>
     </v-bottom-navigation>
+
+    <portal to="global-notification">
+      <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="-1" top>
+        {{ snackMessage }}
+        <v-btn color="blue" text @click="snackbar = false">
+          Close
+        </v-btn>
+      </v-snackbar>
+    </portal>
   </v-layout>
 </template>
 

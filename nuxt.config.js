@@ -31,10 +31,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [
-    "@/plugins/firebase.js",
-    "@/plugins/composition-api",
-  ],
+  plugins: ["@/plugins/firebase.js", "@/plugins/composition-api"],
   /*
    ** Nuxt.js dev-modules
    */
@@ -52,6 +49,7 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     "@nuxtjs/axios",
     "@nuxtjs/pwa",
+    "portal-vue/nuxt",
   ],
   /*
    ** Axios module configuration

@@ -88,15 +88,17 @@
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
     </v-dialog>
-    <v-snackbar
-      v-model="state.snackbar"
-      :timeout="3000"
-      color="success darken-2"
-      dark
-      top
-    >
-      {{ state.snackbarMessage }}
-    </v-snackbar>
+    <portal to="global-notification">
+      <v-snackbar
+        v-model="state.snackbar"
+        :timeout="3000"
+        color="success darken-2"
+        dark
+        top
+      >
+        {{ state.snackbarMessage }}
+      </v-snackbar>
+    </portal>
   </div>
 </template>
 

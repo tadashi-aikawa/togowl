@@ -28,6 +28,7 @@
     "marked": "^1.1.0",
     "nuxt": "^2.12.2",
     "owlelia": "^0.14.0",
+    "portal-vue": "^2.1.7",
     "query-string": "^6.13.1",
     "shallow-equal-object": "^1.1.1",
     "swiper": "^5.4.5",
