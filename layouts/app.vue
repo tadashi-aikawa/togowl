@@ -77,7 +77,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <portal-target name="global-notification" />
+    <portal-target name="global-notification" multiple />
   </v-app>
 </template>
 
