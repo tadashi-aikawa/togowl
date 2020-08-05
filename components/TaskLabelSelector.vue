@@ -18,6 +18,7 @@
     clearable
     prepend-icon="mdi-tag"
     @change="handleChangeLabels"
+    @keyup.ctrl.enter="handleCtrlEnter"
   >
     <template #selection="data">
       <v-chip class="ma-1" x-small dark>
@@ -61,11 +62,16 @@ export default defineComponent({
       context.emit("input", labels);
     };
 
+    const handleCtrlEnter = () => {
+      context.emit("on-ctrl-enter");
+    };
+
     return {
       state,
       labels,
       customFilter,
       handleChangeLabels,
+      handleCtrlEnter,
     };
   },
 });

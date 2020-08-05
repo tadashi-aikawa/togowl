@@ -16,6 +16,7 @@
     clearable
     prepend-icon="mdi-briefcase"
     @change="handleChangeProject"
+    @keyup.ctrl.enter="handleCtrlEnter"
   >
     <template #selection="data">
       <div>
@@ -56,10 +57,15 @@ export default defineComponent({
       context.emit("input", project);
     };
 
+    const handleCtrlEnter = () => {
+      context.emit("on-ctrl-enter");
+    };
+
     return {
       projects,
       customFilter,
       handleChangeProject,
+      handleCtrlEnter,
     };
   },
 });
