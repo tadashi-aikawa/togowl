@@ -3,7 +3,7 @@
     :value="value"
     :items="labels"
     :filter="customFilter"
-    :menu-props="{ maxHeight: 300 }"
+    :menu-props="{ maxHeight: 300, closeOnContentClick: true }"
     :search-input.sync="state.inputText"
     item-text="name"
     color="cyan"
