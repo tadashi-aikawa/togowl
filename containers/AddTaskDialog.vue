@@ -29,19 +29,19 @@
                 color="cyan"
                 item-color="cyan"
                 clearable
-                @keyup.ctrl.enter="addTaskTodayFirst"
+                @keyup.ctrl.enter="handleCntrlEnter"
               />
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
               <task-project-selector
                 v-model="state.project"
-                @on-ctrl-enter="addTaskTodayFirst"
+                @on-ctrl-enter="handleCntrlEnter"
               ></task-project-selector>
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
               <task-label-selector
                 v-model="state.labels"
-                @on-ctrl-enter="addTaskTodayFirst"
+                @on-ctrl-enter="handleCntrlEnter"
               ></task-label-selector>
             </v-row>
           </v-form>
@@ -54,7 +54,7 @@
           <v-btn
             :disabled="!state.isValid"
             color="green darken-2"
-            @click="addTaskTodayFirst"
+            @click="handleCntrlEnter"
           >
             <v-icon>mdi-calendar-today</v-icon>
             <v-icon>mdi-chevron-triple-up</v-icon>
@@ -196,10 +196,16 @@ export default defineComponent({
       });
     };
 
+    const handleCntrlEnter = () => {
+      if (state.isValid) {
+        handleClickTodayFirst();
+      }
+    };
+
     return {
       TASK_NAME_RULES,
       state,
-      addTaskTodayFirst: handleClickTodayFirst,
+      handleCntrlEnter,
       handleClickTodayLast,
       handleClickTomorrow,
       handleSelectSpecifiedDate,

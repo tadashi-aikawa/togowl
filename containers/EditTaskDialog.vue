@@ -29,19 +29,19 @@
                 color="cyan"
                 item-color="cyan"
                 clearable
-                @keyup.ctrl.enter="update"
+                @keyup.ctrl.enter="handleCtrlEnter"
               />
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
               <task-project-selector
                 v-model="state.project"
-                @on-ctrl-enter="update"
+                @on-ctrl-enter="handleCtrlEnter"
               ></task-project-selector>
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
               <task-label-selector
                 v-model="state.labels"
-                @on-ctrl-enter="update"
+                @on-ctrl-enter="handleCtrlEnter"
               ></task-label-selector>
             </v-row>
           </v-form>
@@ -54,7 +54,7 @@
           <v-btn
             :disabled="!state.isValid"
             color="green darken-2"
-            @click="update"
+            @click="handleCtrlEnter"
           >
             Update
           </v-btn>
@@ -143,10 +143,16 @@ export default defineComponent({
       state.visible = false;
     };
 
+    const handleCtrlEnter = () => {
+      if (state.isValid) {
+        handleClickUpdate();
+      }
+    };
+
     return {
       TASK_NAME_RULES,
       state,
-      update: handleClickUpdate,
+      handleCtrlEnter,
     };
   },
 });
