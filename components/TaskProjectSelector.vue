@@ -14,7 +14,9 @@
     dark
     dense
     clearable
+    auto-select-first
     prepend-icon="mdi-briefcase"
+    hide-selected
     @change="handleChangeProject"
     @keyup.ctrl.enter="handleCtrlEnter"
   >
