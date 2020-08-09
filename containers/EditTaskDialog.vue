@@ -49,7 +49,7 @@
             {{ state.processErrorMessage }}
           </v-alert>
         </v-card-text>
-        <v-divider></v-divider>
+        <v-divider style="padding-bottom: 10px;"></v-divider>
         <v-card-actions class="center">
           <v-btn
             :disabled="!state.isValid"

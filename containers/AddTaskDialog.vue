@@ -20,6 +20,7 @@
           <v-form ref="form" v-model="state.isValid">
             <v-row style="padding: 0 10px 0;">
               <v-text-field
+                ref="taskNameFieldRef"
                 v-model="state.taskName"
                 autofocus
                 :rules="TASK_NAME_RULES"
@@ -49,7 +50,7 @@
             {{ state.processErrorMessage }}
           </v-alert>
         </v-card-text>
-        <v-divider></v-divider>
+        <v-divider style="padding-bottom: 10px;"></v-divider>
         <v-card-actions class="center">
           <v-btn
             :disabled="!state.isValid"
@@ -88,6 +89,12 @@
             </v-btn>
           </calendar-selector>
         </v-card-actions>
+        <div class="center">
+          <v-switch
+            v-model="state.shouldCreateAnother"
+            label="Create another"
+          ></v-switch>
+        </div>
       </v-card>
       <v-overlay key="state.processing" absolute :value="state.processing">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -108,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "@vue/composition-api";
+import { defineComponent, reactive, ref } from "@vue/composition-api";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
 import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
@@ -125,6 +132,8 @@ export default defineComponent({
   setup(props) {
     const TASK_NAME_RULES = [(v: string) => !!v || "Task name is required"];
 
+    const taskNameFieldRef = ref<HTMLElement>();
+
     const state = reactive({
       isValid: false,
       taskName: "",
@@ -136,6 +145,7 @@ export default defineComponent({
       snackbarMessage: "",
       processErrorMessage: "",
       visible: props.visible as boolean,
+      shouldCreateAnother: false,
     });
 
     const emitAddTaskAction = async (payload: {
@@ -162,6 +172,13 @@ export default defineComponent({
 
       state.snackbar = true;
       state.snackbarMessage = payload.successMessage;
+
+      if (state.shouldCreateAnother) {
+        state.taskName = "";
+        taskNameFieldRef.value?.focus();
+        return;
+      }
+
       state.visible = false;
     };
 
@@ -205,6 +222,7 @@ export default defineComponent({
     return {
       TASK_NAME_RULES,
       state,
+      taskNameFieldRef,
       handleCntrlEnter,
       handleClickTodayLast,
       handleClickTomorrow,
