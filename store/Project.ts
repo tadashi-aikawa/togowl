@@ -19,6 +19,7 @@ import { Project } from "~/domain/timer/entity/Project";
 import { ProjectCategory } from "~/domain/timer/entity/ProjectCategory";
 import { addMetaToProject } from "~/domain/timer/service/TimerMetaService";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
+import { TaskProjectCountStorage } from "~/utils/local-storage";
 
 let service: TimerService | null;
 
@@ -76,6 +77,10 @@ class ProjectModule extends VuexModule {
     return _(this.projects)
       .flatMap((x) => x.taskProjectIds)
       .uniq()
+      .orderBy(
+        (pid) => this.projectSelectedCountById[pid.asNumber] ?? 0,
+        "desc"
+      )
       .map((x) => taskStore.projectById[x.asNumber])
       .value();
   }
@@ -86,16 +91,25 @@ class ProjectModule extends VuexModule {
     this._projects = projects;
   }
 
-  projectsStatus: ActionStatus = "init";
+  private projectsStatus: ActionStatus = "init";
   @Mutation
   setProjectsStatus(status: ActionStatus) {
     this.projectsStatus = status;
   }
 
-  projectsError: TogowlError | null = null;
+  private projectsError: TogowlError | null = null;
   @Mutation
   setProjectsError(error: TogowlError | null) {
     this.projectsError = error;
+  }
+
+  private projectSelectedCountById: {
+    [id: number]: number;
+  } = TaskProjectCountStorage.getAll();
+
+  @Mutation
+  setProjectSelectedCountById(countById: { [id: number]: number }) {
+    this.projectSelectedCountById = countById;
   }
 
   @Action({ rawError: true })
@@ -146,6 +160,13 @@ class ProjectModule extends VuexModule {
     this.setProjects(projectsOrErr.value);
     this.setProjectsError(null);
     this.setProjectsStatus("success");
+  }
+
+  @Action({ rawError: true })
+  increaseProjectSelectedCount(project: TaskProject): void {
+    this.setProjectSelectedCountById(
+      TaskProjectCountStorage.increase(project.id.asNumber)
+    );
   }
 
   @Action({ rawError: true })

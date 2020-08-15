@@ -55,7 +55,10 @@ export default defineComponent({
         .every((q) => projectName.includes(q));
     };
 
-    const handleChangeProject = (project: TaskProject) => {
+    const handleChangeProject = (project?: TaskProject) => {
+      if (project) {
+        projectStore.increaseProjectSelectedCount(project);
+      }
       context.emit("input", project);
     };
 
