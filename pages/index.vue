@@ -80,12 +80,12 @@
                       @change="start(selectedEntry)"
                     >
                       <template #selection="data">
-                        <div style="padding: 5px;">
+                        <div style="padding: 5px; overflow: hidden;">
                           <EntrySummary :entry="data.item" width="70vw" />
                         </div>
                       </template>
                       <template #item="data">
-                        <div style="padding: 5px;">
+                        <div style="padding: 5px; overflow: hidden;">
                           <EntrySummary :entry="data.item" />
                         </div>
                       </template>
