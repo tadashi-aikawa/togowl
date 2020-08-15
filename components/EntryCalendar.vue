@@ -106,12 +106,17 @@ interface ZoomOption {
 const zoomOptions: ZoomOption[] = [
   { type: "month", intervalHeight: 64 },
   { type: "week", intervalHeight: 64 },
-  { type: "week", intervalHeight: 96 },
+  { type: "week", intervalHeight: 88 },
+  { type: "week", intervalHeight: 112 },
+  { type: "week", intervalHeight: 136 },
   { type: "4day", intervalHeight: 64 },
-  { type: "4day", intervalHeight: 96 },
+  { type: "4day", intervalHeight: 88 },
+  { type: "4day", intervalHeight: 112 },
+  { type: "4day", intervalHeight: 136 },
   { type: "day", intervalHeight: 64 },
-  { type: "day", intervalHeight: 96 },
-  { type: "day", intervalHeight: 128 },
+  { type: "day", intervalHeight: 88 },
+  { type: "day", intervalHeight: 112 },
+  { type: "day", intervalHeight: 136 },
 ];
 
 export default defineComponent({
@@ -125,7 +130,7 @@ export default defineComponent({
 
     const state = reactive({
       currentDate: DateTime.now(),
-      zoomLevel: 5,
+      zoomLevel: 10,
     });
 
     const start = computed(
