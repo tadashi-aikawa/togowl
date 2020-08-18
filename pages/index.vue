@@ -365,24 +365,8 @@ class Root extends Vue {
     return timerStore.taskRelatedToCurrentEntry;
   }
 
-  get entries(): Entry[] {
-    return timerStore.entries;
-  }
-
-  get latest5Entries(): Entry[] {
-    return timerStore.entriesWithDayOrders.slice(0, 5);
-  }
-
   get candidatedEntries(): Entry[] {
     return timerStore.candidatedEntries;
-  }
-
-  get entriesStatus(): ActionStatus {
-    return timerStore.entryByIdStatus;
-  }
-
-  get entriesError(): TogowlError | null {
-    return timerStore.entryByIdError;
   }
 
   get tasks(): Task[] {
@@ -413,12 +397,8 @@ class Root extends Vue {
     return this.fetchingStatus === "in_progress";
   }
 
-  get isEntriesLoading(): boolean {
-    return this.entriesStatus === "in_progress" && this.entries.length === 0;
-  }
-
   get isTasksLoading(): boolean {
-    return this.tasksStatus === "in_progress" && this.tasks.length === 0;
+    return this.tasksStatus === "in_progress";
   }
 
   get disabledStart(): boolean {

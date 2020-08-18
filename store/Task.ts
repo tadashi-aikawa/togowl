@@ -352,7 +352,7 @@ class TaskModule extends VuexModule {
   }
 
   @Action({ rawError: true })
-  private async updateService(): Promise<void> {
+  async updateService(): Promise<void> {
     if (service) {
       service.terminate();
     }

@@ -45,6 +45,9 @@
       <v-app-bar-nav-icon @click.stop="state.drawer = !state.drawer" />
       <v-toolbar-title>Togowl</v-toolbar-title>
       <v-spacer />
+      <v-btn icon accesskey="r" @click="forceRefresh">
+        <v-icon>mdi-refresh</v-icon>
+      </v-btn>
       <add-task-dialog>
         <v-btn icon accesskey="a">
           <v-icon>mdi-plus</v-icon>
@@ -90,7 +93,12 @@ import {
 } from "@vue/composition-api";
 import AddTaskDialog from "~/containers/AddTaskDialog.vue";
 import { getAppVersion } from "~/utils/package";
-import { authenticationStore, taskStore } from "~/store";
+import {
+  authenticationStore,
+  projectStore,
+  taskStore,
+  timerStore,
+} from "~/store";
 
 export default defineComponent({
   components: {
@@ -133,6 +141,12 @@ export default defineComponent({
       state.logoutConfirmDialog = false;
     };
 
+    const forceRefresh = () => {
+      taskStore.updateService();
+      timerStore.updateService();
+      projectStore.updateService();
+    };
+
     onMounted(async () => {
       await taskStore.fetchProjects();
     });
@@ -142,6 +156,7 @@ export default defineComponent({
       state,
       appVersion,
       logout,
+      forceRefresh,
     };
   },
 });
