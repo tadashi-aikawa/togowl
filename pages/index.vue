@@ -122,7 +122,6 @@
               <v-row justify="center">
                 <v-sheet tile class="task-area">
                   <v-img
-                    v-if="!isTasksLoading"
                     width="100%"
                     :src="taskBackgroundImageUrl"
                     :style="{
@@ -411,7 +410,7 @@ class Root extends Vue {
 
   get tasksBackgroundOpacity(): number {
     if (this.tasks.length > 30) {
-      return 0;
+      return 0.5;
     }
     if (this.tasks.length > 20) {
       return 0.1;
