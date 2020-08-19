@@ -410,7 +410,7 @@ class Root extends Vue {
 
   get tasksBackgroundOpacity(): number {
     if (this.tasks.length > 30) {
-      return 0.5;
+      return 0;
     }
     if (this.tasks.length > 20) {
       return 0.1;
