@@ -23,3 +23,24 @@ export namespace TaskProjectCountStorage {
     return obj;
   }
 }
+
+// TODO: refactoring..
+export namespace EntryCountStorage {
+  const key = `${PREFIX}_entry-count`;
+
+  export function getAll(): { [entryHash: string]: number } {
+    const jsonStr = storage.getItem(key);
+    return jsonStr ? JSON.parse(jsonStr) : {};
+  }
+
+  export function increase(hash: string): { [entryHash: string]: number } {
+    const obj = getAll() ?? {};
+    if (obj[hash]) {
+      obj[hash]++;
+    } else {
+      obj[hash] = 1;
+    }
+    storage.setItem(key, JSON.stringify(obj));
+    return obj;
+  }
+}

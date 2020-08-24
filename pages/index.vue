@@ -77,7 +77,7 @@
                       full-width
                       return-object
                       style="max-width: 480px; padding: 0 10px; margin: 0 10px;"
-                      @change="start(selectedEntry)"
+                      @change="startFromSelector(selectedEntry)"
                     >
                       <template #selection="data">
                         <div style="padding: 5px; overflow: hidden;">
@@ -250,7 +250,7 @@ class Root extends Vue {
     this.snackbar = true;
   }
 
-  async start(entry: Entry) {
+  async startFromSelector(entry: Entry) {
     this.waitForBlockedAction = true;
     const entryOrErr = await timerStore.startEntry(entry);
     this.waitForBlockedAction = false;
@@ -259,6 +259,8 @@ class Root extends Vue {
       this.showSnackBar(entryOrErr.error.message, true);
       return;
     }
+
+    timerStore.increaseEntrySelectedCount(entry);
 
     const err = await notificationStore.notifyStartEvent(entry);
     if (err) {

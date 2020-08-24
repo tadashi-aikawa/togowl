@@ -21,6 +21,7 @@ import { addMetaToEntry } from "~/domain/timer/service/TimerMetaService";
 import { Task } from "~/domain/task/entity/Task";
 import { RecentTask } from "~/domain/common/RecentTask";
 import { UnexpectedError } from "~/domain/common/UnexpectedError";
+import { EntryCountStorage } from "~/utils/local-storage";
 
 let service: TimerService | null;
 
@@ -74,10 +75,8 @@ class TimerModule extends VuexModule {
 
   get candidatedEntries(): Entry[] {
     return _(this.entries)
-      .groupBy((x) => x.hashAsTask)
-      .values()
-      .orderBy((es) => es.length, "desc")
-      .map((es) => es[0])
+      .uniqBy((e) => e.hashAsTask)
+      .orderBy((e) => this.entrySelectedCountByHash[e.hashAsTask] ?? 0, "desc")
       .value();
   }
 
@@ -133,6 +132,15 @@ class TimerModule extends VuexModule {
   @Mutation
   setEntryByIdError(error: TogowlError | null) {
     this.entryByIdError = error;
+  }
+
+  private entrySelectedCountByHash: {
+    [hash: string]: number;
+  } = EntryCountStorage.getAll();
+
+  @Mutation
+  setEntrySelectedCountByHash(countByHash: { [hash: string]: number }) {
+    this.entrySelectedCountByHash = countByHash;
   }
 
   @Action
@@ -353,6 +361,13 @@ class TimerModule extends VuexModule {
     this.setEntryById(_.keyBy(entriesOrErr.value, (x) => x.id.asNumber));
     this.setEntryByIdError(null);
     this.setEntryByIdStatus("success");
+  }
+
+  @Action({ rawError: true })
+  increaseEntrySelectedCount(entry: Entry): void {
+    this.setEntrySelectedCountByHash(
+      EntryCountStorage.increase(entry.hashAsTask)
+    );
   }
 
   @Action({ rawError: true })
