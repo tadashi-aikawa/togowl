@@ -37,7 +37,7 @@
         bottom
         right
         fab
-        style="margin-right: 224px;"
+        style="margin-right: 294px;"
         :disabled="isZoomUpDisabled"
         @click="handleClickZoomUp"
       >
@@ -50,7 +50,7 @@
         bottom
         right
         fab
-        style="margin-right: 168px;"
+        style="margin-right: 238px;"
         :disabled="isZoomDownDisabled"
         @click="handleClickZoomDown"
       >
@@ -63,7 +63,7 @@
         bottom
         right
         fab
-        style="margin-right: 112px;"
+        style="margin-right: 182px;"
         @click="handleClickPrevious"
       >
         <v-icon>mdi-chevron-left</v-icon>
@@ -75,15 +75,53 @@
         bottom
         right
         fab
-        style="margin-right: 56px;"
+        style="margin-right: 126px;"
         @click="handleClickNext"
       >
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
-      <v-btn fixed dark small bottom right fab @click="handleClickMoveToNow">
+      <v-btn
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        style="margin-right: 70px;"
+        @click="handleClickMoveToNow"
+      >
         <v-icon>mdi-send-clock</v-icon>
       </v-btn>
+      <v-btn
+        fixed
+        dark
+        small
+        bottom
+        right
+        fab
+        :disabled="!canShare"
+        style="margin-right: 14px;"
+        @click="handleShareDailyCalendar"
+      >
+        <v-icon>mdi-share-variant</v-icon>
+      </v-btn>
     </v-sheet>
+    <portal to="global-notification">
+      <v-snackbar
+        v-model="state.snackbar"
+        :timeout="state.timeout"
+        :color="state.snackbarColor"
+        dark
+        top
+      >
+        {{ state.snackbarMessage }}
+        <template v-slot:action="{ attrs }">
+          <v-btn icon v-bind="attrs" @click="state.snackbar = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </portal>
   </div>
 </template>
 <script lang="ts">
@@ -94,9 +132,14 @@ import {
   reactive,
   ref,
 } from "@vue/composition-api";
+import html2canvas from "html2canvas";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { DateTime } from "~/domain/common/DateTime";
 import ProjectIcon from "~/components/ProjectIcon.vue";
+
+declare class ClipboardItem {
+  constructor(items: { [mimeType: string]: Blob });
+}
 
 interface ZoomOption {
   type: "month" | "week" | "4day" | "day";
@@ -131,6 +174,10 @@ export default defineComponent({
     const state = reactive({
       currentDate: DateTime.now(),
       zoomLevel: 10,
+      snackbar: false,
+      snackbarMessage: "",
+      snackbarColor: "",
+      timeout: 0,
     });
 
     const start = computed(
@@ -151,11 +198,25 @@ export default defineComponent({
       () => state.zoomLevel >= zoomOptions.length - 1
     );
     const isZoomDownDisabled = computed(() => state.zoomLevel <= 0);
+    const canShare = computed(() => zoomOption.value.type === "day");
 
     const moveToNow = () => {
       calendarRef.value.scrollToTime(
         DateTime.now().minusMinutes(240).displayTimeWithoutSeconds
       );
+    };
+
+    const showSuccess = (message: string) => {
+      state.snackbarColor = "success darken-2";
+      state.snackbarMessage = message;
+      state.timeout = 3000;
+      state.snackbar = true;
+    };
+    const showError = (message: string) => {
+      state.snackbarColor = "error darken-2";
+      state.snackbarMessage = message;
+      state.timeout = 0;
+      state.snackbar = true;
     };
 
     onMounted(() => {
@@ -170,6 +231,7 @@ export default defineComponent({
       zoomOption,
       isZoomUpDisabled,
       isZoomDownDisabled,
+      canShare,
       getEventColor({ entry }: { entry: Entry }): string {
         return entry.projectCategory?.color?.unwrap() ?? "#7C3A";
       },
@@ -187,6 +249,42 @@ export default defineComponent({
       },
       handleClickZoomDown() {
         state.zoomLevel--;
+      },
+      async handleShareDailyCalendar() {
+        if (!(navigator as any).canShare) {
+          showError("This feature is not supported on your browser.");
+          return;
+        }
+
+        const canvas = await html2canvas(
+          document.querySelector<HTMLElement>(".v-calendar-daily__pane")!,
+          {
+            backgroundColor: "#1E1E1E",
+          }
+        );
+
+        canvas.toBlob(async (blob: Blob | null) => {
+          if (!blob) {
+            showError("Fail to capture a daily calendar.");
+            return;
+          }
+
+          const image = new File(
+            [blob],
+            `${state.currentDate.displayDate}.png`,
+            {
+              type: "image/png",
+            }
+          );
+          try {
+            await (navigator as any).share({
+              files: [image],
+            });
+            showSuccess(`Success to capture a daily calendar.`);
+          } catch (e) {
+            showError(`Fail to capture a daily calendar. ${e}`);
+          }
+        });
       },
     };
   },
