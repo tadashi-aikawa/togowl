@@ -80,6 +80,7 @@ class SettingsSlack extends Vue {
   ];
 
   proxy = "";
+  disabled = false;
 
   mounted() {
     this.incomingWebHookUrl =
@@ -87,6 +88,7 @@ class SettingsSlack extends Vue {
     this.notifyChannel =
       notificationStore.slackConfig?.notifyTo?.unwrap() ?? "";
     this.proxy = notificationStore.slackConfig?.proxy ?? "";
+    this.disabled = notificationStore.slackConfig?.disabled ?? false;
   }
 
   get slackConfigUpdateError(): TogowlError | null {
@@ -107,6 +109,7 @@ class SettingsSlack extends Vue {
           ? ChannelName.try(this.notifyChannel).orThrow()
           : undefined,
         proxy: this.proxy,
+        disabled: this.disabled,
       })
     );
   }

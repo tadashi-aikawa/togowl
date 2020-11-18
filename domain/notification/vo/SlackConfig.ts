@@ -6,6 +6,7 @@ interface Props {
   incomingWebHookUrl?: Url;
   notifyTo?: ChannelName;
   proxy?: string;
+  disabled: boolean;
 }
 
 type Args = Props;
@@ -27,5 +28,13 @@ export class SlackConfig extends ValueObject<Props> {
 
   get proxy(): string | undefined {
     return this._value.proxy;
+  }
+
+  get disabled(): boolean {
+    return this._value.disabled;
+  }
+
+  cloneWith(partial: Partial<Props>): SlackConfig {
+    return SlackConfig.of({ ...this._value, ...partial });
   }
 }

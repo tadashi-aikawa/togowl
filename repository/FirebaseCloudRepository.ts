@@ -49,6 +49,7 @@ export interface FirestoreSlack {
   notifyTo?: string;
   incomingWebHookUrl?: string;
   proxy?: string;
+  disabled?: boolean;
 }
 
 export interface FirestoreTask {
@@ -133,6 +134,7 @@ export function toSlackConfig(data: FirestoreSlack): SlackConfig {
       ? ChannelName.try(data.notifyTo).orThrow()
       : undefined,
     proxy: data.proxy,
+    disabled: data.disabled ?? false,
   });
 }
 
@@ -279,6 +281,7 @@ class FirebaseCloudRepository implements CloudRepository {
       incomingWebHookUrl: config.incomingWebHookUrl?.unwrap(),
       notifyTo: config.notifyTo?.unwrap(),
       proxy: config.proxy,
+      disabled: config.disabled,
     };
     return store
       .collection("slack")

@@ -37,7 +37,7 @@ class SlackModule extends VuexModule {
     this.updateError = error;
   }
 
-  @Action
+  @Action({ rawError: true })
   async updateSlackConfig(config: SlackConfig) {
     this.setUpdateError(null);
     this.setUpdateStatus("in_progress");
@@ -60,8 +60,12 @@ class SlackModule extends VuexModule {
     this.setUpdateStatus("success");
   }
 
-  @Action
+  @Action({ rawError: true })
   async notifyStartEvent(entry: Entry): Promise<TogowlError | undefined> {
+    if (this.slackConfig?.disabled) {
+      return;
+    }
+
     const err = await service!.start(entry);
     if (err) {
       console.error(err.messageForLog);
@@ -69,8 +73,12 @@ class SlackModule extends VuexModule {
     }
   }
 
-  @Action
+  @Action({ rawError: true })
   async notifyDoneEvent(entry: Entry): Promise<TogowlError | undefined> {
+    if (this.slackConfig?.disabled) {
+      return;
+    }
+
     const err = await service!.done(entry);
     if (err) {
       console.error(err.messageForLog);
@@ -78,8 +86,12 @@ class SlackModule extends VuexModule {
     }
   }
 
-  @Action
+  @Action({ rawError: true })
   async notifyPauseEvent(entry: Entry): Promise<TogowlError | undefined> {
+    if (this.slackConfig?.disabled) {
+      return;
+    }
+
     const err = await service!.pause(entry);
     if (err) {
       console.error(err.messageForLog);
@@ -87,9 +99,13 @@ class SlackModule extends VuexModule {
     }
   }
 
-  @Action
+  @Action({ rawError: true })
   async notifyCancelEvent(): Promise<TogowlError | undefined> {
     const err = await service!.cancel();
+    if (this.slackConfig?.disabled) {
+      return;
+    }
+
     if (err) {
       console.error(err.messageForLog);
       return err;

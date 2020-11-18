@@ -45,6 +45,11 @@
       <v-app-bar-nav-icon @click.stop="state.drawer = !state.drawer" />
       <v-toolbar-title>Togowl</v-toolbar-title>
       <v-spacer />
+      <v-btn icon>
+        <v-icon :color="slackButtonColor" @click="toggleSlackNotification"
+          >mdi-slack</v-icon
+        >
+      </v-btn>
       <v-btn icon accesskey="r" @click="forceRefresh">
         <v-icon>mdi-refresh</v-icon>
       </v-btn>
@@ -95,6 +100,7 @@ import AddTaskDialog from "~/containers/AddTaskDialog.vue";
 import { getAppVersion } from "~/utils/package";
 import {
   authenticationStore,
+  notificationStore,
   projectStore,
   taskStore,
   timerStore,
@@ -135,6 +141,12 @@ export default defineComponent({
     });
 
     const appVersion = computed(() => getAppVersion());
+    const disabledSlackNotification = computed(
+      () => notificationStore.slackConfig?.disabled
+    );
+    const slackButtonColor = computed(() =>
+      disabledSlackNotification.value ? "grey" : "green"
+    );
 
     const logout = () => {
       authenticationStore.logout();
@@ -147,6 +159,14 @@ export default defineComponent({
       projectStore.updateService();
     };
 
+    const toggleSlackNotification = () => {
+      notificationStore.updateSlackConfig(
+        notificationStore.slackConfig!.cloneWith({
+          disabled: !disabledSlackNotification.value,
+        })
+      );
+    };
+
     onMounted(async () => {
       await taskStore.fetchProjects();
     });
@@ -155,8 +175,11 @@ export default defineComponent({
       ITEMS,
       state,
       appVersion,
+      disabledSlackNotification,
+      slackButtonColor,
       logout,
       forceRefresh,
+      toggleSlackNotification,
     };
   },
 });
