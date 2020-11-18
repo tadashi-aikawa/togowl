@@ -16,6 +16,24 @@ import { Entry } from "~/domain/timer/entity/Entry";
 let service: NotificationService | null;
 
 /**
+ * This decorator works to not execute a function if slackConfig.disabled = true.
+ */
+function IgnoreIfDisabled(
+  _target: any,
+  _propertyKey: string,
+  descriptor: PropertyDescriptor
+) {
+  const originalMethod = descriptor.value;
+  descriptor.value = function (this: SlackModule) {
+    if (this.slackConfig?.disabled) {
+      return;
+    }
+
+    return Reflect.apply(originalMethod, this, arguments);
+  };
+}
+
+/**
  * Concrete implementation by using firebase
  */
 @Module({ name: "Slack", namespaced: true, stateFactory: true })
@@ -61,11 +79,8 @@ class SlackModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  @IgnoreIfDisabled
   async notifyStartEvent(entry: Entry): Promise<TogowlError | undefined> {
-    if (this.slackConfig?.disabled) {
-      return;
-    }
-
     const err = await service!.start(entry);
     if (err) {
       console.error(err.messageForLog);
@@ -74,11 +89,8 @@ class SlackModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  @IgnoreIfDisabled
   async notifyDoneEvent(entry: Entry): Promise<TogowlError | undefined> {
-    if (this.slackConfig?.disabled) {
-      return;
-    }
-
     const err = await service!.done(entry);
     if (err) {
       console.error(err.messageForLog);
@@ -87,11 +99,8 @@ class SlackModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  @IgnoreIfDisabled
   async notifyPauseEvent(entry: Entry): Promise<TogowlError | undefined> {
-    if (this.slackConfig?.disabled) {
-      return;
-    }
-
     const err = await service!.pause(entry);
     if (err) {
       console.error(err.messageForLog);
@@ -100,12 +109,9 @@ class SlackModule extends VuexModule {
   }
 
   @Action({ rawError: true })
+  @IgnoreIfDisabled
   async notifyCancelEvent(): Promise<TogowlError | undefined> {
     const err = await service!.cancel();
-    if (this.slackConfig?.disabled) {
-      return;
-    }
-
     if (err) {
       console.error(err.messageForLog);
       return err;
