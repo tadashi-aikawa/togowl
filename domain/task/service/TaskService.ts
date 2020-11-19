@@ -1,6 +1,7 @@
 import { Either } from "owlelia";
 import { Label } from "../entity/Label";
 import { UpdateTaskError } from "../vo/UpdateTaskError";
+import { DeleteTaskError } from "../vo/DeleteTaskError";
 import {
   AddTaskError,
   CompleteTaskError,
@@ -36,6 +37,7 @@ export interface TaskService {
       dayOrder?: number;
     }
   ): Promise<AddTaskError | null>;
+  deleteTask(taskId: TaskId): Promise<DeleteTaskError | null>;
   updateTask(
     taskId: TaskId,
     title?: string,

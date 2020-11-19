@@ -37,12 +37,18 @@
                 <v-list-item-title>Edit</v-list-item-title>
               </v-list-item>
             </edit-task-dialog>
-            <v-list-item disabled>
-              <v-list-item-icon>
-                <v-icon disabled>mdi-delete-forever</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title>Delete</v-list-item-title>
-            </v-list-item>
+            <confirm-wrapper-dialog
+              title="Confirm"
+              :description="deleteConfirmMessageHtml"
+              @confirm="handleDeleteTask"
+            >
+              <v-list-item @click="handleClickDeleteTaskMenuItem">
+                <v-list-item-icon>
+                  <v-icon>mdi-delete-forever</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Delete</v-list-item-title>
+              </v-list-item>
+            </confirm-wrapper-dialog>
             <v-list-item @click="handleClickEditTaskOriginMenuItem">
               <v-list-item-icon>
                 <v-icon>mdi-monitor-edit</v-icon>
@@ -71,10 +77,17 @@ import { computed, defineComponent, reactive } from "@vue/composition-api";
 import AddTaskDialog from "~/containers/AddTaskDialog.vue";
 import EditTaskDialog from "~/containers/EditTaskDialog.vue";
 import TaskSummary from "~/components/TaskSummary.vue";
+import ConfirmWrapperDialog from "~/components/ConfirmWrapperDialog.vue";
 import { Task } from "~/domain/task/entity/Task";
+import { taskStore } from "~/utils/store-accessor";
 
 export default defineComponent({
-  components: { TaskSummary, AddTaskDialog, EditTaskDialog },
+  components: {
+    TaskSummary,
+    AddTaskDialog,
+    EditTaskDialog,
+    ConfirmWrapperDialog,
+  },
   props: {
     task: { type: Object as () => Task, required: true },
     disabled: { type: Boolean },
@@ -88,6 +101,9 @@ export default defineComponent({
     const itemClass = computed((): string =>
       props.task.titleWithoutDecorated.startsWith("⏲") ? "divider" : "task"
     );
+    const deleteConfirmMessageHtml = computed(
+      () => `Are you sure you want to delete ${props.task.titleAsMarkdown}?`
+    );
 
     const handleClickStartButton = () => {
       emit("on-click-start-button", props.task);
@@ -100,13 +116,22 @@ export default defineComponent({
     const handleClickEditTaskMenuItem = () => {
       state.isMenuVisible = false;
     };
+    const handleClickDeleteTaskMenuItem = () => {
+      state.isMenuVisible = false;
+    };
+    const handleDeleteTask = () => {
+      taskStore.deleteTask(props.task.id);
+    };
 
     return {
       state,
       itemClass,
+      deleteConfirmMessageHtml,
       handleClickEditTaskOriginMenuItem,
       handleClickStartButton,
       handleClickEditTaskMenuItem,
+      handleClickDeleteTaskMenuItem,
+      handleDeleteTask,
     };
   },
 });

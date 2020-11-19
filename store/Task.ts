@@ -5,6 +5,7 @@ import {
   CompleteCommand,
   UpdateDueDateCommand,
   UpdateOrderCommand,
+  DeleteCommand,
 } from "./commands/TaskCommand";
 import { UId } from "~/domain/authentication/vo/UId";
 import { TogowlError } from "~/domain/common/TogowlError";
@@ -228,6 +229,17 @@ class TaskModule extends VuexModule {
 
     this.setError(null);
     this.setStatus("success");
+  }
+
+  @Action({ rawError: true })
+  async deleteTask(taskId: TaskId): Promise<void> {
+    this.setTaskById(_.omit(this._taskById, [taskId.asNumber]));
+
+    const err = await this.commandExecutor
+      .add(new DeleteCommand(service!.deleteTask.bind(service), taskId))
+      .execAll();
+    this.setError(err);
+    this.setStatus(err ? "error" : "success");
   }
 
   @Action({ rawError: true })

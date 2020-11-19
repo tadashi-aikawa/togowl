@@ -2,6 +2,7 @@ import _, { Dictionary } from "lodash";
 import { Either, left, right } from "owlelia";
 import { LazyGetter } from "lazy-get-decorator";
 import { Label } from "../entity/Label";
+import { DeleteTaskError } from "../vo/DeleteTaskError";
 import {
   AddTaskError,
   CompleteTaskError,
@@ -272,6 +273,33 @@ export class TodoistTaskService implements TaskService {
       return AddTaskError.of({
         title,
         detail: "Can't add a task to Todoist",
+      });
+    }
+  }
+
+  async deleteTask(taskId: TaskId): Promise<DeleteTaskError | null> {
+    logger.put(`TaskService.deleteTask: ${this.shortTodoistSyncToken}`);
+    try {
+      const res = (
+        await this.syncClient.syncItemDelete(
+          taskId.asNumber,
+          this.todoistSyncToken
+        )
+      ).data;
+      logger.put(
+        `TaskService.deleteTask.success: ${this.shortTodoistSyncToken}`
+      );
+      this.syncCloudToInstance(res);
+      logger.put(
+        `TaskService.deleteTask.success (sync to local): ${this.shortTodoistSyncToken}`
+      );
+      return null;
+    } catch (err) {
+      console.error(err);
+      logger.put(`TaskService.deleteTask.error: ${this.shortTodoistSyncToken}`);
+      return DeleteTaskError.of({
+        taskId,
+        detail: "Can't delete a task on Todoist",
       });
     }
   }

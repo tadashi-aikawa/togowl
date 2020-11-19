@@ -16,6 +16,7 @@ export namespace SyncApi {
   export interface Command {
     type:
       | "item_add"
+      | "item_delete"
       | "item_update"
       | "item_update_day_orders"
       | "item_close"
@@ -148,6 +149,18 @@ export namespace SyncApi {
             project_id: projectId,
             day_order: dayOrder,
             labels,
+          },
+        },
+      ]);
+    }
+
+    syncItemDelete(taskId: number, syncToken = "*"): AxiosPromise<Root> {
+      return this.sync(this.SYNC_RESOURCES, syncToken, [
+        {
+          type: "item_delete",
+          uuid: uuidv4(),
+          args: {
+            id: taskId,
           },
         },
       ]);

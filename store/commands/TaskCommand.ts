@@ -5,7 +5,7 @@ import { TaskId } from "~/domain/task/vo/TaskId";
 import { DateTime } from "~/domain/common/DateTime";
 
 interface Command {
-  exec(): void;
+  exec(): Promise<TogowlError | null>;
 }
 
 export class CompleteCommand implements Command {
@@ -14,7 +14,18 @@ export class CompleteCommand implements Command {
     public taskId: TaskId
   ) {}
 
-  exec() {
+  exec(): Promise<TogowlError | null> {
+    return this.execFunction(this.taskId);
+  }
+}
+
+export class DeleteCommand implements Command {
+  constructor(
+    public execFunction: (taskId: TaskId) => Promise<TogowlError | null>,
+    public taskId: TaskId
+  ) {}
+
+  exec(): Promise<TogowlError | null> {
     return this.execFunction(this.taskId);
   }
 }
@@ -33,7 +44,7 @@ export class UpdateDueDateCommand implements Command {
     public optional: { dayOrder?: number }
   ) {}
 
-  exec() {
+  exec(): Promise<TogowlError | null> {
     return this.execFunction(this.taskId, this.date, this.optional);
   }
 }
@@ -46,7 +57,7 @@ export class UpdateOrderCommand implements Command {
     public taskById: { [taskId: number]: Task }
   ) {}
 
-  exec() {
+  exec(): Promise<TogowlError | null> {
     return this.execFunction(this.taskById);
   }
 }
@@ -80,8 +91,8 @@ export class CommandExecutor {
     return this;
   }
 
-  execAll(delaySeconds = 0): Promise<void> {
-    return new Promise((resolve) => {
+  execAll(delaySeconds = 0): Promise<TogowlError> {
+    return new Promise((resolve, reject) => {
       if (this.timerId) {
         window.clearTimeout(this.timerId);
       }
@@ -98,7 +109,11 @@ export class CommandExecutor {
         while (this.commands.length > 0) {
           const task = this.commands.shift()!;
           this.lastExecutedDateTime = DateTime.now();
-          await task.exec();
+          const err = await task.exec();
+          if (err) {
+            reject(err);
+            return;
+          }
         }
 
         if (this.syncNeeded) {
