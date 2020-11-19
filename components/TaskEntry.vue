@@ -19,7 +19,7 @@
           dark
           rounded="b-xl"
         >
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <div v-bind="attrs" v-on="on">
               <TaskSummary
                 :task="task"
@@ -74,7 +74,6 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive } from "@vue/composition-api";
-import AddTaskDialog from "~/containers/AddTaskDialog.vue";
 import EditTaskDialog from "~/containers/EditTaskDialog.vue";
 import TaskSummary from "~/components/TaskSummary.vue";
 import ConfirmWrapperDialog from "~/components/ConfirmWrapperDialog.vue";
@@ -84,7 +83,6 @@ import { taskStore } from "~/utils/store-accessor";
 export default defineComponent({
   components: {
     TaskSummary,
-    AddTaskDialog,
     EditTaskDialog,
     ConfirmWrapperDialog,
   },

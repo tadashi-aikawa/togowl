@@ -40,7 +40,7 @@ import { Label } from "~/domain/task/entity/Label";
 
 export default defineComponent({
   props: {
-    value: { type: Array as () => Label[] },
+    value: { type: Array as () => Label[], required: true },
   },
   setup(_props, context) {
     const state = reactive({

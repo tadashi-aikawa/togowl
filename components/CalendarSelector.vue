@@ -5,7 +5,7 @@
     :disabled="disabled"
     width="290px"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <div v-bind="attrs" style="cursor: default;" v-on="on">
         <slot></slot>
       </div>

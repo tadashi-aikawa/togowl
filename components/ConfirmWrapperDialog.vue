@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="state.visible" max-width="290">
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <div v-bind="attrs" v-on="on">
         <slot></slot>
       </div>

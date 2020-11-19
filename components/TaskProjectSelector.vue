@@ -42,7 +42,7 @@ import { TaskProject } from "~/domain/task/entity/TaskProject";
 
 export default defineComponent({
   props: {
-    value: { type: Object as () => TaskProject | null },
+    value: { type: Object as () => TaskProject, default: undefined },
   },
   setup(_props, context) {
     const projects = computed(() => projectStore.relatedTaskProjects);

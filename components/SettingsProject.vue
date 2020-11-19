@@ -20,7 +20,7 @@
       </template>
     </v-treeview>
     <v-bottom-sheet v-if="currentItem" v-model="bottomSheet">
-      <SettingsProjectEdit
+      <settings-project-edit
         :name="currentItem.node.name.unwrap()"
         :icon="currentItem.node.icon"
         :color="currentItem.node.color"

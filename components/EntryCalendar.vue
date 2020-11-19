@@ -115,7 +115,7 @@
         top
       >
         {{ state.snackbarMessage }}
-        <template v-slot:action="{ attrs }">
+        <template #action="{ attrs }">
           <v-btn icon v-bind="attrs" @click="state.snackbar = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -136,10 +136,6 @@ import html2canvas from "html2canvas";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { DateTime } from "~/domain/common/DateTime";
 import ProjectIcon from "~/components/ProjectIcon.vue";
-
-declare class ClipboardItem {
-  constructor(items: { [mimeType: string]: Blob });
-}
 
 interface ZoomOption {
   type: "month" | "week" | "4day" | "day";
@@ -177,7 +173,7 @@ export default defineComponent({
       snackbar: false,
       snackbarMessage: "",
       snackbarColor: "",
-      timeout: 0,
+      timeout: -1,
     });
 
     const start = computed(
@@ -215,7 +211,7 @@ export default defineComponent({
     const showError = (message: string) => {
       state.snackbarColor = "error darken-2";
       state.snackbarMessage = message;
-      state.timeout = 0;
+      state.timeout = -1;
       state.snackbar = true;
     };
 

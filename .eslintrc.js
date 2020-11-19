@@ -30,6 +30,6 @@ module.exports = {
     "vue/no-v-html": "off",
 
     // Prettier should not be error
-    "prettier/prettier": "warn",
+    "prettier/prettier": "off",
   },
 };

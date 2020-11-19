@@ -6,7 +6,7 @@
       dark
       overlay-opacity="0.85"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <slot></slot>
         </div>

@@ -61,7 +61,7 @@ import CalendarSelector from "~/components/CalendarSelector.vue";
 import TaskSwiperButton from "~/components/TaskSwiperButton.vue";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
-import "swiper/css/swiper.css";
+import "swiper/swiper-bundle.css";
 
 export default defineComponent({
   components: {

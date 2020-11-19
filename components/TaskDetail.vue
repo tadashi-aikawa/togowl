@@ -16,7 +16,7 @@ import { Note } from "~/domain/task/entity/Note";
 
 export default defineComponent({
   props: {
-    task: { type: Object as () => Task },
+    task: { type: Object as () => Task, default: null },
   },
   setup(props, { emit }) {
     return {

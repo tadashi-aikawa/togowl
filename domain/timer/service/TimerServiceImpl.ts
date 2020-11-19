@@ -116,7 +116,7 @@ export class TimerServiceImpl implements TimerService {
   );
 
   fetchCurrentEntry(): Promise<Either<FetchCurrentEntryError, Entry | null>> {
-    return this.throttleFetchCurrentEntry();
+    return this.throttleFetchCurrentEntry()!;
   }
 
   async startEntry(
@@ -225,7 +225,7 @@ export class TimerServiceImpl implements TimerService {
   });
 
   fetchEntries(since: DateTime): Promise<Either<FetchEntriesError, Entry[]>> {
-    return this.throttleFetchEntries(since);
+    return this.throttleFetchEntries(since)!;
   }
 
   async fetchProjects(): Promise<Either<FetchProjectsError, Project[]>> {

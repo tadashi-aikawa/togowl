@@ -1,7 +1,6 @@
 <template>
   <div>
     <div
-      :style="{ width: width }"
       :class="['task', 'markdown', { compact: compact }]"
       v-html="titleHtml"
     />
@@ -34,7 +33,6 @@ export default defineComponent({
   components: { ProjectSummary },
   props: {
     task: { type: Object as () => Task, required: true },
-    width: { type: String },
     compact: { type: Boolean },
   },
   setup(props) {

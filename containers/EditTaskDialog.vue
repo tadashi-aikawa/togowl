@@ -6,7 +6,7 @@
       dark
       overlay-opacity="0.85"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <div v-bind="attrs" v-on="on">
           <slot></slot>
         </div>
@@ -85,11 +85,10 @@ import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
 import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { Label } from "~/domain/task/entity/Label";
-import CalendarSelector from "~/components/CalendarSelector.vue";
 import { Task } from "~/domain/task/entity/Task";
 
 export default defineComponent({
-  components: { TaskProjectSelector, TaskLabelSelector, CalendarSelector },
+  components: { TaskProjectSelector, TaskLabelSelector },
   props: {
     task: { type: Object as () => Task, required: true },
     visible: { type: Boolean },

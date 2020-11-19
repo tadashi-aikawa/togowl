@@ -91,9 +91,12 @@ import { Color } from "~/domain/common/Color";
 export default defineComponent({
   props: {
     name: { type: String, required: true },
-    icon: { type: Object as () => Icon },
-    color: { type: Object as () => Color },
-    taskProjectIds: { type: Array as () => TaskProjectId[] },
+    icon: { type: Object as () => Icon, default: undefined },
+    color: { type: Object as () => Color, default: undefined },
+    taskProjectIds: {
+      type: Array as () => TaskProjectId[],
+      default: undefined,
+    },
     showColor: { type: Boolean },
     showProjects: { type: Boolean },
   },
