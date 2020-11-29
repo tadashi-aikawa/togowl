@@ -18,7 +18,7 @@
         :now="state.currentDate.displayDateTimeWithoutSeconds"
       >
         <template #event="{ event }">
-          <div style="height: 100%; padding: 2px;">
+          <div style="height: 100%; padding: 2px">
             <v-avatar v-if="event.entry.project" tile size="14px">
               <ProjectIcon
                 :project="event.entry.project"
@@ -37,7 +37,7 @@
         bottom
         right
         fab
-        style="margin-right: 294px;"
+        style="margin-right: 294px"
         :disabled="isZoomUpDisabled"
         @click="handleClickZoomUp"
       >
@@ -50,7 +50,7 @@
         bottom
         right
         fab
-        style="margin-right: 238px;"
+        style="margin-right: 238px"
         :disabled="isZoomDownDisabled"
         @click="handleClickZoomDown"
       >
@@ -63,7 +63,7 @@
         bottom
         right
         fab
-        style="margin-right: 182px;"
+        style="margin-right: 182px"
         @click="handleClickPrevious"
       >
         <v-icon>mdi-chevron-left</v-icon>
@@ -75,7 +75,7 @@
         bottom
         right
         fab
-        style="margin-right: 126px;"
+        style="margin-right: 126px"
         @click="handleClickNext"
       >
         <v-icon>mdi-chevron-right</v-icon>
@@ -87,7 +87,7 @@
         bottom
         right
         fab
-        style="margin-right: 70px;"
+        style="margin-right: 70px"
         @click="handleClickMoveToNow"
       >
         <v-icon>mdi-send-clock</v-icon>
@@ -100,7 +100,7 @@
         right
         fab
         :disabled="!canShare"
-        style="margin-right: 14px;"
+        style="margin-right: 14px"
         @click="handleShareDailyCalendar"
       >
         <v-icon>mdi-share-variant</v-icon>

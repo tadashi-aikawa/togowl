@@ -13,7 +13,7 @@
       <v-img :src="state.taskBackgroundImageUrl" max-width="70%" />
     </v-row>
 
-    <v-row align="center" justify="center" style="padding: 10px;">
+    <v-row align="center" justify="center" style="padding: 10px">
       <v-btn
         :disabled="!state.isValid"
         color="success"
@@ -24,7 +24,7 @@
         <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div v-if="appConfigUpdateError" style="padding: 15px;">
+      <div v-if="appConfigUpdateError" style="padding: 15px">
         <v-alert type="error">
           {{ appConfigUpdateError.message }}
         </v-alert>

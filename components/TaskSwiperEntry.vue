@@ -2,7 +2,7 @@
   <div>
     <swiper ref="mySwiper" :options="state.swiperOption">
       <swiper-slide :class="{ 'swiper-close-area': true, compact }">
-        <v-row align="center" justify="center" style="height: 100%;">
+        <v-row align="center" justify="center" style="height: 100%">
           <v-icon color="white" :small="compact"
             >mdi-checkbox-marked-circle-outline</v-icon
           >

@@ -36,7 +36,7 @@
         </template>
       </v-row>
       <v-row align="center" justify="center">
-        <div style="padding: 15px;">
+        <div style="padding: 15px">
           <v-alert v-if="error" type="error">
             {{ error.message }}
           </v-alert>

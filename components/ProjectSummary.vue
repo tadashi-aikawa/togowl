@@ -5,7 +5,7 @@
         <ProjectCategoryIcon :project-category="projectCategory" />
       </v-avatar>
       <span v-if="!iconOnly" v-text="projectCategoryName" />
-      <span style="margin: 0 2px;">></span>
+      <span style="margin: 0 2px">></span>
     </template>
     <v-avatar tile size="14px">
       <ProjectIcon :project="project" />

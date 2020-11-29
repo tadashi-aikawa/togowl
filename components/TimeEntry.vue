@@ -2,10 +2,10 @@
   <v-list-item :key="entry.id.unwrap()">
     <v-list-item-content>
       <v-list-item-title>
-        <EntrySummary :entry="entry" style="padding-bottom: 5px;" />
+        <EntrySummary :entry="entry" style="padding-bottom: 5px" />
       </v-list-item-title>
       <v-list-item-subtitle class="sub-title">
-        <span style="padding: 0 4px 0 0;"
+        <span style="padding: 0 4px 0 0"
           >{{ entry.start.displayTimeWithoutSeconds }} -
           {{ entry.stop.displayTimeWithoutSeconds }}</span
         >

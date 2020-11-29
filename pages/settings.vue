@@ -3,84 +3,84 @@
     <v-container fluid class="contents-area">
       <template v-if="state.activeTabIndex === 0">
         <v-card class="card-area">
-          <div style="display: flex; justify-content: center; padding: 5px;">
+          <div style="display: flex; justify-content: center; padding: 5px">
             <v-img
               src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0;" />
+          <hr style="margin: 8px 0" />
           <SettingsApp />
         </v-card>
       </template>
 
       <template v-if="state.activeTabIndex === 1">
         <v-card class="card-area">
-          <div style="display: flex; justify-content: center; padding: 5px;">
+          <div style="display: flex; justify-content: center; padding: 5px">
             <v-icon>mdi-timer</v-icon>
-            <v-icon style="padding: 0 5px;">mdi-arrow-left-right-bold</v-icon>
+            <v-icon style="padding: 0 5px">mdi-arrow-left-right-bold</v-icon>
             <v-img
               src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
               max-width="30"
             />
-            <v-icon style="padding: 0 5px;">mdi-arrow-left-right-bold</v-icon>
+            <v-icon style="padding: 0 5px">mdi-arrow-left-right-bold</v-icon>
             <v-icon>mdi-format-list-checks</v-icon>
           </div>
-          <hr style="margin: 8px 0;" />
+          <hr style="margin: 8px 0" />
           <SettingsProject />
         </v-card>
       </template>
 
       <template v-if="state.activeTabIndex === 2">
         <v-card class="card-area">
-          <div style="display: flex; justify-content: center; padding: 5px;">
+          <div style="display: flex; justify-content: center; padding: 5px">
             <v-img
               src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
               max-width="30"
             />
-            <v-icon style="padding: 0 5px;">mdi-arrow-left-right-bold</v-icon>
+            <v-icon style="padding: 0 5px">mdi-arrow-left-right-bold</v-icon>
             <v-img
               src="https://3.bp.blogspot.com/-k89OB_bB7Bw/XJUihHgTzSI/AAAAAAAAJUw/dv9qU3C9HXE-ta0qiPCbGIgYw0-YZpuAACK4BGAYYCw/s1600/logo%2Btoggl%2Bicon.png"
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0;" />
+          <hr style="margin: 8px 0" />
           <SettingsToggl />
         </v-card>
       </template>
 
       <template v-if="state.activeTabIndex === 3">
         <v-card class="card-area">
-          <div style="display: flex; justify-content: center; padding: 5px;">
+          <div style="display: flex; justify-content: center; padding: 5px">
             <v-img
               src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
               max-width="30"
             />
-            <v-icon style="padding: 0 5px;">mdi-arrow-left-right-bold</v-icon>
+            <v-icon style="padding: 0 5px">mdi-arrow-left-right-bold</v-icon>
             <v-img
               src="https://cdn.svgporn.com/logos/todoist-icon.svg"
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0;" />
+          <hr style="margin: 8px 0" />
           <SettingsTodoist />
         </v-card>
       </template>
 
       <template v-if="state.activeTabIndex === 4">
         <v-card class="card-area">
-          <div style="display: flex; justify-content: center; padding: 5px;">
+          <div style="display: flex; justify-content: center; padding: 5px">
             <v-img
               src="https://github.com/tadashi-aikawa/togowl/raw/master/static/icon.png"
               max-width="30"
             />
-            <v-icon style="padding: 0 5px;">mdi-arrow-left-right-bold</v-icon>
+            <v-icon style="padding: 0 5px">mdi-arrow-left-right-bold</v-icon>
             <v-img
               src="https://cdn.svgporn.com/logos/slack-icon.svg"
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0;" />
+          <hr style="margin: 8px 0" />
           <SettingsSlack />
         </v-card>
       </template>

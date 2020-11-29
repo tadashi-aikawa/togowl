@@ -7,12 +7,11 @@ module.exports = {
   extends: [
     "@nuxtjs",
     "plugin:nuxt/recommended",
-    "plugin:prettier/recommended",
     "@nuxtjs/eslint-config-typescript",
     "prettier",
     "prettier/vue",
   ],
-  plugins: ["prettier", "@typescript-eslint"],
+  plugins: ["@typescript-eslint"],
   // add your custom rules here
   rules: {
     "no-useless-constructor": "off",
@@ -29,7 +28,5 @@ module.exports = {
     // Allow v-html
     "vue/no-v-html": "off",
 
-    // Prettier should not be error
-    "prettier/prettier": "off",
   },
 };

@@ -30,7 +30,7 @@
         <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div v-if="taskConfigUpdateError" style="padding: 15px;">
+      <div v-if="taskConfigUpdateError" style="padding: 15px">
         <v-alert type="error">
           {{ taskConfigUpdateError.message }}
         </v-alert>

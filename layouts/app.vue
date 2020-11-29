@@ -71,9 +71,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn color="green darken-1" text @click="logout">
-            Logout
-          </v-btn>
+          <v-btn color="green darken-1" text @click="logout"> Logout </v-btn>
 
           <v-btn
             color="green darken-1"

@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-row align="center" justify="center">
-      <div style="padding: 15px 15px 0; font-size: 110%;">
+      <div style="padding: 15px 15px 0; font-size: 110%">
         <span
           :class="{ 'rainbow-loading': loading, markdown: true }"
           v-html="displayEntryHtml"
         />
       </div>
     </v-row>
-    <v-row align="center" justify="center" style="margin-top: 5px;">
+    <v-row align="center" justify="center" style="margin-top: 5px">
       <div v-if="displayProjectCategory" class="sub-title">
         <v-avatar v-if="currentEntry.projectCategory" tile size="16px">
           <ProjectCategoryIcon
@@ -19,7 +19,7 @@
           :class="{ 'rainbow-loading': loading }"
           v-text="displayProjectCategory"
         />
-        <span style="padding: 0 8px 0;">></span>
+        <span style="padding: 0 8px 0">></span>
       </div>
       <div v-if="displayProject" class="sub-title">
         <v-avatar v-if="currentEntry.project" tile size="16px">
@@ -36,7 +36,7 @@
           v-text="state.currentEntryTime"
         />
       </div>
-      <div v-else class="timer" style="color: grey;">
+      <div v-else class="timer" style="color: grey">
         <v-icon color="grey">mdi-timer</v-icon>
         <span
           :class="{ 'rainbow-loading': loading }"

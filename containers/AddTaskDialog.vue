@@ -14,11 +14,11 @@
       <v-card>
         <v-card-title>
           <v-icon>mdi-format-list-checks</v-icon>
-          <span style="margin-left: 5px;">Add Task</span>
+          <span style="margin-left: 5px">Add Task</span>
         </v-card-title>
         <v-card-text>
           <v-form ref="form" v-model="state.isValid">
-            <v-row style="padding: 0 10px 0;">
+            <v-row style="padding: 0 10px 0">
               <v-text-field
                 ref="taskNameFieldRef"
                 v-model="state.taskName"
@@ -33,13 +33,13 @@
                 @keyup.ctrl.enter="handleCntrlEnter"
               />
             </v-row>
-            <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
+            <v-row style="margin-top: 10px; padding: 0 10px 0 20px">
               <task-project-selector
                 v-model="state.project"
                 @on-ctrl-enter="handleCntrlEnter"
               ></task-project-selector>
             </v-row>
-            <v-row style="margin-top: 10px; padding: 0 10px 0 20px;">
+            <v-row style="margin-top: 10px; padding: 0 10px 0 20px">
               <task-label-selector
                 v-model="state.labels"
                 @on-ctrl-enter="handleCntrlEnter"
@@ -50,7 +50,7 @@
             {{ state.processErrorMessage }}
           </v-alert>
         </v-card-text>
-        <v-divider style="padding-bottom: 10px;"></v-divider>
+        <v-divider style="padding-bottom: 10px"></v-divider>
         <v-card-actions class="center">
           <v-btn
             :disabled="!state.isValid"
@@ -83,7 +83,7 @@
             <v-btn
               :disabled="!state.isValid"
               color="green darken-2"
-              style="margin-left: 8px;"
+              style="margin-left: 8px"
             >
               <v-icon>mdi-calendar-edit</v-icon>
             </v-btn>

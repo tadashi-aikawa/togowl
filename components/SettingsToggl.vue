@@ -46,7 +46,7 @@
         <v-icon right dark>mdi-cloud-upload</v-icon>
       </v-btn>
 
-      <div v-if="timerConfigUpdateError" style="padding: 15px;">
+      <div v-if="timerConfigUpdateError" style="padding: 15px">
         <v-alert type="error">
           {{ timerConfigUpdateError.message }}
         </v-alert>

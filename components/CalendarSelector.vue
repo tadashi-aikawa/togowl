@@ -6,7 +6,7 @@
     width="290px"
   >
     <template #activator="{ on, attrs }">
-      <div v-bind="attrs" style="cursor: default;" v-on="on">
+      <div v-bind="attrs" style="cursor: default" v-on="on">
         <slot></slot>
       </div>
     </template>

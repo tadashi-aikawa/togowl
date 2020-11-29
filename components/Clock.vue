@@ -11,7 +11,7 @@
       v-text="state.currentDate"
     ></div>
     <div
-      style="font-size: 3em; letter-spacing: 0.05em;"
+      style="font-size: 3em; letter-spacing: 0.05em"
       v-text="state.currentTime"
     ></div>
   </div>

@@ -7,11 +7,11 @@
   >
     <v-icon
       class="drag-and-drop-handler no-swiping-class"
-      style="cursor: move; color: grey;"
+      style="cursor: move; color: grey"
       >mdi-drag-vertical</v-icon
     >
     <v-list-item-content>
-      <v-list-item-title style="cursor: pointer;">
+      <v-list-item-title style="cursor: pointer">
         <v-menu
           v-model="state.isMenuVisible"
           offset-y
@@ -23,7 +23,7 @@
             <div v-bind="attrs" v-on="on">
               <TaskSummary
                 :task="task"
-                style="padding-bottom: 5px;"
+                style="padding-bottom: 5px"
                 :compact="compact"
               />
             </div>
@@ -59,7 +59,7 @@
         </v-menu>
       </v-list-item-title>
     </v-list-item-content>
-    <v-list-item-action v-if="!compact" style="margin-left: 5px;">
+    <v-list-item-action v-if="!compact" style="margin-left: 5px">
       <v-btn
         icon
         class="no-swiping-class"

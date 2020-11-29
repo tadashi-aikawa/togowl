@@ -1,12 +1,12 @@
 <template>
   <v-layout column justify-center align-center>
     <template v-if="activeViewIndex === 0">
-      <v-container style="padding: 0;">
+      <v-container style="padding: 0">
         <v-row no-gutters>
           <v-col :sm="12" :md="8">
             <v-flex>
               <v-fade-transition hide-on-leave>
-                <div v-if="currentEntry" style="height: 220px;">
+                <div v-if="currentEntry" style="height: 220px">
                   <CurrentTimeEntry
                     :current-entry="currentEntry"
                     :disabled="!isTimeEntryTrusted"
@@ -15,7 +15,7 @@
                   <v-row
                     align="center"
                     justify="center"
-                    style="margin-bottom: 20px;"
+                    style="margin-bottom: 20px"
                   >
                     <v-btn
                       class="mx-2"
@@ -65,7 +65,7 @@
                 </div>
               </v-fade-transition>
               <v-fade-transition hide-on-leave>
-                <div v-if="!currentEntry" style="height: 220px;">
+                <div v-if="!currentEntry" style="height: 220px">
                   <v-row align="center" justify="center">
                     <v-autocomplete
                       v-model="selectedEntry"
@@ -76,16 +76,16 @@
                       placeholder="Search entries past"
                       full-width
                       return-object
-                      style="max-width: 480px; padding: 0 10px; margin: 0 10px;"
+                      style="max-width: 480px; padding: 0 10px; margin: 0 10px"
                       @change="startFromSelector(selectedEntry)"
                     >
                       <template #selection="data">
-                        <div style="padding: 5px; overflow: hidden;">
+                        <div style="padding: 5px; overflow: hidden">
                           <EntrySummary :entry="data.item" width="70vw" />
                         </div>
                       </template>
                       <template #item="data">
-                        <div style="padding: 5px; overflow: hidden;">
+                        <div style="padding: 5px; overflow: hidden">
                           <EntrySummary :entry="data.item" />
                         </div>
                       </template>
@@ -95,7 +95,7 @@
                   <v-row
                     align="center"
                     justify="center"
-                    style="padding-top: 20px;"
+                    style="padding-top: 20px"
                   >
                     <Clock />
                   </v-row>
@@ -104,7 +104,7 @@
 
               <v-row v-if="fetchingError" align="center" justify="center">
                 <v-fade-transition>
-                  <div style="padding: 15px;">
+                  <div style="padding: 15px">
                     <v-alert type="error">
                       {{ fetchingError.message }}
                     </v-alert>
@@ -112,7 +112,7 @@
                 </v-fade-transition>
               </v-row>
               <v-row v-if="tasksError" align="center" justify="center">
-                <div style="padding: 15px;">
+                <div style="padding: 15px">
                   <v-alert type="error">
                     {{ tasksError.message }}
                   </v-alert>
@@ -188,9 +188,7 @@
     <portal to="global-notification">
       <v-snackbar v-model="snackbar" :color="snackbarColor" :timeout="-1" top>
         {{ snackMessage }}
-        <v-btn color="blue" text @click="snackbar = false">
-          Close
-        </v-btn>
+        <v-btn color="blue" text @click="snackbar = false"> Close </v-btn>
       </v-snackbar>
     </portal>
   </v-layout>
