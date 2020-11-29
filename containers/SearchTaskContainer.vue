@@ -31,6 +31,7 @@ import _ from "lodash";
 import { defineComponent, reactive, computed } from "@vue/composition-api";
 import { taskStore } from "~/utils/store-accessor";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
+import { Task } from "~/domain/task/entity/Task";
 
 export default defineComponent({
   components: { TaskSwiperEntry },
@@ -39,7 +40,7 @@ export default defineComponent({
       word: "",
     });
 
-    const filterBy = (task) => {
+    const filterBy = (task: Task) => {
       const words = state.word.toLowerCase().split(" ");
       const titleWords = words.filter((x) => !x.startsWith("#"));
       const projectWords = words
