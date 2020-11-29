@@ -3,7 +3,7 @@
     <template v-if="activeViewIndex === 0">
       <v-container style="padding: 0">
         <v-row no-gutters>
-          <v-col :sm="12" :md="8">
+          <v-col :sm="12" :lg="8">
             <v-flex>
               <v-fade-transition hide-on-leave>
                 <div v-if="currentEntry" style="height: 220px">
@@ -144,7 +144,7 @@
             </v-flex>
           </v-col>
 
-          <v-col v-if="$vuetify.breakpoint.mdAndUp" :md="4">
+          <v-col v-if="$vuetify.breakpoint.lgAndUp" :lg="4">
             <v-tabs v-model="rightTab" grow color="teal" dark>
               <v-tab>
                 <v-icon style="margin-right: 3px">
