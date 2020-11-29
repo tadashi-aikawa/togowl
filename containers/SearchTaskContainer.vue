@@ -23,6 +23,10 @@
         <TaskSwiperEntry :task="task" hidden-start hidden-drag-handler />
       </v-lazy>
     </template>
+
+    <v-overlay key="loading" absolute :value="isTaskLoading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
   </div>
 </template>
 
@@ -64,6 +68,8 @@ export default defineComponent({
         .value()
     );
 
+    const isTaskLoading = computed(() => taskStore.status === "in_progress");
+
     const changeWord = _.debounce((word) => {
       state.word = word;
     }, 300);
@@ -71,6 +77,7 @@ export default defineComponent({
     return {
       state,
       dateAndTasks,
+      isTaskLoading,
       changeWord,
     };
   },
