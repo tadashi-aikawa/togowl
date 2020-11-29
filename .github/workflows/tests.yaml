@@ -4,8 +4,8 @@ on:
   push:
     paths:
       - '.github/**/*'
-      - 'src/*'
-      - 'src/**/*'
+      - '*.vue'
+      - '*.ts'
       - '*.js'
       - '*.json'
   schedule:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['10.x', '12.x']
+        node: ['10.x', '12.x', '14.x']
     name: Node ${{ matrix.node }}
 
     steps:
@@ -31,7 +31,7 @@ jobs:
 
       - run: npm run test-with-coverage
       - uses: codecov/codecov-action@v1
-        if: "matrix.node == '12.x' && success()"
+        if: "matrix.node == '14.x' && success()"
         with:
           file: ./coverage/clover.xml
 
@@ -58,6 +58,6 @@ jobs:
         with:
           type: ${{ job.status }}
           username: GitHub Actions (Success)
-          job_name: ':togowl: :chrome: :nodejs: All tests  `Versions` 10.x/12.x'
+          job_name: ':togowl: :chrome: :nodejs: All tests  `Versions` 10.x/12.x/14.x'
           icon_emoji: ':github:'
           url: ${{ secrets.SLACK_WEBHOOK }}
