@@ -27,7 +27,7 @@ import { defineComponent, reactive, watch } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
-    date: { type: String, required: true },
+    date: { type: String, default: undefined },
     disabled: { type: Boolean },
     visible: { type: Boolean },
   },

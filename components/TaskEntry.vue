@@ -6,6 +6,7 @@
     :two-line="!compact"
   >
     <v-icon
+      v-if="!hiddenDragHandler"
       class="drag-and-drop-handler no-swiping-class"
       style="cursor: move; color: grey"
       >mdi-drag-vertical</v-icon
@@ -59,7 +60,10 @@
         </v-menu>
       </v-list-item-title>
     </v-list-item-content>
-    <v-list-item-action v-if="!compact" style="margin-left: 5px">
+    <v-list-item-action
+      v-if="!(compact || hiddenStart)"
+      style="margin-left: 5px"
+    >
       <v-btn
         icon
         class="no-swiping-class"
@@ -89,6 +93,8 @@ export default defineComponent({
   props: {
     task: { type: Object as () => Task, required: true },
     disabled: { type: Boolean },
+    hiddenStart: { type: Boolean },
+    hiddenDragHandler: { type: Boolean },
     compact: { type: Boolean },
   },
   setup(props, { emit }) {

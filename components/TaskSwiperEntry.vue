@@ -14,6 +14,8 @@
           :task="task"
           :disabled="disabledStart"
           :compact="compact"
+          :hidden-start="hiddenStart"
+          :hidden-drag-handler="hiddenDragHandler"
           @on-click-start-button="handleClickStartButton"
           @on-click-complete-button="completeTask"
         />
@@ -74,6 +76,8 @@ export default defineComponent({
   props: {
     task: { type: Object as () => Task, required: true },
     disabledStart: { type: Boolean },
+    hiddenStart: { type: Boolean },
+    hiddenDragHandler: { type: Boolean },
     compact: { type: Boolean },
   },
   setup(props, { emit }) {
@@ -99,7 +103,8 @@ export default defineComponent({
       mySwiper.value.$swiper.slideTo(1);
     };
 
-    const date = computed(() => props.task.dueDate!.displayDate);
+    // or undefined?
+    const date = computed(() => props.task.dueDate?.displayDate);
 
     const completeTask = async () => {
       revertSwiperStateAsDefault();

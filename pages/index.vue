@@ -145,9 +145,28 @@
           </v-col>
 
           <v-col v-if="$vuetify.breakpoint.mdAndUp" :md="4">
-            <div class="right-detail-area">
-              <TaskDetail :task="taskRelatedToCurrentEntry" />
-            </div>
+            <v-tabs v-model="rightTab" grow color="teal" dark>
+              <v-tab>
+                <v-icon style="margin-right: 3px">
+                  mdi-comment-text-outline
+                </v-icon>
+                Memo
+              </v-tab>
+              <v-tab><v-icon>mdi-magnify</v-icon>Search</v-tab>
+            </v-tabs>
+
+            <v-tabs-items v-model="rightTab">
+              <v-tab-item>
+                <div class="right-detail-area">
+                  <task-detail :task="taskRelatedToCurrentEntry" />
+                </div>
+              </v-tab-item>
+              <v-tab-item>
+                <div class="right-detail-area">
+                  <search-task-container />
+                </div>
+              </v-tab-item>
+            </v-tabs-items>
           </v-col>
         </v-row>
       </v-container>
@@ -214,6 +233,7 @@ import TaskEntryList from "~/components/TaskEntryList.vue";
 import TaskDetail from "~/components/TaskDetail.vue";
 import Scheduler from "~/components/Scheduler.vue";
 import Clock from "~/components/Clock.vue";
+import SearchTaskContainer from "~/containers/SearchTaskContainer.vue";
 
 @Component({
   components: {
@@ -225,10 +245,12 @@ import Clock from "~/components/Clock.vue";
     EntrySummary,
     Scheduler,
     Clock,
+    SearchTaskContainer,
   },
 })
 class Root extends Vue {
   activeViewIndex = 0;
+  rightTab = 0;
 
   snackbar = false;
   snackbarColor: string | null = null;
@@ -472,10 +494,9 @@ $current-entry-height: 12px + 220px + 12px;
 }
 
 .right-detail-area {
-  margin-left: 20px;
+  height: calc(#{$contents-height} - 18px - 48px);
+  margin-left: 15px;
   padding: 10px;
-  height: calc(#{$contents-height} - 18px);
-  background-color: #333333;
   overflow-y: scroll;
 }
 </style>
