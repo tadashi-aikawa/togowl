@@ -45,6 +45,10 @@ export default defineComponent({
     });
 
     const filterBy = (task: Task) => {
+      if (state.word.length < 2) {
+        return false;
+      }
+
       const words = state.word.toLowerCase().split(" ");
       const titleWords = words.filter((x) => !x.startsWith("#"));
       const projectWords = words
