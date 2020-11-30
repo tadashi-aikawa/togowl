@@ -35,7 +35,6 @@
 <script lang="ts">
 import _ from "lodash";
 import { defineComponent, reactive, computed } from "@vue/composition-api";
-import { DateTime } from "owlelia";
 import { taskStore } from "~/utils/store-accessor";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
 import { Task } from "~/domain/task/entity/Task";
