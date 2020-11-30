@@ -4,6 +4,8 @@
       :value="state.word"
       label="Search all tasks by words"
       prepend-icon="mdi-magnify"
+      color="cyan"
+      item-color="cyan"
       @input="changeWord"
     ></v-text-field>
 
@@ -33,6 +35,7 @@
 <script lang="ts">
 import _ from "lodash";
 import { defineComponent, reactive, computed } from "@vue/composition-api";
+import { DateTime } from "owlelia";
 import { taskStore } from "~/utils/store-accessor";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
 import { Task } from "~/domain/task/entity/Task";
@@ -66,7 +69,7 @@ export default defineComponent({
     const dateAndTasks = computed(() =>
       _(taskStore.tasks)
         .filter(filterBy)
-        .groupBy((x) => x.dueDate?.displayDate ?? "なし")
+        .groupBy((x) => x.dueDate?.displayDateFull ?? "None")
         .map((tasks, date) => [date, tasks])
         .orderBy(([date, _tasks]) => date)
         .value()
