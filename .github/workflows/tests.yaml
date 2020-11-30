@@ -4,7 +4,9 @@ on:
   push:
     paths:
       - '.github/**/*'
-      - '*.vue'
+      - '**/*.vue'
+      - '**/*.ts'
+      - '**/*.js'
       - '*.ts'
       - '*.js'
       - '*.json'
