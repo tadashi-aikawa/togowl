@@ -299,8 +299,8 @@ class TaskModule extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async updateTasksOrder(tasks: Task[]): Promise<void> {
-    const orderedTasks = _(tasks)
+  async updateDailyTasksOrder(tasks: Task[]): Promise<void> {
+    const orderedDailyTasksById = _(tasks)
       .map((v, idx) =>
         v.cloneWith({
           dayOrder: idx + 1,
@@ -308,14 +308,19 @@ class TaskModule extends VuexModule {
       )
       .keyBy((x) => x.id.asNumber)
       .value();
-    this.setTaskById(orderedTasks);
+    const orderedTasksById: { [taskId: number]: Task } = {
+      ...this.taskById,
+      ...orderedDailyTasksById,
+    };
+    this.setTaskById(orderedTasksById);
+
     // TODO: Illegal case
     // TODO: 5000 -> 1000 and restrict when dragging
     await this.commandExecutor
       .add(
         new UpdateOrderCommand(
           service!.updateTasksOrder.bind(service),
-          orderedTasks
+          orderedTasksById
         )
       )
       .execAll(5000);

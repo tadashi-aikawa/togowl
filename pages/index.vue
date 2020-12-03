@@ -367,7 +367,7 @@ class Root extends Vue {
   }
 
   async updateTasksOrder(tasks: Task[]) {
-    await taskStore.updateTasksOrder(tasks);
+    await taskStore.updateDailyTasksOrder(tasks);
   }
 
   get fetchingStatus(): ActionStatus {
