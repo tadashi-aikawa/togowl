@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     :key="task.id.unwrap()"
-    :class="[itemClass, { compact: compact }]"
+    :class="[itemClass, { compact: compact, past: pastDueDate }]"
     :dense="compact"
     :two-line="!compact"
   >
@@ -83,6 +83,7 @@ import TaskSummary from "~/components/TaskSummary.vue";
 import ConfirmWrapperDialog from "~/components/ConfirmWrapperDialog.vue";
 import { Task } from "~/domain/task/entity/Task";
 import { taskStore } from "~/utils/store-accessor";
+import { DateTime } from "~/domain/common/DateTime";
 
 export default defineComponent({
   components: {
@@ -108,6 +109,9 @@ export default defineComponent({
     const deleteConfirmMessageHtml = computed(
       () => `Are you sure you want to delete ${props.task.titleAsMarkdown}?`
     );
+    const pastDueDate = computed(() =>
+      props.task.dueDate!.isBefore(DateTime.today(), true)
+    );
 
     const handleClickStartButton = () => {
       emit("on-click-start-button", props.task);
@@ -131,6 +135,7 @@ export default defineComponent({
       state,
       itemClass,
       deleteConfirmMessageHtml,
+      pastDueDate,
       handleClickEditTaskOriginMenuItem,
       handleClickStartButton,
       handleClickEditTaskMenuItem,
@@ -151,6 +156,10 @@ export default defineComponent({
   padding: 0 5px 0 0;
 }
 
+.past {
+  animation: past-blink 0.75s infinite;
+}
+
 .divider {
   padding: 0 5px 0 0;
 
@@ -158,6 +167,30 @@ export default defineComponent({
     padding: 0 35px 0 0;
     background-color: #303030;
     text-align: center;
+  }
+}
+
+@keyframes past-blink {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+@-webkit-keyframes past-blink {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.2;
   }
 }
 </style>
