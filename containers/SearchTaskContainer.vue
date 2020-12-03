@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-text-field
+      autofocus
       :value="state.word"
       label="Search all tasks by words"
       prepend-icon="mdi-magnify"
