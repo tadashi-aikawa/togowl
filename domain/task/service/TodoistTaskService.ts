@@ -116,6 +116,8 @@ export class TodoistTaskService implements TaskService {
       projectId: task.project_id ? ProjectId.of(task.project_id) : undefined,
       labelIds: task.labels.map(LabelId.of),
       dueDate: task.due ? DateTime.of(task.due.date) : undefined,
+      isRecurring: task.due?.is_recurring ?? false,
+      recurringContent: task.due?.string,
       notes: this.notesByTaskId[task.id]?.map(TodoistTaskService.toNote),
     });
   }

@@ -29,6 +29,8 @@ interface Props {
   labelIds: LabelId[];
   labels?: Label[];
   dueDate?: DateTime;
+  isRecurring: boolean;
+  recurringContent?: string;
   notes?: Note[];
 }
 
@@ -84,6 +86,14 @@ export class Task extends Entity<Props> {
 
   get dueDate(): DateTime | undefined {
     return this._props.dueDate;
+  }
+
+  get isRecurring(): boolean {
+    return this._props.isRecurring;
+  }
+
+  get recurringContent(): string | undefined {
+    return this._props.recurringContent;
   }
 
   get notes(): Note[] {

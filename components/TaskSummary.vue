@@ -4,6 +4,19 @@
       :class="['task', 'markdown', { compact: compact }]"
       v-html="titleHtml"
     />
+    <v-tooltip top>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          v-if="task.isRecurring"
+          style="color: lightblue; font-size: 16px"
+          v-bind="attrs"
+          v-on="on"
+        >
+          mdi-repeat
+        </v-icon>
+      </template>
+      {{ task.recurringContent }}
+    </v-tooltip>
     <ProjectSummary
       v-if="task.entryProject"
       :project="task.entryProject"
