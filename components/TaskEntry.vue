@@ -109,8 +109,9 @@ export default defineComponent({
     const deleteConfirmMessageHtml = computed(
       () => `Are you sure you want to delete ${props.task.titleAsMarkdown}?`
     );
-    const pastDueDate = computed(() =>
-      props.task.dueDate!.isBefore(DateTime.today(), true)
+
+    const pastDueDate = computed(
+      () => props.task.dueDate?.isBefore(DateTime.today(), true) ?? false
     );
 
     const handleClickStartButton = () => {
