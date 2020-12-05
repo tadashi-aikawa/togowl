@@ -41,16 +41,21 @@
 <script lang="ts">
 // @ts-ignore
 import draggable from "vuedraggable";
-import { defineComponent, reactive, watchEffect } from "@vue/composition-api";
+import {
+  computed,
+  defineComponent,
+  reactive,
+  watchEffect,
+} from "@vue/composition-api";
 import { Task } from "~/domain/task/entity/Task";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
+import { timerStore } from "~/store";
 
 export default defineComponent({
   components: { TaskSwiperEntry, draggable },
   props: {
     tasks: { type: Array as () => Task[], required: true },
     loading: { type: Boolean },
-    disabledStart: { type: Boolean },
     compact: { type: Boolean },
   },
   setup(props, { emit }) {
@@ -59,6 +64,8 @@ export default defineComponent({
       _tasks: props.tasks as Task[],
     });
 
+    const disabledStart = computed(() => !!timerStore.currentEntry);
+
     const updateTasks = () => {
       state._tasks = props.tasks;
     };
@@ -66,6 +73,8 @@ export default defineComponent({
 
     return {
       state,
+      disabledStart,
+      // TODO: Action in TaskSwiperEntry
       handleClickStartButton(task: Task) {
         emit("on-click-start", task);
       },

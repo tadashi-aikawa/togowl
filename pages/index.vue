@@ -135,7 +135,6 @@
                   <TaskEntryList
                     :tasks="tasks"
                     :loading="isTasksLoading"
-                    :disabled-start="disabledStart"
                     @on-click-start="startFromTask"
                     @on-change-order="updateTasksOrder"
                   />
@@ -163,7 +162,7 @@
               </v-tab-item>
               <v-tab-item>
                 <div class="right-detail-area">
-                  <search-task-container />
+                  <search-task-container @on-click-start="startFromTask" />
                 </div>
               </v-tab-item>
             </v-tabs-items>
@@ -420,10 +419,6 @@ class Root extends Vue {
 
   get isTasksLoading(): boolean {
     return this.tasksStatus === "in_progress";
-  }
-
-  get disabledStart(): boolean {
-    return !!this.currentEntry;
   }
 
   get taskBackgroundImageUrl(): string | undefined {

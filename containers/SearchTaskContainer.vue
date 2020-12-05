@@ -23,7 +23,12 @@
         </div>
       </v-lazy>
       <v-lazy v-for="task in tasks" :key="task.id.unwrap()" min-height="30">
-        <TaskSwiperEntry :task="task" hidden-start hidden-drag-handler />
+        <TaskSwiperEntry
+          :task="task"
+          :disabled-start="disabledStart"
+          hidden-drag-handler
+          @on-click-start-button="handleClickStartButton"
+        />
       </v-lazy>
     </template>
 
@@ -36,13 +41,13 @@
 <script lang="ts">
 import _ from "lodash";
 import { defineComponent, reactive, computed } from "@vue/composition-api";
-import { taskStore } from "~/utils/store-accessor";
+import { taskStore, timerStore } from "~/store";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
 import { Task } from "~/domain/task/entity/Task";
 
 export default defineComponent({
   components: { TaskSwiperEntry },
-  setup() {
+  setup(_props, { emit }) {
     const state = reactive({
       word: "",
     });
@@ -76,6 +81,7 @@ export default defineComponent({
     );
 
     const isTaskLoading = computed(() => taskStore.status === "in_progress");
+    const disabledStart = computed(() => !!timerStore.currentEntry);
 
     const changeWord = _.debounce((word) => {
       state.word = word;
@@ -85,7 +91,12 @@ export default defineComponent({
       state,
       dateAndTasks,
       isTaskLoading,
+      disabledStart,
       changeWord,
+      // TODO: Action in TaskSwiperEntry
+      handleClickStartButton(task: Task) {
+        emit("on-click-start", task);
+      },
     };
   },
 });
