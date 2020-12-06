@@ -13,7 +13,7 @@
           x-small
           depressed
           fab
-          @click="(e) => onClickEditButton(e, item)"
+          @click.stop="(e) => onClickEditButton(item)"
         >
           <v-icon small>mdi-pencil</v-icon>
         </v-btn>
@@ -92,8 +92,7 @@ class SettingsProject extends Vue {
       .value();
   }
 
-  onClickEditButton(event: Event, item: ProjectItem | ProjectCategoryItem) {
-    event.stopPropagation();
+  onClickEditButton(item: ProjectItem | ProjectCategoryItem) {
     this.currentItem = item;
     this.bottomSheet = true;
   }

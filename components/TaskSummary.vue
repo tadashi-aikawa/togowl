@@ -11,6 +11,7 @@
           style="color: lightblue; font-size: 16px"
           v-bind="attrs"
           v-on="on"
+          @click.stop
         >
           mdi-repeat
         </v-icon>
