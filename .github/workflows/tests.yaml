@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: ['10.x', '12.x', '14.x']
+        node: ['14.x']
     name: Node ${{ matrix.node }}
 
     steps:
@@ -60,6 +60,6 @@ jobs:
         with:
           type: ${{ job.status }}
           username: GitHub Actions (Success)
-          job_name: ':togowl: :chrome: :nodejs: All tests  `Versions` 10.x/12.x/14.x'
+          job_name: ':togowl: :chrome: :nodejs: All tests  `Versions` 14.x'
           icon_emoji: ':github:'
           url: ${{ secrets.SLACK_WEBHOOK }}

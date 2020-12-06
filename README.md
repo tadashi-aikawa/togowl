@@ -20,7 +20,7 @@ It integrates with Toggl, Todoist and Slack.
 ✅ For all
 ----------
 
-`node.js` is required.
+`node.js >= v14` is required.
 
 ### Clone and install dependencies
 
