@@ -167,7 +167,7 @@ export default defineComponent({
 .divider {
   padding: 0 35px 0 0;
   text-align: center;
-  background-color: #303030;
+  background-color: #30303080;
 }
 
 @keyframes past-blink {
