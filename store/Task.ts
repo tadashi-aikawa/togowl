@@ -40,16 +40,19 @@ class TaskModule extends VuexModule {
   }
 
   get taskById(): { [taskId: number]: Task } {
-    return _.mapValues(this._taskById, (x) =>
-      x.cloneWith({
-        project: this.projectById[x.projectId?.asNumber ?? -1],
-        entryProject: x.projectId
-          ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
-          : undefined,
-        labels: x.labelIds
-          .map((id) => this._labelById[id.asNumber])
-          .filter((x) => x),
-      })
+    // TODO: If you want to include checked/deleted tasks, modify this code.
+    return _.mapValues(
+      _.pickBy(this._taskById, (x) => x.isEffective),
+      (x) =>
+        x.cloneWith({
+          project: this.projectById[x.projectId?.asNumber ?? -1],
+          entryProject: x.projectId
+            ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
+            : undefined,
+          labels: x.labelIds
+            .map((id) => this._labelById[id.asNumber])
+            .filter((x) => x),
+        })
     );
   }
 
@@ -387,6 +390,12 @@ class TaskModule extends VuexModule {
       onError: (_err: TogowlError) => this.setError,
       onSyncNeeded: (clientId?: string) => {
         this.commandExecutor.needSync(clientId).execAll(1000);
+      },
+      onCompleteTask: (task: Task) => {
+        this.setTaskById({
+          ...this._taskById,
+          [task.id.asNumber]: task,
+        });
       },
     });
 

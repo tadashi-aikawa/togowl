@@ -45,6 +45,8 @@ export class TodoistTaskService implements TaskService {
   private labelsById: Dictionary<todoist.SyncApi.Label>;
   private notesById: Dictionary<todoist.SyncApi.Note>;
 
+  private listener: TaskEventListener;
+
   @inboxProjectIdMemoize
   private get inboxProjectId(): number {
     return _(this.projectById).find((x) => x.inbox_project)!.id;
@@ -69,24 +71,27 @@ export class TodoistTaskService implements TaskService {
     listener: TaskEventListener
   ) {
     logger.put("new TaskService");
+    this.listener = listener;
     this.syncClient = new todoist.SyncApi.SyncClient(todoistToken);
 
     this.socketClient = todoist.SocketApi.ApiClient.use(todoistWebSocketToken, {
       onOpen: () => {
         logger.put("TaskService.onOpen");
-        listener.onStartSubscribe?.();
+        this.listener.onStartSubscribe?.();
       },
       onClose: (event) => {
         logger.put(`TaskService.onClose: ${event.code}`);
-        listener.onEndSubscribe?.();
+        this.listener.onEndSubscribe?.();
       },
       onError: (event) => {
         logger.put("TaskService.onError");
-        listener.onError?.(SubscribeTaskError.of({ message: event.reason }));
+        this.listener.onError?.(
+          SubscribeTaskError.of({ message: event.reason })
+        );
       },
       onSyncNeeded: (clientId?: string) => {
         logger.put("TaskService.onSyncNeeded");
-        listener.onSyncNeeded?.(clientId);
+        this.listener.onSyncNeeded?.(clientId);
       },
     });
   }
@@ -119,6 +124,8 @@ export class TodoistTaskService implements TaskService {
       isRecurring: task.due?.is_recurring ?? false,
       recurringContent: task.due?.string,
       notes: this.notesByTaskId[task.id]?.map(TodoistTaskService.toNote),
+      checked: task.checked === 1,
+      deleted: task.is_deleted === 1,
     });
   }
 
@@ -194,14 +201,7 @@ export class TodoistTaskService implements TaskService {
         `TaskService.fetchTasks.success (sync to local): ${this.shortTodoistSyncToken}`
       );
 
-      return right(
-        _(this.taskById)
-          .values()
-          .reject((x) => x.is_deleted === 1)
-          .reject((x) => x.checked === 1)
-          .map((x) => this.toTask(x))
-          .value()
-      );
+      return right(_.map(this.taskById, (x) => this.toTask(x)));
     } catch (err) {
       console.error(err);
       logger.put(`TaskService.fetchTasks.error: ${this.shortTodoistSyncToken}`);
@@ -228,6 +228,9 @@ export class TodoistTaskService implements TaskService {
       this.syncCloudToInstance(res);
       logger.put(
         `TaskService.completeTask.success (sync to local): ${this.shortTodoistSyncToken}`
+      );
+      this.listener.onCompleteTask?.(
+        this.toTask(this.taskById[taskId.unwrap()])
       );
       return null;
     } catch (err) {

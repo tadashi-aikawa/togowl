@@ -21,6 +21,7 @@ export interface TaskEventListener {
   onEndSubscribe?(): void;
   onError?(err: SubscribeTaskError): void;
   onSyncNeeded?(clientId?: string): void;
+  onCompleteTask?(task: Task): void;
 }
 
 export interface TaskService {

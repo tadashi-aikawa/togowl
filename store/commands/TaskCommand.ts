@@ -67,10 +67,10 @@ interface SyncNeededListener {
 }
 
 export class CommandExecutor {
-  commands: Command[] = [];
-  syncNeeded = false;
-  timerId: number;
-  lastExecutedDateTime: DateTime;
+  private commands: Command[] = [];
+  private syncNeeded = false;
+  private timerId: number;
+  private lastExecutedDateTime: DateTime;
 
   constructor(public listener: SyncNeededListener) {}
 

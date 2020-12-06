@@ -31,7 +31,6 @@
         />
       </v-lazy>
     </template>
-
     <v-overlay key="loading" absolute :value="isTaskLoading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>

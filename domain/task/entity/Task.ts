@@ -32,6 +32,8 @@ interface Props {
   isRecurring: boolean;
   recurringContent?: string;
   notes?: Note[];
+  checked: boolean;
+  deleted: boolean;
 }
 
 type Args = Props;
@@ -42,6 +44,10 @@ export class Task extends Entity<Props> {
 
   static of(args: Args): Task {
     return new Task(args.id.unwrap(), args);
+  }
+
+  get isEffective(): boolean {
+    return !this._props.checked && !this._props.deleted;
   }
 
   get id(): TaskId {
