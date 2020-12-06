@@ -1,7 +1,7 @@
 import colors from "vuetify/es5/util/colors";
 
 export default {
-  mode: "spa",
+  ssr: false,
   /*
    ** Headers of the page
    */
@@ -87,7 +87,7 @@ export default {
   build: {
     babel: {
       // envName: server, client, modern
-      presets({ envName }) {
+      presets({ _envName }) {
         return [
           [
             "@nuxt/babel-preset-app",
