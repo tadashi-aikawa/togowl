@@ -1,49 +1,62 @@
 <template>
   <div>
     <swiper ref="mySwiper" :options="state.swiperOption">
-      <swiper-slide :class="{ 'swiper-close-area': true, compact }">
+      <swiper-slide
+        :class="{ 'swiper-close-area': true, compact, divider: isDivider }"
+      >
         <v-row align="center" justify="center" style="height: 100%">
-          <v-icon color="white" :small="compact"
+          <v-icon color="white" :small="compact || isDivider"
             >mdi-checkbox-marked-circle-outline</v-icon
           >
-          <span :class="{ complete: true, compact }">Complete</span>
+          <span :class="{ complete: true, compact, divider: isDivider }"
+            >Complete</span
+          >
         </v-row>
       </swiper-slide>
-      <swiper-slide :class="{ 'swiper-main-area': true, compact }">
+      <swiper-slide
+        :class="{ 'swiper-main-area': true, compact, divider: isDivider }"
+      >
         <TaskEntry
           :task="task"
           :disabled="disabledStart"
           :compact="compact"
-          :hidden-start="hiddenStart"
+          :hidden-start="hiddenStart || isDivider"
           :hidden-drag-handler="hiddenDragHandler"
+          :divider="isDivider"
           @on-click-start-button="handleClickStartButton"
           @on-click-complete-button="completeTask"
         />
       </swiper-slide>
-      <swiper-slide :class="{ 'swiper-extra-menu-area': true, compact }">
+      <swiper-slide
+        :class="{ 'swiper-extra-menu-area': true, compact, divider: isDivider }"
+      >
         <v-list-item>
           <v-container
-            :class="{ 'swiper-extra-menu-list-item': true, compact }"
+            :class="{
+              'swiper-extra-menu-list-item': true,
+              compact,
+              divider: isDivider,
+            }"
           >
             <v-row align="center" justify="center">
               <task-swiper-button
-                :compact="compact"
+                :compact="compact || isDivider"
                 icon="mdi-chevron-triple-up"
                 @click="updateToTodayAtFirst"
               />
               <task-swiper-button
-                :compact="compact"
+                :compact="compact || isDivider"
                 icon="mdi-chevron-triple-down"
                 @click="updateToTodayAtLast"
               />
               <task-swiper-button
-                :compact="compact"
+                :compact="compact || isDivider"
                 icon="mdi-calendar-arrow-right"
                 @click="updateToTomorrow"
               />
               <calendar-selector :date="date" @select-date="updateDueDate">
                 <task-swiper-button
-                  :compact="compact"
+                  :compact="compact || isDivider"
                   icon="mdi-calendar-edit"
                 />
               </calendar-selector>
@@ -106,6 +119,10 @@ export default defineComponent({
     // or undefined?
     const date = computed(() => props.task.dueDate?.displayDate);
 
+    const isDivider = computed(() =>
+      props.task.titleWithoutDecorated.startsWith("⏲")
+    );
+
     const completeTask = async () => {
       revertSwiperStateAsDefault();
       await taskStore.completeTask(props.task.id);
@@ -131,6 +148,7 @@ export default defineComponent({
       state,
       date,
       mySwiper,
+      isDivider,
       completeTask,
       updateToTodayAtFirst,
       updateToTodayAtLast,
@@ -150,12 +168,18 @@ export default defineComponent({
   opacity: 0.8;
   background-color: darkslategrey;
 
+  &.divider {
+    height: 45px;
+  }
   &.compact {
     height: 35px;
   }
 }
 
 .swiper-main-area {
+  &.divider {
+    height: 45px;
+  }
   &.compact {
     height: 35px;
   }
@@ -166,12 +190,18 @@ export default defineComponent({
   opacity: 0.8;
   background-color: dimgrey;
 
+  &.divider {
+    height: 45px;
+  }
   &.compact {
     height: 35px;
   }
 }
 
 .swiper-extra-menu-list-item {
+  &.divider {
+    padding-top: 5px;
+  }
   &.compact {
     padding-top: 0;
   }

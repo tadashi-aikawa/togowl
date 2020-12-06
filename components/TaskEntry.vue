@@ -3,14 +3,15 @@
     :key="task.id.unwrap()"
     :class="[itemClass, { compact: compact, past: pastDueDate }]"
     :dense="compact"
-    :two-line="!compact"
+    :two-line="!compact && !divider"
   >
     <v-icon
       v-if="!hiddenDragHandler"
       class="drag-and-drop-handler no-swiping-class"
       style="cursor: move; color: grey"
-      >mdi-drag-vertical</v-icon
     >
+      mdi-drag-vertical
+    </v-icon>
     <v-list-item-content>
       <v-list-item-title style="cursor: pointer">
         <v-menu
@@ -26,6 +27,7 @@
                 :task="task"
                 style="padding-bottom: 5px"
                 :compact="compact"
+                :hide-recurring="divider"
               />
             </div>
           </template>
@@ -97,6 +99,7 @@ export default defineComponent({
     hiddenStart: { type: Boolean },
     hiddenDragHandler: { type: Boolean },
     compact: { type: Boolean },
+    divider: { type: Boolean },
   },
   setup(props, { emit }) {
     const state = reactive({
@@ -104,7 +107,7 @@ export default defineComponent({
     });
 
     const itemClass = computed((): string =>
-      props.task.titleWithoutDecorated.startsWith("⏲") ? "divider" : "task"
+      props.divider ? "divider" : "task"
     );
     const deleteConfirmMessageHtml = computed(
       () => `Are you sure you want to delete ${props.task.titleAsMarkdown}?`
@@ -162,13 +165,9 @@ export default defineComponent({
 }
 
 .divider {
-  padding: 0 5px 0 0;
-
-  &.compact {
-    padding: 0 35px 0 0;
-    background-color: #303030;
-    text-align: center;
-  }
+  padding: 0 35px 0 0;
+  text-align: center;
+  background-color: #303030;
 }
 
 @keyframes past-blink {

@@ -4,7 +4,7 @@
       :class="['task', 'markdown', { compact: compact }]"
       v-html="titleHtml"
     />
-    <v-tooltip top>
+    <v-tooltip v-if="!hideRecurring" top>
       <template #activator="{ on, attrs }">
         <v-icon
           v-if="task.isRecurring"
@@ -48,6 +48,7 @@ export default defineComponent({
   props: {
     task: { type: Object as () => Task, required: true },
     compact: { type: Boolean },
+    hideRecurring: { type: Boolean },
   },
   setup(props) {
     const titleHtml = computed(() => props.task.titleAsMarkdown);
