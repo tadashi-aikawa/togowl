@@ -22,7 +22,7 @@
           :options="{
             threshold: 0.5,
           }"
-          min-height="1"
+          :min-height="compact ? 30 : 37"
         >
           <TaskSwiperEntry
             :task="task"
