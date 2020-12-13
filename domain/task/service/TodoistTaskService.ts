@@ -324,8 +324,13 @@ export class TodoistTaskService implements TaskService {
           this.todoistSyncToken,
           {
             content: title,
+            // Prevent for clear the section when the specified project and current project are the same
             projectId:
-              project === null ? this.inboxProjectId : project?.id.asNumber,
+              this.taskById[taskId.asNumber].project_id === project?.id.asNumber
+                ? undefined
+                : project === null
+                ? this.inboxProjectId
+                : project?.id.asNumber,
             labels: labels?.map((x) => x.idAsNumber),
           }
         )
