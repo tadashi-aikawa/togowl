@@ -26,10 +26,20 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-      - uses: microsoft/playwright-github-action@v1
 
       - run: npm install
-      - run: cp .firebase.config.sample.json .firebase.config.json
+      - run: |
+          cat > .firebase.config.json << "EOF"
+            {
+              "apiKey": "${{ secrets.TOGOWL_API_KEY }}",
+              "authDomain": "togowl.firebaseapp.com",
+              "databaseURL": "https://togowl.firebaseio.com",
+              "projectId": "togowl",
+              "storageBucket": "togowl.appspot.com",
+              "messagingSenderId": "505439731265",
+              "appId": "1:505439731265:web:e8dfd007733f97471c50c0"
+            }
+          EOF
       - run: npm run build
 
       - run: npm run test-with-coverage
