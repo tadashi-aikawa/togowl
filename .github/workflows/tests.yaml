@@ -39,14 +39,15 @@ jobs:
           file: ./coverage/clover.xml
 
       - run: npm run test:e2e
+        env:
+          TOGOWL_MAIL_ADDRESS: ${{ secrets.TOGOWL_MAIL_ADDRESS }}
+          TOGOWL_PASSWORD: ${{ secrets.TOGOWL_PASSWORD }}
+
       - uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
           name: '${{ matrix.node }}-e2e-videos'
           path: videos
-        env:
-          TOGOWL_MAIL_ADDRESS: ${{ secrets.TOGOWL_MAIL_ADDRESS }}
-          TOGOWL_PASSWORD: ${{ secrets.TOGOWL_PASSWORD }}
 
       - name: 'Slack notification (not success)'
         uses: homoluctus/slatify@master
