@@ -28,8 +28,6 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - run: npm install
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: 0
       - run: |
           cat > .firebase.config.json << "EOF"
             {
