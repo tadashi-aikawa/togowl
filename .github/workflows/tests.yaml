@@ -22,10 +22,11 @@ jobs:
     name: Node ${{ matrix.node }}
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
+      - uses: microsoft/playwright-github-action@v1
 
       - run: npm install
       - run: cp .firebase.config.sample.json .firebase.config.json
@@ -36,6 +37,13 @@ jobs:
         if: "matrix.node == '14.x' && success()"
         with:
           file: ./coverage/clover.xml
+
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: '${{ matrix.node }}-e2e-videos'
+          path: videos
 
       - name: 'Slack notification (not success)'
         uses: homoluctus/slatify@master

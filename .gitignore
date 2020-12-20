@@ -92,3 +92,6 @@ sw.*
 # Firebase
 .firebase
 .firebase.config.json
+
+# e2e
+videos

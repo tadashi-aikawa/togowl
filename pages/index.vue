@@ -1,7 +1,7 @@
 <template>
   <v-layout column justify-center align-center>
     <template v-if="activeViewIndex === 0">
-      <v-container style="padding: 0">
+      <v-container id="main-contents" style="padding: 0">
         <v-row no-gutters>
           <v-col :sm="12" :lg="8">
             <v-flex>

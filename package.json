@@ -13,6 +13,7 @@
     "lint:fix": "eslint --ext .js,.vue --fix --ignore-path .gitignore .",
     "test": "jest",
     "test-with-coverage": "jest --collect-coverage",
+    "test:e2e": "jest -c jest.e2e.config.js e2e",
     "deploy": "firebase deploy"
   },
   "dependencies": {
@@ -55,9 +56,12 @@
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-nuxt": ">=2.0.0",
+    "expect-playwright": "^0.2.6",
     "jest": "^26.6.3",
+    "jest-playwright-preset": "^1.4.2",
     "node-sass": "^5.0.0",
     "nuxt-property-decorator": "^2.8.8",
+    "playwright": "^1.6.2",
     "prettier": "^2.1.2",
     "sass-loader": "^8.0.0",
     "vue-jest": "^4.0.0-beta.3",

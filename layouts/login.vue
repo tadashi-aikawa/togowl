@@ -10,12 +10,14 @@
       <v-row align="center" justify="center">
         <v-form ref="form" v-model="valid">
           <v-text-field
+            id="mail-address-input"
             v-model="mailAddress"
             :rules="mailAddressRules"
             label="Mail address"
             required
           />
           <v-text-field
+            id="password-input"
             v-model="password"
             type="password"
             :rules="passwordRules"
@@ -30,7 +32,13 @@
           <span>Login...</span>
         </template>
         <template v-else>
-          <v-btn :disabled="!valid" color="success" class="mr-4" @click="login">
+          <v-btn
+            id="login-button"
+            :disabled="!valid"
+            color="success"
+            class="mr-4"
+            @click="login"
+          >
             Login
           </v-btn>
         </template>
