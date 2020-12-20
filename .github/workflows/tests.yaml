@@ -44,6 +44,9 @@ jobs:
         with:
           name: '${{ matrix.node }}-e2e-videos'
           path: videos
+        env:
+          TOGOWL_MAIL_ADDRESS: ${{ secrets.TOGOWL_MAIL_ADDRESS }}
+          TOGOWL_PASSWORD: ${{ secrets.TOGOWL_PASSWORD }}
 
       - name: 'Slack notification (not success)'
         uses: homoluctus/slatify@master
