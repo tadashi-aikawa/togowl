@@ -14,7 +14,7 @@ export class Url extends PrimitiveValueObject<string> {
   private _voCommonUrlBrand!: never;
 
   static try(value: string): Either<InvalidUrlError, Url> {
-    if (!/^https?:\/\/.+/.test(value)) {
+    if (!/^[^:]+:\/\/.+/.test(value)) {
       return left(
         InvalidUrlError.of({
           invalidValue: value,

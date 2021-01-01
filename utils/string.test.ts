@@ -94,13 +94,15 @@ describe.each`
 });
 
 describe.each`
-  str                                     | expected
-  ${"[title](http://hoge)"}               | ${"http://hoge"}
-  ${"prefix [title](http://hoge)"}        | ${"http://hoge"}
-  ${"[title](http://hoge) suffix"}        | ${"http://hoge"}
-  ${"prefix [title](http://hoge) suffix"} | ${"http://hoge"}
-  ${"[title](Invalid URL)"}               | ${undefined}
-  ${"No URL"}                             | ${undefined}
+  str                                                                         | expected
+  ${"[title](http://hoge)"}                                                   | ${"http://hoge"}
+  ${"prefix [title](http://hoge)"}                                            | ${"http://hoge"}
+  ${"[title](http://hoge) suffix"}                                            | ${"http://hoge"}
+  ${"prefix [title](http://hoge) suffix"}                                     | ${"http://hoge"}
+  ${"[title](obsidian://open?vault=Owl%20Brain&file=Obsidian) suffix"}        | ${"obsidian://open?vault=Owl%20Brain&file=Obsidian"}
+  ${"prefix [title](obsidian://open?vault=Owl%20Brain&file=Obsidian) suffix"} | ${"obsidian://open?vault=Owl%20Brain&file=Obsidian"}
+  ${"[title](Invalid URL)"}                                                   | ${undefined}
+  ${"No URL"}                                                                 | ${undefined}
 `("pickUrl ", ({ str, expected }) => {
   test(`${str} -> ${expected}`, () =>
     expect(pickUrl(str)?.unwrap()).toBe(expected));
