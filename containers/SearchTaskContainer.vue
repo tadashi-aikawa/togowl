@@ -22,7 +22,7 @@
           <v-divider></v-divider>
         </div>
       </v-lazy>
-      <v-lazy v-for="task in tasks" :key="task.id.unwrap()" min-height="30">
+      <v-lazy v-for="task in tasks" :key="task.id.unwrap()" min-height="64">
         <TaskSwiperEntry
           :task="task"
           :disabled-start="disabledStart"

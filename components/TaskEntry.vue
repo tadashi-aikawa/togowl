@@ -3,7 +3,7 @@
     :key="task.id.unwrap()"
     :class="[itemClass, { compact: compact, past: pastDueDate }]"
     :dense="compact"
-    :two-line="!compact && !divider"
+    :two-line="!compact"
   >
     <v-icon
       v-if="!hiddenDragHandler"

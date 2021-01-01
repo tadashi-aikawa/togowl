@@ -1,21 +1,15 @@
 <template>
   <div>
     <swiper ref="mySwiper" :options="state.swiperOption">
-      <swiper-slide
-        :class="{ 'swiper-close-area': true, compact, divider: isDivider }"
-      >
+      <swiper-slide :class="{ 'swiper-close-area': true, compact }">
         <v-row align="center" justify="center" style="height: 100%">
-          <v-icon color="white" :small="compact || isDivider"
+          <v-icon color="white" :small="compact"
             >mdi-checkbox-marked-circle-outline</v-icon
           >
-          <span :class="{ complete: true, compact, divider: isDivider }"
-            >Complete</span
-          >
+          <span :class="{ complete: true, compact }">Complete</span>
         </v-row>
       </swiper-slide>
-      <swiper-slide
-        :class="{ 'swiper-main-area': true, compact, divider: isDivider }"
-      >
+      <swiper-slide :class="{ 'swiper-main-area': true, compact }">
         <TaskEntry
           :task="task"
           :disabled="disabledStart"
@@ -27,36 +21,33 @@
           @on-click-complete-button="completeTask"
         />
       </swiper-slide>
-      <swiper-slide
-        :class="{ 'swiper-extra-menu-area': true, compact, divider: isDivider }"
-      >
+      <swiper-slide :class="{ 'swiper-extra-menu-area': true, compact }">
         <v-list-item>
           <v-container
             :class="{
               'swiper-extra-menu-list-item': true,
               compact,
-              divider: isDivider,
             }"
           >
             <v-row align="center" justify="center">
               <task-swiper-button
-                :compact="compact || isDivider"
+                :compact="compact"
                 icon="mdi-chevron-triple-up"
                 @click="updateToTodayAtFirst"
               />
               <task-swiper-button
-                :compact="compact || isDivider"
+                :compact="compact"
                 icon="mdi-chevron-triple-down"
                 @click="updateToTodayAtLast"
               />
               <task-swiper-button
-                :compact="compact || isDivider"
+                :compact="compact"
                 icon="mdi-calendar-arrow-right"
                 @click="updateToTomorrow"
               />
               <calendar-selector :date="date" @select-date="updateDueDate">
                 <task-swiper-button
-                  :compact="compact || isDivider"
+                  :compact="compact"
                   icon="mdi-calendar-edit"
                 />
               </calendar-selector>
@@ -168,18 +159,12 @@ export default defineComponent({
   opacity: 0.8;
   background-color: darkslategrey;
 
-  &.divider {
-    height: 45px;
-  }
   &.compact {
     height: 35px;
   }
 }
 
 .swiper-main-area {
-  &.divider {
-    height: 45px;
-  }
   &.compact {
     height: 35px;
   }
@@ -190,18 +175,12 @@ export default defineComponent({
   opacity: 0.8;
   background-color: dimgrey;
 
-  &.divider {
-    height: 45px;
-  }
   &.compact {
     height: 35px;
   }
 }
 
 .swiper-extra-menu-list-item {
-  &.divider {
-    padding-top: 5px;
-  }
   &.compact {
     padding-top: 0;
   }
