@@ -82,6 +82,7 @@ class ProjectModule extends VuexModule {
         "desc"
       )
       .map((x) => taskStore.projectById[x.asNumber])
+      .reject((x) => x === undefined)
       .value();
   }
 
