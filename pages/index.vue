@@ -162,7 +162,7 @@
               </v-tab-item>
               <v-tab-item>
                 <div class="right-detail-area">
-                  <search-task-container @on-click-start="startFromTask" />
+                  <task-searcher @on-click-start="startFromTask" />
                 </div>
               </v-tab-item>
             </v-tabs-items>
@@ -232,7 +232,7 @@ import TaskEntryList from "~/components/TaskEntryList.vue";
 import TaskDetail from "~/components/TaskDetail.vue";
 import Scheduler from "~/components/Scheduler.vue";
 import Clock from "~/components/Clock.vue";
-import SearchTaskContainer from "~/containers/SearchTaskContainer.vue";
+import TaskSearcher from "~/containers/TaskSearcher.vue";
 
 @Component({
   components: {
@@ -244,7 +244,7 @@ import SearchTaskContainer from "~/containers/SearchTaskContainer.vue";
     EntrySummary,
     Scheduler,
     Clock,
-    SearchTaskContainer,
+    TaskSearcher,
   },
 })
 class Root extends Vue {

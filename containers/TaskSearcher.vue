@@ -64,8 +64,13 @@ export default defineComponent({
 
       return (
         titleWords.every((x) => task.title.toLocaleLowerCase().includes(x)) &&
-        projectWords.every((x) =>
-          task.project?.name.unwrap().toLocaleLowerCase().includes(x)
+        projectWords.every(
+          (x) =>
+            task.project?.name.unwrap().toLocaleLowerCase().includes(x) ||
+            task.entryProject?.category?.name
+              ?.unwrap()
+              .toLocaleLowerCase()
+              .includes(x)
         )
       );
     };
