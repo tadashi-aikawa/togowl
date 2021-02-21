@@ -27,7 +27,7 @@
     "fp-ts": "^2.8.6",
     "html2canvas": "^1.0.0-rc.7",
     "lazy-get-decorator": "^2.2.0",
-    "marked": "^1.2.4",
+    "marked": "^2.0.0",
     "nuxt": "^2.14.9",
     "owlelia": "^0.16.0",
     "portal-vue": "^2.1.7",
