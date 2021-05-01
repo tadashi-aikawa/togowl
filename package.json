@@ -68,6 +68,6 @@
     "vuex-module-decorators": "^1.0.1"
   },
   "volta": {
-    "node": "14.16.0"
+    "node": "14.16.1"
   }
 }
