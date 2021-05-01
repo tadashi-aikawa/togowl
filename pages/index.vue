@@ -196,6 +196,15 @@
       </div>
     </template>
 
+    <template v-if="!$vuetify.breakpoint.lgAndUp && activeViewIndex === 2">
+      <div class="scheduler-area">
+        <task-searcher @on-click-start="startFromTask" />
+      </div>
+      <v-overlay :value="waitForBlockedAction">
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+    </template>
+
     <v-bottom-navigation
       v-model="activeViewIndex"
       grow
@@ -212,6 +221,10 @@
         <span>Scheduler</span>
         <v-icon>mdi-pen</v-icon>
       </v-btn>
+      <v-btn v-if="!$vuetify.breakpoint.lgAndUp">
+        <span>Task</span>
+        <v-icon>mdi-format-list-checks</v-icon>
+      </v-btn>
     </v-bottom-navigation>
 
     <portal to="global-notification">
@@ -225,7 +238,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
-import { computed } from "@vue/composition-api";
 import {
   appStore,
   notificationStore,
