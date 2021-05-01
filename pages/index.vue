@@ -151,8 +151,14 @@
                 </v-icon>
                 Memo
               </v-tab>
-              <v-tab><v-icon>mdi-magnify</v-icon>Search</v-tab>
-              <v-tab><v-icon>mdi-calendar</v-icon>Calendar</v-tab>
+              <v-tab>
+                <v-icon>mdi-magnify</v-icon>
+                Search
+              </v-tab>
+              <v-tab>
+                <v-icon style="margin-right: 3px">mdi-calendar</v-icon>
+                Calendar
+              </v-tab>
             </v-tabs>
 
             <v-tabs-items v-model="rightTab">
