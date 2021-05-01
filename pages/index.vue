@@ -152,6 +152,7 @@
                 Memo
               </v-tab>
               <v-tab><v-icon>mdi-magnify</v-icon>Search</v-tab>
+              <v-tab><v-icon>mdi-calendar</v-icon>Calendar</v-tab>
             </v-tabs>
 
             <v-tabs-items v-model="rightTab">
@@ -163,6 +164,16 @@
               <v-tab-item>
                 <div class="right-detail-area">
                   <task-searcher @on-click-start="startFromTask" />
+                </div>
+              </v-tab-item>
+              <v-tab-item>
+                <div class="right-detail-area">
+                  <entry-calendar
+                    :entries="entries"
+                    :height="calendarHeight"
+                    button-offset-bottom="70px"
+                    button-offset-right="45px"
+                  />
                 </div>
               </v-tab-item>
             </v-tabs-items>
@@ -214,6 +225,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
+import { computed } from "@vue/composition-api";
 import {
   appStore,
   notificationStore,
@@ -233,9 +245,11 @@ import TaskDetail from "~/components/TaskDetail.vue";
 import Scheduler from "~/components/Scheduler.vue";
 import Clock from "~/components/Clock.vue";
 import TaskSearcher from "~/containers/TaskSearcher.vue";
+import EntryCalendar from "~/components/EntryCalendar.vue";
 
 @Component({
   components: {
+    EntryCalendar,
     CurrentTimeEntry,
     TimeEntry,
     TimeEntries,
@@ -381,6 +395,10 @@ class Root extends Vue {
     return timerStore.currentEntry;
   }
 
+  get entries(): Entry[] {
+    return timerStore.entries;
+  }
+
   get taskRelatedToCurrentEntry(): Task | null {
     return timerStore.taskRelatedToCurrentEntry;
   }
@@ -442,6 +460,10 @@ class Root extends Vue {
       return 0.5;
     }
     return 1;
+  }
+
+  get calendarHeight(): string {
+    return "calc(100vh - 220px)";
   }
 
   customFilter(item: Entry, queryText: string): boolean {

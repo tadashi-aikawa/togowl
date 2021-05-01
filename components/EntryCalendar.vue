@@ -37,7 +37,11 @@
         bottom
         right
         fab
-        style="margin-right: 294px"
+        :style="{
+          'margin-right': '294px',
+          bottom: buttonOffsetBottom,
+          right: buttonOffsetRight,
+        }"
         :disabled="isZoomUpDisabled"
         @click="handleClickZoomUp"
       >
@@ -50,7 +54,11 @@
         bottom
         right
         fab
-        style="margin-right: 238px"
+        :style="{
+          'margin-right': '238px',
+          bottom: buttonOffsetBottom,
+          right: buttonOffsetRight,
+        }"
         :disabled="isZoomDownDisabled"
         @click="handleClickZoomDown"
       >
@@ -63,7 +71,11 @@
         bottom
         right
         fab
-        style="margin-right: 182px"
+        :style="{
+          'margin-right': '182px',
+          bottom: buttonOffsetBottom,
+          right: buttonOffsetRight,
+        }"
         @click="handleClickPrevious"
       >
         <v-icon>mdi-chevron-left</v-icon>
@@ -75,7 +87,11 @@
         bottom
         right
         fab
-        style="margin-right: 126px"
+        :style="{
+          'margin-right': '126px',
+          bottom: buttonOffsetBottom,
+          right: buttonOffsetRight,
+        }"
         @click="handleClickNext"
       >
         <v-icon>mdi-chevron-right</v-icon>
@@ -87,7 +103,11 @@
         bottom
         right
         fab
-        style="margin-right: 70px"
+        :style="{
+          'margin-right': '70px',
+          bottom: buttonOffsetBottom,
+          right: buttonOffsetRight,
+        }"
         @click="handleClickMoveToNow"
       >
         <v-icon>mdi-send-clock</v-icon>
@@ -100,7 +120,11 @@
         right
         fab
         :disabled="!canShare"
-        style="margin-right: 14px"
+        :style="{
+          'margin-right': '14px',
+          bottom: buttonOffsetBottom,
+          right: buttonOffsetRight,
+        }"
         @click="handleShareDailyCalendar"
       >
         <v-icon>mdi-share-variant</v-icon>
@@ -163,6 +187,8 @@ export default defineComponent({
   props: {
     entries: { type: Array as () => Entry[], required: true },
     height: { type: String, required: true },
+    buttonOffsetRight: { type: String, default: "15px" },
+    buttonOffsetBottom: { type: String, default: "15px" },
   },
   setup(props) {
     const calendarRef = ref<any>();
