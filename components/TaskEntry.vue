@@ -40,6 +40,14 @@
                 <v-list-item-title>Edit</v-list-item-title>
               </v-list-item>
             </edit-task-dialog>
+            <add-task-dialog :base-task="task">
+              <v-list-item @click="handleClickEditTaskMenuItem">
+                <v-list-item-icon>
+                  <v-icon>mdi-content-duplicate</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Duplicate</v-list-item-title>
+              </v-list-item>
+            </add-task-dialog>
             <confirm-wrapper-dialog
               title="Confirm"
               :description="deleteConfirmMessageHtml"
@@ -86,10 +94,12 @@ import ConfirmWrapperDialog from "~/components/ConfirmWrapperDialog.vue";
 import { Task } from "~/domain/task/entity/Task";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
+import AddTaskDialog from "~/containers/AddTaskDialog.vue";
 
 export default defineComponent({
   components: {
     TaskSummary,
+    AddTaskDialog,
     EditTaskDialog,
     ConfirmWrapperDialog,
   },

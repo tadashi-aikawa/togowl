@@ -30,19 +30,19 @@
                 color="cyan"
                 item-color="cyan"
                 clearable
-                @keyup.ctrl.enter="handleCntrlEnter"
+                @keyup.ctrl.enter="handleCtrlEnter"
               />
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px">
               <task-project-selector
                 v-model="state.project"
-                @on-ctrl-enter="handleCntrlEnter"
+                @on-ctrl-enter="handleCtrlEnter"
               ></task-project-selector>
             </v-row>
             <v-row style="margin-top: 10px; padding: 0 10px 0 20px">
               <task-label-selector
                 v-model="state.labels"
-                @on-ctrl-enter="handleCntrlEnter"
+                @on-ctrl-enter="handleCtrlEnter"
               ></task-label-selector>
             </v-row>
           </v-form>
@@ -55,7 +55,7 @@
           <v-btn
             :disabled="!state.isValid"
             color="green darken-2"
-            @click="handleCntrlEnter"
+            @click="handleCtrlEnter"
           >
             <v-icon>mdi-calendar-today</v-icon>
             <v-icon>mdi-chevron-triple-up</v-icon>
@@ -115,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "@vue/composition-api";
+import { defineComponent, reactive, ref, watch } from "@vue/composition-api";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
 import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
@@ -123,30 +123,64 @@ import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
 import { Label } from "~/domain/task/entity/Label";
 import CalendarSelector from "~/components/CalendarSelector.vue";
+import { Task } from "~/domain/task/entity/Task";
+
+interface State {
+  isValid: boolean;
+  taskName: string;
+  project: TaskProject | undefined;
+  labels: Label[];
+  date: string;
+  processing: boolean;
+  snackbar: boolean;
+  snackbarMessage: string;
+  processErrorMessage: string;
+  visible: boolean;
+  shouldCreateAnother: boolean;
+}
 
 export default defineComponent({
   components: { TaskProjectSelector, TaskLabelSelector, CalendarSelector },
   props: {
-    visible: { type: Boolean },
+    baseTask: { type: Object as () => Task, default: undefined },
+    visible: { type: Boolean, default: false },
   },
   setup(props) {
-    const TASK_NAME_RULES = [(v: string) => !!v || "Task name is required"];
+    const taskNameRules = [(v: string) => !!v || "Task name is required"];
 
     const taskNameFieldRef = ref<HTMLElement>();
 
-    const state = reactive({
+    const state = reactive<State>({
       isValid: false,
       taskName: "",
       project: undefined,
-      labels: [] as Label[],
+      labels: [],
       date: DateTime.now().displayDate,
       processing: false,
       snackbar: false,
       snackbarMessage: "",
       processErrorMessage: "",
-      visible: props.visible as boolean,
+      visible: props.visible,
       shouldCreateAnother: false,
     });
+
+    watch(
+      () => state.visible,
+      (_visible) => {
+        if (_visible) {
+          if (props.baseTask) {
+            state.taskName = props.baseTask.title;
+            state.project = props.baseTask.project;
+            state.labels = props.baseTask.labels;
+          } else {
+            state.taskName = "";
+            state.project = undefined;
+            state.labels = [];
+          }
+        }
+      },
+      { immediate: true }
+    );
 
     const emitAddTaskAction = async (payload: {
       successMessage: string;
@@ -213,17 +247,17 @@ export default defineComponent({
       });
     };
 
-    const handleCntrlEnter = () => {
+    const handleCtrlEnter = () => {
       if (state.isValid) {
         handleClickTodayFirst();
       }
     };
 
     return {
-      TASK_NAME_RULES,
+      TASK_NAME_RULES: taskNameRules,
       state,
       taskNameFieldRef,
-      handleCntrlEnter,
+      handleCtrlEnter,
       handleClickTodayLast,
       handleClickTomorrow,
       handleSelectSpecifiedDate,
