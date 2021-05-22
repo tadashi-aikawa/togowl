@@ -1,5 +1,5 @@
 <h1 align="center">
-    Togowl
+    🦉 Togowl 🦉
 </h1>
 
 <p align="center">
@@ -24,7 +24,7 @@ It integrates with Toggl, Todoist, and Slack unofficially.
 
 <p align="center">
   <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" width="60" style="margin: 0 20px;"/>
-  <img src="https://cdn.svgporn.com/logos/nuxt.svg" width="60" style="margin: 0 20px;"/>
+  <img src="https://cdn.svgporn.com/logos/nuxt-icon.svg" width="60" style="margin: 0 20px;"/>
   <img src="https://cdn.svgporn.com/logos/vuetifyjs.svg" width="60" style="margin: 0 20px;"/>
   <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" style="margin: 0 20px;"/>
 </p>
