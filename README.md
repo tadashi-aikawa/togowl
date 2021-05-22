@@ -22,12 +22,12 @@ It integrates with Toggl, Todoist, and Slack unofficially.
   </a>
 </p>
 
-<div style="display: flex; justify-content: center;">
+<p align="center">
   <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" width="60" style="margin: 0 20px;"/>
   <img src="https://cdn.svgporn.com/logos/nuxt.svg" width="60" style="margin: 0 20px;"/>
   <img src="https://cdn.svgporn.com/logos/vuetifyjs.svg" width="60" style="margin: 0 20px;"/>
   <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" style="margin: 0 20px;"/>
-</div>
+</p>
 
 
 ✅ For all
