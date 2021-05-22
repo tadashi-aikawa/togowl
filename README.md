@@ -1,19 +1,32 @@
-togowl
-======
+<h1 align="center">
+    Togowl
+</h1>
 
-[![Actions Status](https://github.com/tadashi-aikawa/togowl/workflows/Tests/badge.svg)](https://github.com/tadashi-aikawa/togowl/actions)
-[![codecov](https://codecov.io/gh/tadashi-aikawa/togowl/branch/master/graph/badge.svg)](https://codecov.io/gh/tadashi-aikawa/togowl)
+<p align="center">
+    <img alt="Togowl" src="./static/icon.png?raw=true" width="240" />
+</p>
 
-<img src="./static/icon.png" width="240" />
-
+<p align="center">
 Togowl is task and life management tools for next generation owls.  
-It integrates with Toggl, Todoist and Slack.
+</p>
+<p align="center">
+It integrates with Toggl, Todoist, and Slack unofficially.
+</p>
 
-<div style="display: flex;">
-  <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" width="60" />
-  <img src="https://cdn.svgporn.com/logos/nuxt.svg" width="60" />
-  <img src="https://cdn.svgporn.com/logos/vuetifyjs.svg" width="60" />
-  <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" />
+<p align="center">
+  <a href="https://github.com/tadashi-aikawa/togowl/actions">
+    <img alt="Tests" src="https://github.com/tadashi-aikawa/togowl/workflows/Tests/badge.svg" />
+  </a>
+  <a href="https://codecov.io/gh/tadashi-aikawa/togowl">
+    <img alt="Coverage" src="https://codecov.io/gh/tadashi-aikawa/togowl/branch/master/graph/badge.svg" />
+  </a>
+</p>
+
+<div style="display: flex; justify-content: center;">
+  <img src="https://cdn.svgporn.com/logos/typescript-icon.svg" width="60" style="margin: 0 20px;"/>
+  <img src="https://cdn.svgporn.com/logos/nuxt.svg" width="60" style="margin: 0 20px;"/>
+  <img src="https://cdn.svgporn.com/logos/vuetifyjs.svg" width="60" style="margin: 0 20px;"/>
+  <img src="https://cdn.svgporn.com/logos/firebase.svg" width="60" style="margin: 0 20px;"/>
 </div>
 
 
