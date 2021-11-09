@@ -76,7 +76,7 @@ export namespace SocketApi {
     }
 
     static use(token: string, listener: EventListener): ApiClient {
-      const socket = new WebSocket("wss://stream.toggl.com/ws");
+      const socket = new WebSocket("wss://track.toggl.com/stream");
 
       const onOpenListener = (_ev: WebSocketEventMap["open"]) => {
         const authentication = JSON.stringify({
@@ -187,8 +187,8 @@ export namespace RestApi {
     constructor(token: string, proxy?: string) {
       this.token = token;
       this.baseUrl = proxy
-        ? `https://${proxy}/toggl.com/api/v8`
-        : "https://toggl.com/api/v8";
+        ? `https://${proxy}/api.track.toggl.com/api/v8`
+        : "https://api.track.toggl.com/api/v8";
     }
 
     __get<T>(path: string, params?: Object): Promise<T> {
