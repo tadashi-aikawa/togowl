@@ -33,7 +33,7 @@
     "portal-vue": "^2.1.7",
     "query-string": "^6.13.7",
     "shallow-equal-object": "^1.1.1",
-    "swiper": "^6.3.5",
+    "swiper": "^6.5.1",
     "type-fest": "^0.19.0",
     "uuid": "^8.3.1",
     "vue-awesome-swiper": "^4.1.1",
