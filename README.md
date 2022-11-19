@@ -99,23 +99,6 @@ npm run build
 npm run start
 ```
 
-### e2e Test
-
-First, you need to set environment variables.
-
-| Name                | Description o                |
-| ------------------- | ---------------------------- |
-| TOGOWL_MAIL_ADDRESS | Your mail address registered |
-| TOGOWL_PASSWORD     | Your password registered     |
-
-If ok,
-
-```
-npm run build
-npm run test:e2e
-```
-
-
 ### Release (Only for )
 
 Before release, you need to be able to deploy.  
