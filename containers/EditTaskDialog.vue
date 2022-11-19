@@ -1,3 +1,87 @@
+<script lang="ts" setup>
+import { reactive, watch } from "vue";
+import { taskStore } from "~/utils/store-accessor";
+import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
+import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
+import { Label } from "~/domain/task/entity/Label";
+import { Task } from "~/domain/task/entity/Task";
+
+interface Props {
+  task: Task;
+  visible?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+  visible: false,
+});
+
+const TASK_NAME_RULES = [(v: string) => !!v || "Task name is required"];
+
+interface State {
+  isValid: boolean;
+  taskName: string;
+  project: TaskProject | undefined;
+  labels: Label[];
+  processing: boolean;
+  snackbar: boolean;
+  snackbarMessage: string;
+  processErrorMessage: string;
+  visible: boolean;
+}
+
+const state = reactive<State>({
+  isValid: false,
+  taskName: "",
+  project: undefined,
+  labels: [],
+  processing: false,
+  snackbar: false,
+  snackbarMessage: "",
+  processErrorMessage: "",
+  visible: props.visible,
+}) as State;
+
+watch(
+  () => state.visible,
+  (_visible) => {
+    if (_visible) {
+      state.taskName = props.task.title;
+      state.project = props.task.project;
+      state.labels = props.task.labels;
+    }
+  },
+  { immediate: true }
+);
+
+const handleClickUpdate = async () => {
+  state.processing = true;
+  state.processErrorMessage = "";
+  const err = await taskStore.updateTask({
+    taskId: props.task.id,
+    title: state.taskName,
+    project: (state.project as TaskProject | null) ?? null,
+    labels: state.labels,
+  });
+  state.processing = false;
+
+  if (err) {
+    state.processErrorMessage = `Failure to Update task: ${state.taskName}`;
+    console.error(err.message);
+    return;
+  }
+
+  state.snackbar = true;
+  state.snackbarMessage = `Update 『${state.taskName}』`;
+  state.visible = false;
+};
+
+const handleCtrlEnter = () => {
+  if (state.isValid) {
+    handleClickUpdate();
+  }
+};
+</script>
+
 <template>
   <div>
     <v-dialog
@@ -77,84 +161,3 @@
     </portal>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, reactive, watch } from "vue";
-import { taskStore } from "~/utils/store-accessor";
-import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
-import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
-import { TaskProject } from "~/domain/task/entity/TaskProject";
-import { Label } from "~/domain/task/entity/Label";
-import { Task } from "~/domain/task/entity/Task";
-
-export default defineComponent({
-  components: { TaskProjectSelector, TaskLabelSelector },
-  props: {
-    task: { type: Object as () => Task, required: true },
-    visible: { type: Boolean },
-  },
-  setup(props) {
-    const TASK_NAME_RULES = [(v: string) => !!v || "Task name is required"];
-
-    const state = reactive({
-      isValid: false,
-      taskName: "",
-      project: undefined as TaskProject | undefined,
-      labels: [] as Label[],
-      processing: false,
-      snackbar: false,
-      snackbarMessage: "",
-      processErrorMessage: "",
-      visible: props.visible as boolean,
-    });
-
-    watch(
-      () => state.visible,
-      (_visible) => {
-        if (_visible) {
-          state.taskName = props.task.title;
-          state.project = props.task.project;
-          state.labels = props.task.labels;
-        }
-      },
-      { immediate: true }
-    );
-
-    const handleClickUpdate = async () => {
-      state.processing = true;
-      state.processErrorMessage = "";
-      const err = await taskStore.updateTask({
-        taskId: props.task.id,
-        title: state.taskName,
-        project: (state.project as TaskProject | null) ?? null,
-        labels: state.labels,
-      });
-      state.processing = false;
-
-      if (err) {
-        state.processErrorMessage = `Failure to Update task: ${state.taskName}`;
-        console.error(err.message);
-        return;
-      }
-
-      state.snackbar = true;
-      state.snackbarMessage = `Update 『${state.taskName}』`;
-      state.visible = false;
-    };
-
-    const handleCtrlEnter = () => {
-      if (state.isValid) {
-        handleClickUpdate();
-      }
-    };
-
-    return {
-      TASK_NAME_RULES,
-      state,
-      handleCtrlEnter,
-    };
-  },
-});
-</script>
-
-<style lang="scss" scoped></style>

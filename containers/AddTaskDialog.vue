@@ -1,3 +1,143 @@
+<script lang="ts" setup>
+import { reactive, ref, watch } from "vue";
+import { taskStore } from "~/utils/store-accessor";
+import { DateTime } from "~/domain/common/DateTime";
+import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
+import { Label } from "~/domain/task/entity/Label";
+import { Task } from "~/domain/task/entity/Task";
+import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
+import CalendarSelector from "~/components/CalendarSelector.vue";
+
+interface Props {
+  baseTask?: Task;
+  visible?: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+  visible: false,
+});
+
+interface State {
+  isValid: boolean;
+  taskName: string;
+  project: TaskProject | undefined;
+  labels: Label[];
+  date: string;
+  processing: boolean;
+  snackbar: boolean;
+  snackbarMessage: string;
+  processErrorMessage: string;
+  visible: boolean;
+  shouldCreateAnother: boolean;
+}
+
+const state = reactive({
+  isValid: false,
+  taskName: "",
+  project: undefined,
+  labels: [],
+  date: DateTime.now().displayDate,
+  processing: false,
+  snackbar: false,
+  snackbarMessage: "",
+  processErrorMessage: "",
+  visible: props.visible,
+  shouldCreateAnother: false,
+}) as State;
+
+const taskNameRules = [(v: string) => !!v || "Task name is required"];
+const taskNameFieldRef = ref<HTMLElement>();
+
+watch(
+  () => state.visible,
+  (_visible) => {
+    if (_visible) {
+      if (props.baseTask) {
+        state.taskName = props.baseTask.title;
+        state.project = props.baseTask.project;
+        state.labels = props.baseTask.labels;
+      } else {
+        state.taskName = "";
+        state.project = undefined;
+        state.labels = [];
+      }
+    }
+  },
+  { immediate: true }
+);
+
+const emitAddTaskAction = async (payload: {
+  successMessage: string;
+  dueDate?: DateTime;
+  dayOrder?: number;
+}) => {
+  state.processing = true;
+  state.processErrorMessage = "";
+  const err = await taskStore.addTask({
+    title: state.taskName,
+    dueDate: payload.dueDate,
+    dayOrder: payload.dayOrder,
+    project: state.project as TaskProject | undefined,
+    labels: state.labels,
+  });
+  state.processing = false;
+
+  if (err) {
+    state.processErrorMessage = `Failure to create task: ${state.taskName}`;
+    console.error(err.message);
+    return;
+  }
+
+  state.snackbar = true;
+  state.snackbarMessage = payload.successMessage;
+
+  if (state.shouldCreateAnother) {
+    state.taskName = "";
+    taskNameFieldRef.value?.focus();
+    return;
+  }
+
+  state.visible = false;
+};
+
+const handleClickTodayFirst = async () => {
+  await emitAddTaskAction({
+    dueDate: DateTime.now(),
+    successMessage: `Add 『${state.taskName}』 at FIRST today.`,
+    dayOrder: 0,
+  });
+};
+
+const handleClickTodayLast = async () => {
+  await emitAddTaskAction({
+    dueDate: DateTime.now(),
+    successMessage: `Add 『${state.taskName}』 at LAST today.`,
+    dayOrder: 999,
+  });
+};
+
+const handleClickTomorrow = async () => {
+  await emitAddTaskAction({
+    dueDate: DateTime.tomorrow(),
+    successMessage: `Add 『${state.taskName}』 at tomorrow.`,
+  });
+};
+
+const handleSelectSpecifiedDate = async (date: string) => {
+  state.date = date;
+  await emitAddTaskAction({
+    dueDate: DateTime.of(date),
+    successMessage: `Add 『${state.taskName}』at ${date}.`,
+  });
+};
+
+const handleCtrlEnter = () => {
+  if (state.isValid) {
+    handleClickTodayFirst();
+  }
+};
+</script>
+
 <template>
   <div>
     <v-dialog
@@ -23,7 +163,7 @@
                 ref="taskNameFieldRef"
                 v-model="state.taskName"
                 autofocus
-                :rules="TASK_NAME_RULES"
+                :rules="taskNameRules"
                 placeholder="Morning coffee☕"
                 hint="Task name"
                 persistent-hint
@@ -113,157 +253,3 @@
     </portal>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
-import { taskStore } from "~/utils/store-accessor";
-import { DateTime } from "~/domain/common/DateTime";
-import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
-import TaskLabelSelector from "~/components/TaskLabelSelector.vue";
-import { TaskProject } from "~/domain/task/entity/TaskProject";
-import { Label } from "~/domain/task/entity/Label";
-import CalendarSelector from "~/components/CalendarSelector.vue";
-import { Task } from "~/domain/task/entity/Task";
-
-interface State {
-  isValid: boolean;
-  taskName: string;
-  project: TaskProject | undefined;
-  labels: Label[];
-  date: string;
-  processing: boolean;
-  snackbar: boolean;
-  snackbarMessage: string;
-  processErrorMessage: string;
-  visible: boolean;
-  shouldCreateAnother: boolean;
-}
-
-export default defineComponent({
-  components: { TaskProjectSelector, TaskLabelSelector, CalendarSelector },
-  props: {
-    baseTask: { type: Object as () => Task, default: undefined },
-    visible: { type: Boolean, default: false },
-  },
-  setup(props) {
-    const taskNameRules = [(v: string) => !!v || "Task name is required"];
-
-    const taskNameFieldRef = ref<HTMLElement>();
-
-    const state = reactive<State>({
-      isValid: false,
-      taskName: "",
-      project: undefined,
-      labels: [],
-      date: DateTime.now().displayDate,
-      processing: false,
-      snackbar: false,
-      snackbarMessage: "",
-      processErrorMessage: "",
-      visible: props.visible,
-      shouldCreateAnother: false,
-    });
-
-    watch(
-      () => state.visible,
-      (_visible) => {
-        if (_visible) {
-          if (props.baseTask) {
-            state.taskName = props.baseTask.title;
-            state.project = props.baseTask.project;
-            state.labels = props.baseTask.labels;
-          } else {
-            state.taskName = "";
-            state.project = undefined;
-            state.labels = [];
-          }
-        }
-      },
-      { immediate: true }
-    );
-
-    const emitAddTaskAction = async (payload: {
-      successMessage: string;
-      dueDate?: DateTime;
-      dayOrder?: number;
-    }) => {
-      state.processing = true;
-      state.processErrorMessage = "";
-      const err = await taskStore.addTask({
-        title: state.taskName,
-        dueDate: payload.dueDate,
-        dayOrder: payload.dayOrder,
-        project: state.project as TaskProject | undefined,
-        labels: state.labels,
-      });
-      state.processing = false;
-
-      if (err) {
-        state.processErrorMessage = `Failure to create task: ${state.taskName}`;
-        console.error(err.message);
-        return;
-      }
-
-      state.snackbar = true;
-      state.snackbarMessage = payload.successMessage;
-
-      if (state.shouldCreateAnother) {
-        state.taskName = "";
-        taskNameFieldRef.value?.focus();
-        return;
-      }
-
-      state.visible = false;
-    };
-
-    const handleClickTodayFirst = async () => {
-      await emitAddTaskAction({
-        dueDate: DateTime.now(),
-        successMessage: `Add 『${state.taskName}』 at FIRST today.`,
-        dayOrder: 0,
-      });
-    };
-
-    const handleClickTodayLast = async () => {
-      await emitAddTaskAction({
-        dueDate: DateTime.now(),
-        successMessage: `Add 『${state.taskName}』 at LAST today.`,
-        dayOrder: 999,
-      });
-    };
-
-    const handleClickTomorrow = async () => {
-      await emitAddTaskAction({
-        dueDate: DateTime.tomorrow(),
-        successMessage: `Add 『${state.taskName}』 at tomorrow.`,
-      });
-    };
-
-    const handleSelectSpecifiedDate = async (date: string) => {
-      state.date = date;
-      await emitAddTaskAction({
-        dueDate: DateTime.of(date),
-        successMessage: `Add 『${state.taskName}』at ${date}.`,
-      });
-    };
-
-    const handleCtrlEnter = () => {
-      if (state.isValid) {
-        handleClickTodayFirst();
-      }
-    };
-
-    return {
-      TASK_NAME_RULES: taskNameRules,
-      state,
-      taskNameFieldRef,
-      handleCtrlEnter,
-      handleClickTodayLast,
-      handleClickTomorrow,
-      handleSelectSpecifiedDate,
-    };
-  },
-});
-</script>
-
-<style lang="scss" scoped></style>

@@ -1,3 +1,19 @@
+<script lang="ts" setup="">
+import { computed } from "vue";
+import ProjectSummary from "~/components/ProjectSummary.vue";
+import { Task } from "~/domain/task/entity/Task";
+
+interface Props {
+  task: Task;
+  compact?: boolean;
+  hideRecurring?: boolean;
+}
+const props = defineProps<Props>();
+
+const titleHtml = computed(() => props.task.titleAsMarkdown);
+const labels = computed(() => props.task.labels.map((x) => x.name));
+</script>
+
 <template>
   <div>
     <div
@@ -38,29 +54,6 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent } from "vue";
-import ProjectSummary from "~/components/ProjectSummary.vue";
-import { Task } from "~/domain/task/entity/Task";
-
-export default defineComponent({
-  components: { ProjectSummary },
-  props: {
-    task: { type: Object as () => Task, required: true },
-    compact: { type: Boolean },
-    hideRecurring: { type: Boolean },
-  },
-  setup(props) {
-    const titleHtml = computed(() => props.task.titleAsMarkdown);
-    const labels = computed(() => props.task.labels.map((x) => x.name));
-
-    return {
-      titleHtml,
-      labels,
-    };
-  },
-});
-</script>
 
 <style lang="scss" scoped>
 .task {

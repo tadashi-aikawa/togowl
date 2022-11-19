@@ -1,3 +1,82 @@
+<script lang="ts" setup>
+import { computed, reactive, watch } from "vue";
+import { Icon } from "~/domain/common/Icon";
+import { Url } from "~/domain/common/Url";
+import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
+import { taskStore } from "~/utils/store-accessor";
+import { TaskProject } from "~/domain/task/entity/TaskProject";
+import { Color } from "~/domain/common/Color";
+
+interface Props {
+  name: string;
+  icon?: Icon;
+  color?: Color;
+  taskProjectIds?: TaskProjectId[];
+  showColor: boolean;
+  showProjects: boolean;
+}
+const props = defineProps<Props>();
+
+interface State {
+  inputText: string;
+  iconUrl: string;
+  iconEmoji: string;
+  color: string;
+  selectedTaskProjects: TaskProject[];
+  isValid: boolean;
+  candidatedTaskProjects: TaskProject[];
+}
+
+const state = reactive<State>({
+  inputText: "",
+  iconUrl: "",
+  iconEmoji: "",
+  color: "",
+  selectedTaskProjects: [],
+  isValid: false,
+  candidatedTaskProjects: [],
+}) as State;
+
+watch(
+  () => props,
+  (props) => {
+    state.iconUrl = props.icon?.url ?? "";
+    state.iconEmoji = props.icon?.emoji ?? "";
+    state.color = props.color?.unwrap() ?? "";
+    state.candidatedTaskProjects = taskStore.projects;
+    state.selectedTaskProjects = state.candidatedTaskProjects.filter(
+      (x) => props.taskProjectIds?.some((id) => x.id.equals(id)) ?? false
+    );
+  },
+  { deep: true, immediate: true }
+);
+
+const rules = reactive({
+  iconUrl: [(v: string) => !v || Url.try(v).isRight() || "Invalid URL"],
+  iconEmoji: [
+    (v: string) => !v || !v.includes(":") || "Can not contain colons",
+  ],
+});
+
+const previewColor = computed(() => state.color);
+
+const emit = defineEmits<{
+  (e: "on-save", icon: Icon, color: Color, projects: TaskProject[]): void;
+}>();
+
+const save = () => {
+  emit(
+    "on-save",
+    Icon.of({
+      url: Url.try(state.iconUrl).orUndefined(),
+      emoji: state.iconEmoji,
+    }),
+    Color.of(state.color),
+    state.selectedTaskProjects
+  );
+};
+</script>
+
 <template>
   <v-list style="padding: 10px">
     <v-avatar tile size="24px" style="margin-right: 5px">
@@ -73,82 +152,3 @@
     </v-row>
   </v-list>
 </template>
-
-<script lang="ts">
-import {
-  computed,
-  defineComponent,
-  reactive,
-  watch,
-} from "vue";
-import { Icon } from "~/domain/common/Icon";
-import { Url } from "~/domain/common/Url";
-import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";
-import { taskStore } from "~/utils/store-accessor";
-import { TaskProject } from "~/domain/task/entity/TaskProject";
-import { Color } from "~/domain/common/Color";
-
-export default defineComponent({
-  props: {
-    name: { type: String, required: true },
-    icon: { type: Object as () => Icon, default: undefined },
-    color: { type: Object as () => Color, default: undefined },
-    taskProjectIds: {
-      type: Array as () => TaskProjectId[],
-      default: undefined,
-    },
-    showColor: { type: Boolean },
-    showProjects: { type: Boolean },
-  },
-  setup(props, { emit }) {
-    const state = reactive({
-      inputText: "",
-      iconUrl: "",
-      iconEmoji: "",
-      color: "",
-      selectedTaskProjects: [] as TaskProject[],
-      isValid: false,
-      candidatedTaskProjects: computed(() => taskStore.projects),
-    });
-
-    const rules = reactive({
-      iconUrl: [(v: string) => !v || Url.try(v).isRight() || "Invalid URL"],
-      iconEmoji: [
-        (v: string) => !v || !v.includes(":") || "Can not contain colons",
-      ],
-    });
-
-    watch(
-      () => props,
-      (props) => {
-        state.iconUrl = props.icon?.url ?? "";
-        state.iconEmoji = props.icon?.emoji ?? "";
-        state.color = props.color?.unwrap() ?? "";
-        state.selectedTaskProjects = state.candidatedTaskProjects.filter(
-          (x) => props.taskProjectIds?.some((id) => x.id.equals(id)) ?? false
-        );
-      },
-      { deep: true, immediate: true }
-    );
-
-    return {
-      state,
-      rules,
-      previewColor: computed(() => state.color),
-      save() {
-        emit(
-          "on-save",
-          Icon.of({
-            url: Url.try(state.iconUrl).orUndefined(),
-            emoji: state.iconEmoji,
-          }),
-          Color.of(state.color),
-          state.selectedTaskProjects
-        );
-      },
-    };
-  },
-});
-</script>
-
-<style scoped></style>
