@@ -13,7 +13,6 @@ module.exports = {
     "^~/(.*)$": "<rootDir>/$1",
   },
   testPathIgnorePatterns: [
-    "/e2e/",
     "/node_modules/",
     "/dist/",
     "/components/",
