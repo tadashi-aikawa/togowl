@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import EntryCalendar from "~/components/EntryCalendar.vue";
 import { timerStore } from "~/utils/store-accessor";
 

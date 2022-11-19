@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "@vue/composition-api";
+import { defineComponent, reactive } from "vue";
 import logger from "~/utils/global-logger";
 import { DateTime } from "~/domain/common/DateTime";
 

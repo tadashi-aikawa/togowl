@@ -1,7 +1,7 @@
+import * as marked from "marked";
 import { HtmlString } from "~/domain/common/HtmlString";
 import { Url } from "~/domain/common/Url";
 
-const marked = require("marked");
 const defaultRenderer = new marked.Renderer();
 const InlineRenderer = new marked.Renderer();
 InlineRenderer.paragraph = (text: string) => `${text}\n`;
@@ -14,7 +14,7 @@ export const trimBracketDate = (text: string): string =>
   text.replace(/ +\[x(\d{4}\/\d{1,2}\/\d{1,2}|\d{1,2}\/\d{1,2})]/, "");
 
 export const toHTML = (markdown: string, inline: boolean = false): HtmlString =>
-  marked(markdown, {
+  marked.marked(markdown, {
     breaks: true,
     renderer: inline ? InlineRenderer : defaultRenderer,
   });

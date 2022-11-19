@@ -80,7 +80,7 @@ import {
   defineComponent,
   reactive,
   watch,
-} from "@vue/composition-api";
+} from "vue";
 import { Icon } from "~/domain/common/Icon";
 import { Url } from "~/domain/common/Url";
 import { ProjectId as TaskProjectId } from "~/domain/task/vo/ProjectId";

@@ -39,7 +39,7 @@ import {
   defineComponent,
   onMounted,
   reactive,
-} from "@vue/composition-api";
+} from "vue";
 import { appStore } from "~/utils/store-accessor";
 import { Theme } from "~/domain/app/vo/Theme";
 import { Url } from "~/domain/common/Url";

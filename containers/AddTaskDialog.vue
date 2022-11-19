@@ -115,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "@vue/composition-api";
+import { defineComponent, reactive, ref, watch } from "vue";
 import { taskStore } from "~/utils/store-accessor";
 import { DateTime } from "~/domain/common/DateTime";
 import TaskProjectSelector from "~/components/TaskProjectSelector.vue";

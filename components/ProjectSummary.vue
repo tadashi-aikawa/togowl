@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";
 import { Project } from "~/domain/timer/entity/Project";

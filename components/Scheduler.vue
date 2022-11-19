@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent } from "vue";
 import TaskEntryList from "~/components/TaskEntryList.vue";
 import { Task } from "~/domain/task/entity/Task";
 

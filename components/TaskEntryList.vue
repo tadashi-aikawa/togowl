@@ -46,7 +46,7 @@ import {
   defineComponent,
   reactive,
   watchEffect,
-} from "@vue/composition-api";
+} from "vue";
 import { Task } from "~/domain/task/entity/Task";
 import TaskSwiperEntry from "~/components/TaskSwiperEntry.vue";
 import { timerStore } from "~/store";

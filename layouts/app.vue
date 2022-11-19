@@ -93,7 +93,7 @@ import {
   defineComponent,
   onMounted,
   reactive,
-} from "@vue/composition-api";
+} from "vue";
 import AddTaskDialog from "~/containers/AddTaskDialog.vue";
 import { getAppVersion } from "~/utils/package";
 import {

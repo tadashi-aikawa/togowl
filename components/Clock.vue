@@ -21,7 +21,7 @@ import {
   defineComponent,
   onBeforeUnmount,
   reactive,
-} from "@vue/composition-api";
+} from "vue";
 import { DateTime } from "~/domain/common/DateTime";
 
 export default defineComponent({

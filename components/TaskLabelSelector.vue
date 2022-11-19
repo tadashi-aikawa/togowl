@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "@vue/composition-api";
+import { computed, defineComponent, reactive } from "vue";
 import { taskStore } from "~/utils/store-accessor";
 import { Label } from "~/domain/task/entity/Label";
 

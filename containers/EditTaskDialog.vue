@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch } from "@vue/composition-api";
+import { defineComponent, reactive, watch } from "vue";
 import { taskStore } from "~/utils/store-accessor";
 import TaskProjectSelector from "~/components/TaskProjectSelector.vue";
 import TaskLabelSelector from "~/components/TaskLabelSelector.vue";

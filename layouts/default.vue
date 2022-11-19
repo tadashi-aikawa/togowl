@@ -35,7 +35,7 @@ import {
   defineComponent,
   onMounted,
   reactive,
-} from "@vue/composition-api";
+} from "vue";
 import Login from "~/layouts/login.vue";
 import App from "~/layouts/app.vue";
 import { authenticationStore, userStore } from "~/utils/store-accessor";

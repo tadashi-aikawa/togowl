@@ -59,7 +59,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from "@vue/composition-api";
+import { computed, defineComponent, reactive, ref } from "vue";
 import { Swiper, SwiperSlide } from "vue-awesome-swiper";
 import { Task } from "~/domain/task/entity/Task";
 import TaskEntry from "~/components/TaskEntry.vue";

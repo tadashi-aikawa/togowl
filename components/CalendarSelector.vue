@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch } from "@vue/composition-api";
+import { defineComponent, reactive, watch } from "vue";
 
 export default defineComponent({
   props: {

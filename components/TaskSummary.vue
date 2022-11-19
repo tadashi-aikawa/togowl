@@ -39,7 +39,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import ProjectSummary from "~/components/ProjectSummary.vue";
 import { Task } from "~/domain/task/entity/Task";
 

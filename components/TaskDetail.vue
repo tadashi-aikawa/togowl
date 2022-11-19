@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import { Task } from "~/domain/task/entity/Task";
 import { Note } from "~/domain/task/entity/Note";
 

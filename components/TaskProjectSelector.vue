@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import { projectStore } from "~/utils/store-accessor";
 import { TaskProject } from "~/domain/task/entity/TaskProject";
 

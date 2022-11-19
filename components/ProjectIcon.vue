@@ -2,7 +2,7 @@
   <img :src="src" />
 </template>
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import { Project } from "~/domain/timer/entity/Project";
 
 export default defineComponent({

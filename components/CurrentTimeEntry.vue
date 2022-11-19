@@ -53,7 +53,7 @@ import {
   onBeforeUnmount,
   reactive,
   watchEffect,
-} from "@vue/composition-api";
+} from "vue";
 import { Entry } from "~/domain/timer/entity/Entry";
 import ProjectIcon from "~/components/ProjectIcon.vue";
 import ProjectCategoryIcon from "~/components/ProjectCategoryIcon.vue";

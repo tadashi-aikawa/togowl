@@ -119,7 +119,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "@vue/composition-api";
+import { defineComponent, reactive } from "vue";
 import SettingsApp from "~/components/SettingsApp.vue";
 import SettingsSlack from "~/components/SettingsSlack.vue";
 import SettingsToggl from "~/components/SettingsToggl.vue";

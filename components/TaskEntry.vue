@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "@vue/composition-api";
+import { computed, defineComponent, reactive } from "vue";
 import EditTaskDialog from "~/containers/EditTaskDialog.vue";
 import TaskSummary from "~/components/TaskSummary.vue";
 import ConfirmWrapperDialog from "~/components/ConfirmWrapperDialog.vue";

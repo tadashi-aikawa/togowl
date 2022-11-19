@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@vue/composition-api";
+import { computed, defineComponent } from "vue";
 import { Entry } from "~/domain/timer/entity/Entry";
 import ProjectSummary from "~/components/ProjectSummary.vue";
 import { Project } from "~/domain/timer/entity/Project";

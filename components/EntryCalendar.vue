@@ -155,7 +155,7 @@ import {
   onMounted,
   reactive,
   ref,
-} from "@vue/composition-api";
+} from "vue";
 import html2canvas from "html2canvas";
 import { Entry } from "~/domain/timer/entity/Entry";
 import { DateTime } from "~/domain/common/DateTime";
