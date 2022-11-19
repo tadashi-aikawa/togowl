@@ -1,3 +1,154 @@
+<script lang="ts" setup>
+import { computed, onMounted, reactive, ref } from "vue";
+import html2canvas from "html2canvas";
+import { Entry } from "~/domain/timer/entity/Entry";
+import { DateTime } from "~/domain/common/DateTime";
+import ProjectIcon from "~/components/ProjectIcon.vue";
+
+interface ZoomOption {
+  type: "month" | "week" | "4day" | "day";
+  intervalHeight: number;
+}
+
+const zoomOptions: ZoomOption[] = [
+  { type: "month", intervalHeight: 64 },
+  { type: "week", intervalHeight: 64 },
+  { type: "week", intervalHeight: 88 },
+  { type: "week", intervalHeight: 112 },
+  { type: "week", intervalHeight: 136 },
+  { type: "4day", intervalHeight: 64 },
+  { type: "4day", intervalHeight: 88 },
+  { type: "4day", intervalHeight: 112 },
+  { type: "4day", intervalHeight: 136 },
+  { type: "day", intervalHeight: 64 },
+  { type: "day", intervalHeight: 88 },
+  { type: "day", intervalHeight: 112 },
+  { type: "day", intervalHeight: 136 },
+];
+
+interface Props {
+  entries: Entry[];
+  height: string;
+  buttonOffsetRight?: string;
+  buttonOffsetBottom?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+  buttonOffsetRight: "15px",
+  buttonOffsetBottom: "15px",
+});
+
+interface State {
+  currentDate: DateTime;
+  zoomLevel: number;
+  snackbar: boolean;
+  snackbarMessage: string;
+  snackbarColor: string;
+  timeout: number;
+}
+
+const state = reactive<State>({
+  currentDate: DateTime.now(),
+  zoomLevel: 10,
+  snackbar: false,
+  snackbarMessage: "",
+  snackbarColor: "",
+  timeout: -1,
+});
+
+const calendarRef = ref<any>();
+
+const start = computed(() => state.currentDate.displayDateTimeWithoutSeconds);
+const events = computed(() =>
+  props.entries
+    ? props.entries.map((x) => ({
+        nameAsHtml: x.descriptionAsMarkdown,
+        start: x.start.displayDateTimeWithoutSeconds,
+        end: x.stop?.displayDateTimeWithoutSeconds,
+        entry: x,
+      }))
+    : []
+);
+const zoomOption = computed<ZoomOption>(() => zoomOptions[state.zoomLevel]);
+const isZoomUpDisabled = computed(
+  () => state.zoomLevel >= zoomOptions.length - 1
+);
+const isZoomDownDisabled = computed(() => state.zoomLevel <= 0);
+const canShare = computed(() => zoomOption.value.type === "day");
+
+const moveToNow = () => {
+  calendarRef.value.scrollToTime(
+    DateTime.now().minusMinutes(240).displayTimeWithoutSeconds
+  );
+};
+
+const showSuccess = (message: string) => {
+  state.snackbarColor = "success darken-2";
+  state.snackbarMessage = message;
+  state.timeout = 3000;
+  state.snackbar = true;
+};
+const showError = (message: string) => {
+  state.snackbarColor = "error darken-2";
+  state.snackbarMessage = message;
+  state.timeout = -1;
+  state.snackbar = true;
+};
+
+onMounted(() => {
+  moveToNow();
+});
+
+const getEventColor = ({ entry }: { entry: Entry }) =>
+  entry.projectCategory?.color?.unwrap() ?? "#7C3A";
+const handleClickMoveToNow = () => {
+  moveToNow();
+};
+const handleClickPrevious = () => {
+  state.currentDate = state.currentDate.minusDays(1);
+};
+const handleClickNext = () => {
+  state.currentDate = state.currentDate.plusDays(1);
+};
+const handleClickZoomUp = () => {
+  state.zoomLevel++;
+};
+const handleClickZoomDown = () => {
+  state.zoomLevel--;
+};
+const handleShareDailyCalendar = async () => {
+  if (!(navigator as any).canShare) {
+    showError("This feature is not supported on your browser.");
+    return;
+  }
+
+  const canvas = await html2canvas(
+    document.querySelector<HTMLElement>(".v-calendar-daily__pane")!,
+    {
+      backgroundColor: "#1E1E1E",
+    }
+  );
+
+  canvas.toBlob(async (blob: Blob | null) => {
+    if (!blob) {
+      showError("Fail to capture a daily calendar.");
+      return;
+    }
+
+    const image = new File([blob], `${state.currentDate.displayDate}.png`, {
+      type: "image/png",
+    });
+    try {
+      await (navigator as any).share({
+        files: [image],
+      });
+      showSuccess(`Success to capture a daily calendar.`);
+    } catch (e) {
+      showError(`Fail to capture a daily calendar. ${e}`);
+    }
+  });
+};
+</script>
+
 <template>
   <div>
     <v-sheet :height="height">
@@ -148,169 +299,3 @@
     </portal>
   </div>
 </template>
-<script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  reactive,
-  ref,
-} from "vue";
-import html2canvas from "html2canvas";
-import { Entry } from "~/domain/timer/entity/Entry";
-import { DateTime } from "~/domain/common/DateTime";
-import ProjectIcon from "~/components/ProjectIcon.vue";
-
-interface ZoomOption {
-  type: "month" | "week" | "4day" | "day";
-  intervalHeight: number;
-}
-
-const zoomOptions: ZoomOption[] = [
-  { type: "month", intervalHeight: 64 },
-  { type: "week", intervalHeight: 64 },
-  { type: "week", intervalHeight: 88 },
-  { type: "week", intervalHeight: 112 },
-  { type: "week", intervalHeight: 136 },
-  { type: "4day", intervalHeight: 64 },
-  { type: "4day", intervalHeight: 88 },
-  { type: "4day", intervalHeight: 112 },
-  { type: "4day", intervalHeight: 136 },
-  { type: "day", intervalHeight: 64 },
-  { type: "day", intervalHeight: 88 },
-  { type: "day", intervalHeight: 112 },
-  { type: "day", intervalHeight: 136 },
-];
-
-export default defineComponent({
-  components: { ProjectIcon },
-  props: {
-    entries: { type: Array as () => Entry[], required: true },
-    height: { type: String, required: true },
-    buttonOffsetRight: { type: String, default: "15px" },
-    buttonOffsetBottom: { type: String, default: "15px" },
-  },
-  setup(props) {
-    const calendarRef = ref<any>();
-
-    const state = reactive({
-      currentDate: DateTime.now(),
-      zoomLevel: 10,
-      snackbar: false,
-      snackbarMessage: "",
-      snackbarColor: "",
-      timeout: -1,
-    });
-
-    const start = computed(
-      () => state.currentDate.displayDateTimeWithoutSeconds
-    );
-    const events = computed(() =>
-      props.entries
-        ? props.entries.map((x) => ({
-            nameAsHtml: x.descriptionAsMarkdown,
-            start: x.start.displayDateTimeWithoutSeconds,
-            end: x.stop?.displayDateTimeWithoutSeconds,
-            entry: x,
-          }))
-        : []
-    );
-    const zoomOption = computed<ZoomOption>(() => zoomOptions[state.zoomLevel]);
-    const isZoomUpDisabled = computed(
-      () => state.zoomLevel >= zoomOptions.length - 1
-    );
-    const isZoomDownDisabled = computed(() => state.zoomLevel <= 0);
-    const canShare = computed(() => zoomOption.value.type === "day");
-
-    const moveToNow = () => {
-      calendarRef.value.scrollToTime(
-        DateTime.now().minusMinutes(240).displayTimeWithoutSeconds
-      );
-    };
-
-    const showSuccess = (message: string) => {
-      state.snackbarColor = "success darken-2";
-      state.snackbarMessage = message;
-      state.timeout = 3000;
-      state.snackbar = true;
-    };
-    const showError = (message: string) => {
-      state.snackbarColor = "error darken-2";
-      state.snackbarMessage = message;
-      state.timeout = -1;
-      state.snackbar = true;
-    };
-
-    onMounted(() => {
-      moveToNow();
-    });
-
-    return {
-      state,
-      calendarRef,
-      start,
-      events,
-      zoomOption,
-      isZoomUpDisabled,
-      isZoomDownDisabled,
-      canShare,
-      getEventColor({ entry }: { entry: Entry }): string {
-        return entry.projectCategory?.color?.unwrap() ?? "#7C3A";
-      },
-      handleClickMoveToNow() {
-        moveToNow();
-      },
-      handleClickPrevious() {
-        state.currentDate = state.currentDate.minusDays(1);
-      },
-      handleClickNext() {
-        state.currentDate = state.currentDate.plusDays(1);
-      },
-      handleClickZoomUp() {
-        state.zoomLevel++;
-      },
-      handleClickZoomDown() {
-        state.zoomLevel--;
-      },
-      async handleShareDailyCalendar() {
-        if (!(navigator as any).canShare) {
-          showError("This feature is not supported on your browser.");
-          return;
-        }
-
-        const canvas = await html2canvas(
-          document.querySelector<HTMLElement>(".v-calendar-daily__pane")!,
-          {
-            backgroundColor: "#1E1E1E",
-          }
-        );
-
-        canvas.toBlob(async (blob: Blob | null) => {
-          if (!blob) {
-            showError("Fail to capture a daily calendar.");
-            return;
-          }
-
-          const image = new File(
-            [blob],
-            `${state.currentDate.displayDate}.png`,
-            {
-              type: "image/png",
-            }
-          );
-          try {
-            await (navigator as any).share({
-              files: [image],
-            });
-            showSuccess(`Success to capture a daily calendar.`);
-          } catch (e) {
-            showError(`Fail to capture a daily calendar. ${e}`);
-          }
-        });
-      },
-    };
-  },
-});
-</script>
-
-<style scoped></style>
