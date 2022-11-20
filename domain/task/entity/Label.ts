@@ -1,8 +1,6 @@
 import { Entity } from "owlelia";
-import { LabelId } from "../vo/LabelId";
 
 interface Props {
-  id: LabelId;
   name: string;
 }
 
@@ -12,15 +10,7 @@ export class Label extends Entity<Props> {
   private _entityTaskLabelBrand!: never;
 
   static of(args: Args): Label {
-    return new Label(args.id.unwrap(), args);
-  }
-
-  get id(): LabelId {
-    return this._props.id;
-  }
-
-  get idAsNumber(): number {
-    return this._props.id.asNumber;
+    return new Label(args.name, args);
   }
 
   get name(): string {

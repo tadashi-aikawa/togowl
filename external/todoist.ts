@@ -27,32 +27,28 @@ export namespace SyncApi {
   }
 
   export interface Label {
-    id: number;
+    id: string;
     name: string;
-    color: number;
+    color: string;
     item_order: number;
-    /** 0: not favorite, 1: favorite */
-    is_favorite: number;
-    /** 0: exists, 1: removed */
-    is_deleted: number;
+    is_favorite: boolean;
+    is_deleted: boolean;
   }
 
   export interface Note {
-    id: number;
-    item_id: number;
-    project_id: number;
+    id: string;
+    item_id: string;
+    project_id: string;
     content: string;
-    /** "2020-05-17T03:58:17Z` */
-    posted: string;
-    /** 0: exists, 1: removed */
-    is_deleted: number;
+    /** "2020-05-17T03:58:17Z...` */
+    posted_at: string;
+    is_deleted: boolean;
   }
 
   export interface Project {
-    id: number;
+    id: string;
     name: string;
-    /** 0: exists, 1: removed */
-    is_deleted: number;
+    is_deleted: boolean;
     inbox_project: boolean;
   }
 
@@ -65,19 +61,17 @@ export namespace SyncApi {
   }
 
   export interface Task {
-    id: number;
+    id: string;
     content: string;
     day_order: number;
-    parent_id: number | null;
-    project_id: number | null;
-    labels: number[];
+    parent_id: string | null;
+    project_id: string | null;
+    labels: string[];
     due: Due | null;
     /** 0: 通常 ～ 4: 緊急 */
     priority: number;
-    /** 0: 未完了, 1: 完了 */
-    checked: number;
-    /** 0: 存在する, 1: 消された */
-    is_deleted: number;
+    checked: boolean;
+    is_deleted: boolean;
   }
 
   export interface Root {
@@ -104,7 +98,7 @@ export namespace SyncApi {
     private readonly token: string;
 
     constructor(token: string) {
-      this.baseUrl = "https://api.todoist.com/sync/v8";
+      this.baseUrl = "https://api.todoist.com/sync/v9";
       this.token = token;
     }
 
@@ -133,8 +127,8 @@ export namespace SyncApi {
       tempId: string,
       content: string,
       due?: Partial<Due>,
-      projectId?: number,
-      labels?: number[],
+      projectId?: string,
+      labels?: string[],
       dayOrder?: number,
       syncToken = "*"
     ): AxiosPromise<Root> {
@@ -154,7 +148,7 @@ export namespace SyncApi {
       ]);
     }
 
-    syncItemDelete(taskId: number, syncToken = "*"): AxiosPromise<Root> {
+    syncItemDelete(taskId: string, syncToken = "*"): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
         {
           type: "item_delete",
@@ -167,12 +161,12 @@ export namespace SyncApi {
     }
 
     syncItemUpdate(
-      taskId: number,
+      taskId: string,
       syncToken = "*",
       payload: {
         content?: string;
-        projectId?: number;
-        labels?: number[];
+        projectId?: string;
+        labels?: string[];
         due?: Partial<Due> | null;
         dayOrder?: number;
       }
@@ -205,7 +199,7 @@ export namespace SyncApi {
     }
 
     syncItemUpdateDayOrders(
-      orderByTaskId: { [taskId: number]: number },
+      orderByTaskId: { [taskId: string]: number },
       syncToken = "*"
     ): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
@@ -219,7 +213,7 @@ export namespace SyncApi {
       ]);
     }
 
-    syncItemClose(taskId: number, syncToken = "*"): AxiosPromise<Root> {
+    syncItemClose(taskId: string, syncToken = "*"): AxiosPromise<Root> {
       return this.sync(this.SYNC_RESOURCES, syncToken, [
         {
           type: "item_close",

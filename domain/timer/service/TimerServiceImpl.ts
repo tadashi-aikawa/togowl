@@ -102,7 +102,7 @@ export class TimerServiceImpl implements TimerService {
       const entry = (await this.restClient.timeEntryCurrent()).data;
       logger.put("TimerService.fetchCurrentEntry.success");
       return right(entry ? this.transformEntry(entry) : null);
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.fetchCurrentEntry.err");
       logger.put(err.message);
       return left(FetchCurrentEntryError.of());
@@ -129,7 +129,7 @@ export class TimerServiceImpl implements TimerService {
       ).data;
       logger.put("TimerService.startEntry.success");
       return right(this.transformEntry(startedEntry));
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.startEntry.err");
       logger.put(err.message);
       return left(
@@ -154,7 +154,7 @@ export class TimerServiceImpl implements TimerService {
       ).data;
       logger.put("TimerService.updateEntry.success");
       return right(this.transformEntry(updatedEntry));
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.updateEntry.err");
       logger.put(err.message);
       return left(
@@ -173,7 +173,7 @@ export class TimerServiceImpl implements TimerService {
       ).data;
       logger.put("TimerService.stopEntry.success");
       return right(this.transformEntry(afterEntry));
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.stopEntry.err");
       logger.put(err.message);
       return left(
@@ -190,7 +190,7 @@ export class TimerServiceImpl implements TimerService {
       await this.restClient.timeEntryDelete(entry.id.asNumber);
       logger.put("TimerService.deleteEntry.success");
       return right(entry);
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.deleteEntry.err");
       logger.put(err.message);
       return left(
@@ -209,7 +209,7 @@ export class TimerServiceImpl implements TimerService {
       const entries = await this.restClient.entries(since.rfc3339);
       logger.put("TimerService.fetchEntries.success");
       return right(entries.map((e) => this.transformEntry(e)));
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.fetchEntries.err");
       logger.put(err.message);
       return left(
@@ -246,7 +246,7 @@ export class TimerServiceImpl implements TimerService {
           )
         )
       );
-    } catch (err) {
+    } catch (err: any) {
       logger.put("TimerService.fetchProjects.err");
       logger.put(err.message);
       return left(FetchProjectsError.of());

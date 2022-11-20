@@ -5,14 +5,14 @@ const PREFIX = "togowl";
 export namespace TaskProjectCountStorage {
   const key = `${PREFIX}_task-project-count`;
 
-  export function getAll(): { [taskProjectId: number]: number } {
+  export function getAll(): { [taskProjectId: string]: number } {
     const jsonStr = storage.getItem(key);
     return jsonStr ? JSON.parse(jsonStr) : {};
   }
 
   export function increase(
-    taskProjectId: number
-  ): { [taskProjectId: number]: number } {
+    taskProjectId: string
+  ): { [taskProjectId: string]: number } {
     const obj = getAll() ?? {};
     if (obj[taskProjectId]) {
       obj[taskProjectId]++;

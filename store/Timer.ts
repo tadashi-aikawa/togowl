@@ -50,7 +50,7 @@ class TimerModule extends VuexModule {
   }
 
   get taskRelatedToCurrentEntry(): Task | null {
-    const id = this.recentTask?.taskId?.asNumber;
+    const id = this.recentTask?.taskId?.unwrap();
     return id ? taskStore.taskById[id] : null;
   }
 

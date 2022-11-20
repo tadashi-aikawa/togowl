@@ -19,10 +19,6 @@ export class Note extends Entity<Props> {
     return new Note(args.id.unwrap(), args);
   }
 
-  get idAsNumber(): number {
-    return this._props.id.asNumber;
-  }
-
   get bodyAsMarkdown(): HtmlString {
     return toHTML(this._props.body);
   }

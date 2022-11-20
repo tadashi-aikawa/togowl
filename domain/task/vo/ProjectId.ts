@@ -6,8 +6,4 @@ export class ProjectId extends PrimitiveValueObject<string> {
   static of(value: number | string): ProjectId {
     return new ProjectId(String(value));
   }
-
-  get asNumber(): number {
-    return Number(this.unwrap());
-  }
 }

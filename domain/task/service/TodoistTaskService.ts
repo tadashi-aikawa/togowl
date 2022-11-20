@@ -28,7 +28,6 @@ import { UpdateTaskError } from "~/domain/task/vo/UpdateTaskError";
 import { UpdateTasksOrderError } from "~/domain/task/vo/UpdateTasksOrderError";
 import { Note } from "~/domain/task/entity/Note";
 import { NoteId } from "~/domain/task/vo/NoteId";
-import { LabelId } from "~/domain/task/vo/LabelId";
 import { Url } from "~/domain/common/Url";
 import { todoistToMarkdown } from "~/utils/string";
 
@@ -48,7 +47,7 @@ export class TodoistTaskService implements TaskService {
   private listener: TaskEventListener;
 
   @inboxProjectIdMemoize
-  private get inboxProjectId(): number {
+  private get inboxProjectId(): string {
     return _(this.projectById).find((x) => x.inbox_project)!.id;
   }
 
@@ -56,7 +55,7 @@ export class TodoistTaskService implements TaskService {
   private get notesByTaskId(): Dictionary<todoist.SyncApi.Note[]> {
     return _(this.notesById)
       .values()
-      .reject((x) => x.is_deleted === 1)
+      .reject((x) => x.is_deleted)
       .groupBy((x) => x.item_id)
       .value();
   }
@@ -105,7 +104,7 @@ export class TodoistTaskService implements TaskService {
     return Note.of({
       id: NoteId.of(note.id),
       body: note.content,
-      createdAt: DateTime.of(note.posted),
+      createdAt: DateTime.of(note.posted_at),
     });
   }
 
@@ -119,13 +118,13 @@ export class TodoistTaskService implements TaskService {
         `https://todoist.com/app?#task%2F${task.id}`
       ).orThrow(),
       projectId: task.project_id ? ProjectId.of(task.project_id) : undefined,
-      labelIds: task.labels.map(LabelId.of),
+      labelNames: task.labels,
       dueDate: task.due ? DateTime.of(task.due.date) : undefined,
       isRecurring: task.due?.is_recurring ?? false,
       recurringContent: task.due?.string,
       notes: this.notesByTaskId[task.id]?.map(TodoistTaskService.toNote),
-      checked: task.checked === 1,
-      deleted: task.is_deleted === 1,
+      checked: task.checked,
+      deleted: task.is_deleted,
     });
   }
 
@@ -138,7 +137,6 @@ export class TodoistTaskService implements TaskService {
 
   private static toLabel(label: todoist.SyncApi.Label): Label {
     return Label.of({
-      id: LabelId.of(label.id),
       name: label.name,
     });
   }
@@ -202,7 +200,7 @@ export class TodoistTaskService implements TaskService {
       );
 
       return right(_.map(this.taskById, (x) => this.toTask(x)));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       logger.put(`TaskService.fetchTasks.error: ${this.shortTodoistSyncToken}`);
       return left(
@@ -218,7 +216,7 @@ export class TodoistTaskService implements TaskService {
     try {
       const res = (
         await this.syncClient.syncItemClose(
-          taskId.asNumber,
+          taskId.unwrap(),
           this.todoistSyncToken
         )
       ).data;
@@ -260,8 +258,8 @@ export class TodoistTaskService implements TaskService {
           "temp_id",
           title,
           { date: optional.dueDate?.displayDate },
-          optional.project?.id.asNumber,
-          optional.labels?.map((x) => x.idAsNumber),
+          optional.project?.id.unwrap(),
+          optional.labels?.map((x) => x.name),
           optional.dayOrder,
           this.todoistSyncToken
         )
@@ -287,7 +285,7 @@ export class TodoistTaskService implements TaskService {
     try {
       const res = (
         await this.syncClient.syncItemDelete(
-          taskId.asNumber,
+          taskId.unwrap(),
           this.todoistSyncToken
         )
       ).data;
@@ -320,18 +318,18 @@ export class TodoistTaskService implements TaskService {
     try {
       const res = (
         await this.syncClient.syncItemUpdate(
-          taskId.asNumber,
+          taskId.unwrap(),
           this.todoistSyncToken,
           {
             content: title,
             // Prevent for clear the section when the specified project and current project are the same
             projectId:
-              this.taskById[taskId.asNumber].project_id === project?.id.asNumber
+              this.taskById[taskId.unwrap()].project_id === project?.id.unwrap()
                 ? undefined
                 : project === null
                 ? this.inboxProjectId
-                : project?.id.asNumber,
-            labels: labels?.map((x) => x.idAsNumber),
+                : project?.id.unwrap(),
+            labels: labels?.map((x) => x.name),
           }
         )
       ).data;
@@ -370,7 +368,7 @@ export class TodoistTaskService implements TaskService {
     try {
       const res = (
         await this.syncClient.syncItemUpdate(
-          taskId.asNumber,
+          taskId.unwrap(),
           this.todoistSyncToken,
           { due, dayOrder: optional.dayOrder }
         )
@@ -438,7 +436,7 @@ export class TodoistTaskService implements TaskService {
       return right(
         _(this.projectById)
           .values()
-          .reject((x) => x.is_deleted === 1)
+          .reject((x) => x.is_deleted)
           .map((x) => TodoistTaskService.toProject(x))
           .value()
       );
@@ -466,7 +464,7 @@ export class TodoistTaskService implements TaskService {
       return right(
         _(this.labelsById)
           .values()
-          .reject((x) => x.is_deleted === 1)
+          .reject((x) => x.is_deleted)
           .map((x) => TodoistTaskService.toLabel(x))
           .value()
       );

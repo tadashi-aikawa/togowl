@@ -243,7 +243,7 @@ class FirebaseCloudRepository implements CloudRepository {
           name: UserName.of(userDoc.data()!.name),
         })
       );
-    } catch (e) {
+    } catch (e: any) {
       return left(
         LoginError.of({
           detail: `${e.code}: ${e.message}`,
@@ -263,7 +263,7 @@ class FirebaseCloudRepository implements CloudRepository {
           name: UserName.of(userDoc.data()!.name),
         })
       );
-    } catch (e) {
+    } catch (e: any) {
       return left(
         LoadUserError.of({
           detail: `${e.code}: ${e.message}`,

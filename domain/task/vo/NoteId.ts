@@ -6,8 +6,4 @@ export class NoteId extends PrimitiveValueObject<string> {
   static of(value: string | number): NoteId {
     return new NoteId(String(value));
   }
-
-  get asNumber(): number {
-    return Number(this.unwrap());
-  }
 }

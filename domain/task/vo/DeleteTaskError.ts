@@ -7,7 +7,7 @@ export class DeleteTaskError extends TogowlError {
 
   static of(args: { taskId: TaskId; detail: string }): DeleteTaskError {
     return new DeleteTaskError(
-      `Fail to delete a task. id: ${args.taskId.asNumber}. ${args.detail}`
+      `Fail to delete a task. id: ${args.taskId.unwrap()}. ${args.detail}`
     );
   }
 }

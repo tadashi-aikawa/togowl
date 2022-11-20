@@ -1,5 +1,4 @@
 import { Entity } from "owlelia";
-import { LabelId } from "../vo/LabelId";
 import { Label } from "./Label";
 import { TaskProject } from "./TaskProject";
 import { TaskId } from "~/domain/task/vo/TaskId";
@@ -26,7 +25,7 @@ interface Props {
   projectId?: ProjectId;
   project?: TaskProject;
   entryProject?: Project;
-  labelIds: LabelId[];
+  labelNames: string[];
   labels?: Label[];
   dueDate?: DateTime;
   isRecurring: boolean;
@@ -82,8 +81,8 @@ export class Task extends Entity<Props> {
     return this._props.entryProject;
   }
 
-  get labelIds(): LabelId[] {
-    return this._props.labelIds;
+  get labelNames(): string[] {
+    return this._props.labelNames;
   }
 
   get labels(): Label[] {

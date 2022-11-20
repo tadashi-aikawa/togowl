@@ -7,7 +7,7 @@ export class UpdateTaskError extends TogowlError {
 
   static of(args: { taskId: TaskId; detail: string }): UpdateTaskError {
     return new UpdateTaskError(
-      `Fail to update a task. id: ${args.taskId.asNumber}. ${args.detail}`
+      `Fail to update a task. id: ${args.taskId.unwrap()}. ${args.detail}`
     );
   }
 }

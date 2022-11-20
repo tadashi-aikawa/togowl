@@ -51,7 +51,7 @@ class ProjectModule extends VuexModule {
     );
   }
 
-  get projectById(): { [projectId: number]: Project } {
+  get projectById(): { [projectId: string]: Project } {
     return _.keyBy(this.projects, (p) => p.id.asNumber);
   }
 
@@ -63,7 +63,7 @@ class ProjectModule extends VuexModule {
   }
 
   // FIXME: extract
-  get projectByTaskProjectId(): { [taskProjectId: number]: Project } {
+  get projectByTaskProjectId(): { [taskProjectId: string]: Project } {
     return _(this.projects)
       .flatMap((pj) => pj.taskProjectIds.map((tpid) => [tpid.unwrap(), pj]))
       .fromPairs()
@@ -78,10 +78,10 @@ class ProjectModule extends VuexModule {
       .flatMap((x) => x.taskProjectIds)
       .uniq()
       .orderBy(
-        (pid) => this.projectSelectedCountById[pid.asNumber] ?? 0,
+        (pid) => this.projectSelectedCountById[pid.unwrap()] ?? 0,
         "desc"
       )
-      .map((x) => taskStore.projectById[x.asNumber])
+      .map((x) => taskStore.projectById[x.unwrap()])
       .reject((x) => x === undefined)
       .value();
   }
@@ -105,11 +105,11 @@ class ProjectModule extends VuexModule {
   }
 
   private projectSelectedCountById: {
-    [id: number]: number;
+    [id: string]: number;
   } = TaskProjectCountStorage.getAll();
 
   @Mutation
-  setProjectSelectedCountById(countById: { [id: number]: number }) {
+  setProjectSelectedCountById(countById: { [id: string]: number }) {
     this.projectSelectedCountById = countById;
   }
 
@@ -166,7 +166,7 @@ class ProjectModule extends VuexModule {
   @Action({ rawError: true })
   increaseProjectSelectedCount(project: TaskProject): void {
     this.setProjectSelectedCountById(
-      TaskProjectCountStorage.increase(project.id.asNumber)
+      TaskProjectCountStorage.increase(project.id.unwrap())
     );
   }
 

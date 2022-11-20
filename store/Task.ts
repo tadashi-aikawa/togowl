@@ -39,18 +39,18 @@ class TaskModule extends VuexModule {
     return this._taskConfig ? toTaskConfig(this._taskConfig) : null;
   }
 
-  get taskById(): { [taskId: number]: Task } {
+  get taskById(): { [taskId: string]: Task } {
     // TODO: If you want to include checked/deleted tasks, modify this code.
     return _.mapValues(
       _.pickBy(this._taskById, (x) => x.isEffective),
       (x) =>
         x.cloneWith({
-          project: this.projectById[x.projectId?.asNumber ?? -1],
+          project: this.projectById[x.projectId?.unwrap() ?? "-1"], // XXX: -1 ??
           entryProject: x.projectId
-            ? projectStore.projectByTaskProjectId[x.projectId.asNumber]
+            ? projectStore.projectByTaskProjectId[x.projectId.unwrap()]
             : undefined,
-          labels: x.labelIds
-            .map((id) => this._labelById[id.asNumber])
+          labels: x.labelNames
+            .map((name) => this._labelByName[name])
             .filter((x) => x),
         })
     );
@@ -85,17 +85,17 @@ class TaskModule extends VuexModule {
     return Object.values(this._projectById);
   }
 
-  get projectById(): { [projectId: number]: TaskProject } {
+  get projectById(): { [projectId: string]: TaskProject } {
     return this._projectById;
   }
 
   get labels(): Label[] {
-    return Object.values(this._labelById);
+    return Object.values(this._labelByName);
   }
 
-  private _taskById: { [taskId: number]: Task } = {};
+  private _taskById: { [taskId: string]: Task } = {};
   @Mutation
-  setTaskById(taskById: { [taskId: number]: Task }) {
+  setTaskById(taskById: { [taskId: string]: Task }) {
     this._taskById = taskById;
   }
 
@@ -111,9 +111,9 @@ class TaskModule extends VuexModule {
     this.error = error;
   }
 
-  private _projectById: { [projectId: number]: TaskProject } = {};
+  private _projectById: { [projectId: string]: TaskProject } = {};
   @Mutation
-  setProjectById(projectById: { [projectId: number]: TaskProject }) {
+  setProjectById(projectById: { [projectId: string]: TaskProject }) {
     this._projectById = projectById;
   }
 
@@ -129,10 +129,10 @@ class TaskModule extends VuexModule {
     this.projectError = error;
   }
 
-  private _labelById: { [labelId: number]: Label } = {};
+  private _labelByName: { [labelName: string]: Label } = {};
   @Mutation
-  setLabelById(labelById: { [labelId: number]: Label }) {
-    this._labelById = labelById;
+  setLabelByName(labelByName: { [labelName: string]: Label }) {
+    this._labelByName = labelByName;
   }
 
   labelStatus: ActionStatus = "init";
@@ -196,7 +196,7 @@ class TaskModule extends VuexModule {
       return;
     }
 
-    this.setTaskById(_.keyBy(tasksOrErr.value, (x) => x.id.asNumber));
+    this.setTaskById(_.keyBy(tasksOrErr.value, (x) => x.id.unwrap()));
     this.setError(null);
     this.setStatus("success");
   }
@@ -204,7 +204,7 @@ class TaskModule extends VuexModule {
   @Action({ rawError: true })
   async completeTask(taskId: TaskId): Promise<void> {
     // TODO: Illegal case
-    this.setTaskById(_.omit(this._taskById, [taskId.asNumber]));
+    this.setTaskById(_.omit(this._taskById, [taskId.unwrap()]));
     await this.commandExecutor
       .add(new CompleteCommand(service!.completeTask.bind(service), taskId))
       .execAll(1000);
@@ -237,7 +237,7 @@ class TaskModule extends VuexModule {
 
   @Action({ rawError: true })
   async deleteTask(taskId: TaskId): Promise<void> {
-    this.setTaskById(_.omit(this._taskById, [taskId.asNumber]));
+    this.setTaskById(_.omit(this._taskById, [taskId.unwrap()]));
 
     const err = await this.commandExecutor
       .add(new DeleteCommand(service!.deleteTask.bind(service), taskId))
@@ -257,10 +257,10 @@ class TaskModule extends VuexModule {
     // TODO: Illegal case
     this.setTaskById({
       ...this._taskById,
-      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWith({
+      [taskId.unwrap()]: this._taskById[taskId.unwrap()].cloneWith({
         title,
         projectId: project?.id,
-        labelIds: labels.map((x) => x.id),
+        labelNames: labels.map((x) => x.name),
       }),
     });
 
@@ -285,7 +285,7 @@ class TaskModule extends VuexModule {
     // TODO: Illegal case
     this.setTaskById({
       ...this._taskById,
-      [taskId.asNumber]: this._taskById[taskId.asNumber].cloneWith({
+      [taskId.unwrap()]: this._taskById[taskId.unwrap()].cloneWith({
         dueDate,
         dayOrder,
       }),
@@ -310,9 +310,9 @@ class TaskModule extends VuexModule {
           dayOrder: idx + 1,
         })
       )
-      .keyBy((x) => x.id.asNumber)
+      .keyBy((x) => x.id.unwrap())
       .value();
-    const orderedTasksById: { [taskId: number]: Task } = {
+    const orderedTasksById: { [taskId: string]: Task } = {
       ...this.taskById,
       ...orderedDailyTasksById,
     };
@@ -346,7 +346,7 @@ class TaskModule extends VuexModule {
       return;
     }
 
-    this.setProjectById(_.keyBy(projectsOrErr.value, (x) => x.id.asNumber));
+    this.setProjectById(_.keyBy(projectsOrErr.value, (x) => x.id.unwrap()));
     this.setProjectError(null);
     this.setProjectStatus("success");
   }
@@ -367,7 +367,7 @@ class TaskModule extends VuexModule {
       return;
     }
 
-    this.setLabelById(_.keyBy(labelsOrErr.value, (x) => x.idAsNumber));
+    this.setLabelByName(_.keyBy(labelsOrErr.value, (x) => x.name));
     this.setLabelError(null);
     this.setLabelStatus("success");
   }
@@ -394,7 +394,7 @@ class TaskModule extends VuexModule {
       onCompleteTask: (task: Task) => {
         this.setTaskById({
           ...this._taskById,
-          [task.id.asNumber]: task,
+          [task.id.unwrap()]: task,
         });
       },
     });
