@@ -43,7 +43,7 @@ jobs:
           EOF
       - run: task build
 
-      - run: task test-with-coverage
+      - run: task test:coverage
       - uses: codecov/codecov-action@v3
         if: "matrix.node == '18.x' && success()"
         with:
