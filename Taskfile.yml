@@ -1,0 +1,58 @@
+version: "3"
+
+tasks:
+  default:
+    - task: help
+
+  help:
+    silent: true
+    cmds:
+      - task -l
+
+  dev:
+    desc: Start with web server
+    cmds:
+      - npm run dev
+  build:
+    desc: Build
+    cmds:
+      - npm run build
+  start:
+    desc: Start
+    cmds:
+      - npm run start
+  test:
+    desc: Test
+    cmds:
+      - npm run test
+  test:coverage:
+    desc: Test with coverage
+    cmds:
+      - npm run test-with-coverage
+  ci:
+    desc: For CI
+    cmds:
+      - task: init
+      - task: build
+      - task: test
+  deploy:
+    desc: Deploy
+    cmds:
+      - task: npm run deploy
+
+  release:
+    desc: |
+      Build
+          ∟ [Ex] task release VERSION=1.2.3
+          ∟ [Ex] task release VERSION=1.2.3-beta
+    deps:
+      - ci
+    cmds:
+      - npm version {{.VERSION}}
+      - task: ci
+      - task: deploy
+      - git push --tags
+      - git push
+    preconditions:
+      - sh: "[ {{.VERSION}} != '' ]"
+        msg: "VERSION is required."

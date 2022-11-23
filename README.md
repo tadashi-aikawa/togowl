@@ -73,7 +73,7 @@ firebase login
 Then
 
 ```
-npm run deploy
+task deploy
 ```
 
 
@@ -83,20 +83,20 @@ npm run deploy
 ### Serve with hot reload at localhost:3000
 
 ```
-npm run dev
+task dev
 ```
 
 ### Tests
 
 ```
-npm test
+task test
 ```
 
 ### Build for production and launch server
 
 ```
-npm run build
-npm run start
+task build
+task start
 ```
 
 ### Release (Only for )
@@ -105,5 +105,5 @@ Before release, you need to be able to deploy.
 If you can, then...
 
 ```
-make release version=x.y.z
+task release VERSION=x.y.z
 ```
