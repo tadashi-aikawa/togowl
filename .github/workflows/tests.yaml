@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - run: npm install
+      - run: npm install --legacy-peer-deps
       - run: |
           cat > .firebase.config.json << "EOF"
             {

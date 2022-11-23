@@ -33,14 +33,15 @@ It integrates with Toggl, Todoist, and Slack unofficially.
 ✅ For all
 ----------
 
-`node.js >= v14` is required.
+`node.js >= v18` is required.
 
 ### Clone and install dependencies
 
 ```
 git clone https://github.com/tadashi-aikawa/togowl.git
 cd togowl
-npm install
+# TODO: fix
+npm install --legacy-peer-deps
 ```
 
 ### Create your app on firebase
