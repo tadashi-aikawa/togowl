@@ -9,6 +9,10 @@ tasks:
     cmds:
       - task -l
 
+  init:
+    desc: Initialize for dev
+    cmds:
+      - npm install
   dev:
     desc: Start with web server
     cmds:
