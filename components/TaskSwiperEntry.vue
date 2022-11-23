@@ -179,6 +179,7 @@ const updateDueDate = (date: string) =>
 }
 
 .swiper-extra-menu-list-item {
+  padding-top: 25px;
   &.compact {
     padding-top: 0;
   }

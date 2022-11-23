@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row align="center" justify="center">
-      <div style="padding: 15px 15px 0; font-size: 110%">
+      <div style="padding: 15px 15px 0; font-size: 110%; line-break: anywhere">
         <span
           :class="{ 'rainbow-loading': loading, markdown: true }"
           v-html="displayEntryHtml"
@@ -113,11 +113,12 @@ export default defineComponent({
 </script>
 <style scoped>
 .timer {
-  padding: 10px;
+  padding: 10px 0 20px 0;
   font-size: 200%;
   letter-spacing: 0.05em;
 }
 .sub-title {
+  padding-top: 12px;
   font-size: 85%;
   color: darkgrey;
 }

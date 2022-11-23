@@ -6,7 +6,10 @@
           <v-col :sm="12" :lg="8">
             <v-flex>
               <v-fade-transition hide-on-leave>
-                <div v-if="currentEntry" style="height: 220px">
+                <div
+                  v-if="currentEntry"
+                  style="height: 220px; margin-top: 20px"
+                >
                   <CurrentTimeEntry
                     :current-entry="currentEntry"
                     :disabled="!isTimeEntryTrusted"
@@ -65,7 +68,10 @@
                 </div>
               </v-fade-transition>
               <v-fade-transition hide-on-leave>
-                <div v-if="!currentEntry" style="height: 220px">
+                <div
+                  v-if="!currentEntry"
+                  style="height: 220px; margin-top: 20px"
+                >
                   <v-row align="center" justify="center">
                     <v-autocomplete
                       v-model="selectedEntry"
@@ -95,7 +101,7 @@
                   <v-row
                     align="center"
                     justify="center"
-                    style="padding-top: 20px"
+                    style="margin-top: 20px"
                   >
                     <Clock />
                   </v-row>

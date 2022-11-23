@@ -9,7 +9,7 @@
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0" />
+          <hr style="margin: 8px 0 20px 0" />
           <SettingsApp />
         </v-card>
       </template>
@@ -26,7 +26,7 @@
             <v-icon style="padding: 0 5px">mdi-arrow-left-right-bold</v-icon>
             <v-icon>mdi-format-list-checks</v-icon>
           </div>
-          <hr style="margin: 8px 0" />
+          <hr style="margin: 8px 0 20px 0" />
           <SettingsProject />
         </v-card>
       </template>
@@ -44,7 +44,7 @@
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0" />
+          <hr style="margin: 8px 0 20px 0" />
           <SettingsToggl />
         </v-card>
       </template>
@@ -62,7 +62,7 @@
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0" />
+          <hr style="margin: 8px 0 20px 0" />
           <SettingsTodoist />
         </v-card>
       </template>
@@ -80,7 +80,7 @@
               max-width="30"
             />
           </div>
-          <hr style="margin: 8px 0" />
+          <hr style="margin: 8px 0 20px 0" />
           <SettingsSlack />
         </v-card>
       </template>
@@ -154,6 +154,6 @@ export default defineComponent({
   padding-right: 3px;
 }
 .card-area {
-  padding: 10px;
+  padding: 30px;
 }
 </style>
