@@ -1,3 +1,95 @@
+<script lang="ts" setup>
+import { computed, defineComponent, reactive, ref } from "vue";
+import { Swiper, SwiperSlide } from "vue-awesome-swiper";
+import { Task } from "~/domain/task/entity/Task";
+import TaskEntry from "~/components/TaskEntry.vue";
+import CalendarSelector from "~/components/CalendarSelector.vue";
+import TaskSwiperButton from "~/components/TaskSwiperButton.vue";
+import { taskStore } from "~/utils/store-accessor";
+import { DateTime } from "~/domain/common/DateTime";
+import "swiper/swiper.min.css";
+
+interface Props {
+  task: Task;
+  disabledStart: boolean;
+  hiddenStart?: boolean;
+  hiddenDragHandler?: boolean;
+  compact: boolean;
+}
+const props = withDefaults(defineProps<Props>(), {
+  hiddenStart: false,
+  hiddenDragHandler: false,
+});
+
+const emit = defineEmits<{
+  (e: "on-click-start-button", task: Task): void;
+}>();
+const handleClickStartButton = () => {
+  emit("on-click-start-button", props.task);
+};
+
+interface State {
+  swiperOption: {
+    initialSlide: number;
+    loop: boolean;
+    threshold: number;
+    noSwipingClass: string;
+    on: {
+      transitionEnd(): void;
+    };
+  };
+}
+
+const state = reactive<State>({
+  swiperOption: {
+    initialSlide: 1,
+    loop: false,
+    threshold: 10,
+    noSwipingClass: "no-swiping-class",
+    on: {
+      transitionEnd(this: { activeIndex: number }) {
+        if (this.activeIndex === 0) {
+          completeTask();
+        }
+      },
+    },
+  },
+});
+
+const mySwiper = ref<any>();
+
+const revertSwiperStateAsDefault = () => {
+  mySwiper.value.$swiper.slideTo(1);
+};
+
+// or undefined?
+const date = computed(() => props.task.dueDate?.displayDate);
+
+const isDivider = computed(() =>
+  props.task.titleWithoutDecorated.startsWith("⏲")
+);
+
+const completeTask = async () => {
+  revertSwiperStateAsDefault();
+  await taskStore.completeTask(props.task.id);
+};
+
+const emitUpdateDueDateAction = (dueDate: DateTime, dayOrder?: number) => {
+  revertSwiperStateAsDefault();
+  taskStore.updateDueDate({
+    taskId: props.task.id,
+    dueDate: props.task.dueDate?.overwriteDate(dueDate) ?? dueDate,
+    dayOrder,
+  });
+};
+const updateToTodayAtFirst = () => emitUpdateDueDateAction(DateTime.today(), 0);
+const updateToTodayAtLast = () =>
+  emitUpdateDueDateAction(DateTime.today(), 999);
+const updateToTomorrow = () => emitUpdateDueDateAction(DateTime.tomorrow());
+const updateDueDate = (date: string) =>
+  emitUpdateDueDateAction(DateTime.of(date));
+</script>
+
 <template>
   <div>
     <swiper ref="mySwiper" :options="state.swiperOption">
@@ -58,100 +150,6 @@
     </swiper>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent, reactive, ref } from "vue";
-import { Swiper, SwiperSlide } from "vue-awesome-swiper";
-import { Task } from "~/domain/task/entity/Task";
-import TaskEntry from "~/components/TaskEntry.vue";
-import CalendarSelector from "~/components/CalendarSelector.vue";
-import TaskSwiperButton from "~/components/TaskSwiperButton.vue";
-import { taskStore } from "~/utils/store-accessor";
-import { DateTime } from "~/domain/common/DateTime";
-import "swiper/swiper-bundle.css";
-
-export default defineComponent({
-  components: {
-    TaskEntry,
-    Swiper,
-    SwiperSlide,
-    CalendarSelector,
-    TaskSwiperButton,
-  },
-  props: {
-    task: { type: Object as () => Task, required: true },
-    disabledStart: { type: Boolean },
-    hiddenStart: { type: Boolean },
-    hiddenDragHandler: { type: Boolean },
-    compact: { type: Boolean },
-  },
-  setup(props, { emit }) {
-    const state = reactive({
-      swiperOption: {
-        initialSlide: 1,
-        loop: false,
-        threshold: 10,
-        noSwipingClass: "no-swiping-class",
-        on: {
-          transitionEnd(this: { activeIndex: number }) {
-            if (this.activeIndex === 0) {
-              completeTask();
-            }
-          },
-        },
-      },
-    });
-
-    const mySwiper = ref<any>();
-
-    const revertSwiperStateAsDefault = () => {
-      mySwiper.value.$swiper.slideTo(1);
-    };
-
-    // or undefined?
-    const date = computed(() => props.task.dueDate?.displayDate);
-
-    const isDivider = computed(() =>
-      props.task.titleWithoutDecorated.startsWith("⏲")
-    );
-
-    const completeTask = async () => {
-      revertSwiperStateAsDefault();
-      await taskStore.completeTask(props.task.id);
-    };
-
-    const emitUpdateDueDateAction = (dueDate: DateTime, dayOrder?: number) => {
-      revertSwiperStateAsDefault();
-      taskStore.updateDueDate({
-        taskId: props.task.id,
-        dueDate: props.task.dueDate?.overwriteDate(dueDate) ?? dueDate,
-        dayOrder,
-      });
-    };
-    const updateToTodayAtFirst = () =>
-      emitUpdateDueDateAction(DateTime.today(), 0);
-    const updateToTodayAtLast = () =>
-      emitUpdateDueDateAction(DateTime.today(), 999);
-    const updateToTomorrow = () => emitUpdateDueDateAction(DateTime.tomorrow());
-    const updateDueDate = (date: string) =>
-      emitUpdateDueDateAction(DateTime.of(date));
-
-    return {
-      state,
-      date,
-      mySwiper,
-      isDivider,
-      completeTask,
-      updateToTodayAtFirst,
-      updateToTodayAtLast,
-      updateToTomorrow,
-      updateDueDate,
-      handleClickStartButton() {
-        emit("on-click-start-button", props.task);
-      },
-    };
-  },
-});
-</script>
 
 <style lang="scss" scoped>
 .swiper-close-area {
