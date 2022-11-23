@@ -42,7 +42,7 @@ tasks:
   deploy:
     desc: Deploy
     cmds:
-      - task: npm run deploy
+      - task: firebase deploy
 
   release:
     desc: |
