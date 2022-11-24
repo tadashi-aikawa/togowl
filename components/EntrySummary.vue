@@ -30,7 +30,7 @@ export default defineComponent({
 
 <style scoped>
 .entry {
-  font-size: 100% !important;
+  font-size: 95% !important;
   color: white;
   overflow: hidden;
   text-overflow: ellipsis;
