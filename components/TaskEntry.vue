@@ -77,18 +77,20 @@ const handleDeleteTask = () => {
     </v-icon>
 
     <v-hover v-slot="{ hover }">
-      <v-btn
-        class="mr-1 no-swiping-class"
-        icon
-        @click="handleClickCompleteButton"
-      >
-        <v-fade-transition>
-          <v-icon dark v-if="!hover"> mdi-circle </v-icon>
-          <v-icon v-if="hover" dark style="color: darkseagreen">
+      <v-fade-transition>
+        <div class="mr-2">
+          <v-icon dark v-if="!hover" color="grey"> mdi-circle </v-icon>
+          <v-icon
+            v-if="hover"
+            dark
+            style="color: darkseagreen"
+            class="no-swiping-class"
+            @click="handleClickCompleteButton"
+          >
             mdi-check-circle
           </v-icon>
-        </v-fade-transition>
-      </v-btn>
+        </div>
+      </v-fade-transition>
     </v-hover>
 
     <v-list-item-content>
