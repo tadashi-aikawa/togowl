@@ -110,12 +110,14 @@ export namespace SyncApi {
       return Axios.post(
         "/sync",
         stringify({
-          token: this.token,
           sync_token: syncToken,
           resource_types: JSON.stringify(resourceTypes),
           commands: commands.length > 0 ? JSON.stringify(commands) : undefined,
         }),
-        { baseURL: this.baseUrl }
+        {
+          baseURL: this.baseUrl,
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
       );
     }
 
